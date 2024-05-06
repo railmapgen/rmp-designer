@@ -1,47 +1,41 @@
-import rmgRuntime from '@railmapgen/rmg-runtime';
-import { Button } from '@chakra-ui/react';
+import React from 'react';
+import { Button, Flex } from '@chakra-ui/react';
 import WindowHeader from './window-header';
-import { useRootDispatch, useRootSelector } from '../redux';
-import { bumpCounter } from '../redux/app/app-slice';
-import {
-    RmgDebouncedInput,
-    RmgLabel,
-    RmgPage,
-    RmgPageHeader,
-    RmgThemeProvider,
-    RmgWindow,
-} from '@railmapgen/rmg-components';
+import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
+import { useRootSelector } from '../redux';
+import SvgWrapper from './svg-wrapper';
+import { RmpDetails } from './panel/details-rmp';
+import { DetailsSvgs } from './panel/details-svgs';
+import { Settings } from './panel/settings';
+import { Export } from './panel/export';
+import { DetailsComponents } from './panel/details-components';
 
 export default function AppRoot() {
     const { t } = useTranslation();
-    const dispatch = useRootDispatch();
-    const counter = useRootSelector(state => state.app.counter);
+    const param = useRootSelector(store => store.param);
+    const [openExport, setOpenExport] = React.useState(false);
 
     return (
         <RmgThemeProvider>
             <RmgWindow>
                 <WindowHeader />
                 <RmgPage>
-                    <RmgPageHeader>
-                        <RmgLabel label="Quick filter">
-                            <RmgDebouncedInput placeholder="Filter anything" />
-                        </RmgLabel>
-                    </RmgPageHeader>
-                    This is a seed project for RMG with React framework.
-                    <br />
-                    Please replace any &quot;Seed Project&quot; or &quot;seed-project&quot; with the correct component
-                    name.
-                    <br />
-                    Chakra UI and Redux store have been setup already. Here&apos;s an example state: {counter}.
-                    <br />
-                    <Button onClick={() => dispatch(bumpCounter())}>Bump</Button>
-                    <br />
-                    RMG Runtime has been setup. Click the button below to open RMG in another tab.
-                    <br />
-                    <Button onClick={() => rmgRuntime.openApp('rmg')}>
-                        {t('Open')} {t('Rail Map Generator')}
-                    </Button>
+                    <RmgErrorBoundary allowReset>
+                        <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
+                            <SvgWrapper />
+                            <RmpDetails />
+                        </Flex>
+                        <Flex p={2} direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
+                            <Settings />
+                            <Button onClick={() => setOpenExport(true)}>Export</Button>
+                        </Flex>
+                        <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
+                            <DetailsSvgs />
+                            <DetailsComponents />
+                        </Flex>
+                        <Export isOpen={openExport} onClose={() => setOpenExport(false)} param={param} />
+                    </RmgErrorBoundary>
                 </RmgPage>
             </RmgWindow>
         </RmgThemeProvider>

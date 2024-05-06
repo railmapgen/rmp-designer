@@ -7,7 +7,7 @@ import i18n from './i18n/config';
 import { createRoot, Root } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import initStore from './redux/init';
-import { Events } from './util/constant';
+import { Events } from './constants/constants';
 
 let root: Root;
 

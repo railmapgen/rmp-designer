@@ -1,9 +1,11 @@
 import { combineReducers, configureStore, createListenerMiddleware, TypedStartListening } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import appReducer from './app/app-slice';
+import paramReducer from './param/param-slice';
 
 const rootReducer = combineReducers({
     app: appReducer,
+    param: paramReducer,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 
