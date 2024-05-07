@@ -1,10 +1,15 @@
 import { combineReducers, configureStore, createListenerMiddleware, TypedStartListening } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { enableMapSet } from 'immer';
 import appReducer from './app/app-slice';
+import runtimeReducer from './runtime/runtime-slice';
 import paramReducer from './param/param-slice';
+
+enableMapSet();
 
 const rootReducer = combineReducers({
     app: appReducer,
+    runtime: runtimeReducer,
     param: paramReducer,
 });
 export type RootState = ReturnType<typeof rootReducer>;
@@ -13,7 +18,7 @@ const listenerMiddleware = createListenerMiddleware();
 export const createStore = (preloadedState: Partial<RootState> = {}) =>
     configureStore({
         reducer: rootReducer,
-        middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(listenerMiddleware.middleware),
+        middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).prepend(listenerMiddleware.middleware),
         preloadedState,
     });
 const store = createStore();

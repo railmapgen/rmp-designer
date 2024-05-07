@@ -1,15 +1,16 @@
-import { AttrsProps, Components, ComponentsType, SvgsElem } from './constants';
+import { AttrsProps, Id, SvgsElem } from './constants';
+import { ComponentsType } from './components';
 import { RectSvgAttrs } from '../components/svgs/rect';
 
 export enum SvgsType {
     Rect = 'rect',
 }
 
-// export interface SvgsAttrs {
-//     [SvgsType.Rect]?: RectSvgAttrs;
-// }
+export interface SvgsAttrs {
+    [SvgsType.Rect]?: RectSvgAttrs;
+}
 
-export type SvgsAttrs = RectSvgAttrs;
+// export type SvgsAttrs = RectSvgAttrs;
 
 export interface Variable {
     id: string;
@@ -18,14 +19,14 @@ export interface Variable {
 }
 
 export interface SvgsComponentProps<T> {
-    id: string;
+    id: Id;
     isCore: boolean;
     x: string;
     y: string;
     attrs: T;
-    handlePointerDown: (id: string, e: React.PointerEvent<SVGElement>) => void;
-    handlePointerMove: (id: string, e: React.PointerEvent<SVGElement>) => void;
-    handlePointerUp: (id: string, e: React.PointerEvent<SVGElement>) => void;
+    handlePointerDown: (id: Id, e: React.PointerEvent<SVGElement>) => void;
+    handlePointerMove: (id: Id, e: React.PointerEvent<SVGElement>) => void;
+    handlePointerUp: (id: Id, e: React.PointerEvent<SVGElement>) => void;
     variable: Variable[];
 }
 

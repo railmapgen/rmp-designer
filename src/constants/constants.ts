@@ -1,24 +1,11 @@
+import { ColourHex, MonoColour } from '@railmapgen/rmg-palette-resources';
 import { SvgsAttrs, SvgsType } from './svgs';
+import { Components } from './components';
 
-export type ComponentsType = 'text' | 'textarea' | 'number' | 'switch';
-
-export const ComponentsTypeOptions = {
-    text: 'text',
-    textarea: 'textarea',
-    number: 'number',
-    switch: 'switch',
-};
-
-export interface Components {
-    id: string;
-    label: string;
-    type: ComponentsType;
-    defaultValue: any;
-    value?: any;
-}
+export type Id = `id_${string}`;
 
 export interface SvgsElem<T> {
-    id: string;
+    id: Id;
     type: SvgsType;
     isCore: boolean;
     x: string;
@@ -29,7 +16,7 @@ export interface SvgsElem<T> {
 export interface Param {
     id: string;
     type: 'MiscNode' | 'Station';
-    svgs: Array<SvgsElem<SvgsAttrs>>;
+    svgs: Array<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>;
     components: Components[];
     color?: Components;
 }
@@ -39,6 +26,12 @@ export interface AttrsProps<T> {
     attrs: T;
     handleAttrsUpdate: (id: string, attrs: T) => void;
 }
+
+export type Theme = [string, string, ColourHex, MonoColour];
+
+export type RuntimeMode = 'free' | `svgs-${SvgsType}`;
+
+export type RuntimeActive = 'background' | Id | undefined;
 
 export enum Events {
     APP_LOAD = 'APP_LOAD',

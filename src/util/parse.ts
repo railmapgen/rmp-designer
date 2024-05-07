@@ -1,4 +1,4 @@
-import { Components, ComponentsType } from '../constants/constants';
+import { Components, ComponentsType } from '../constants/components';
 
 export const queryComponentValue = (components: Components[], query: string) => {
     components.forEach(c => {
@@ -18,8 +18,12 @@ export const getComponentValue = (components: Components[]) =>
 
 export const calcFunc = (str: string, ...rest: string[]) => new Function(...rest, `return ${str}`);
 
-export const calcFuncInBatch = (str: string[], name: string[], value: string[], type: ComponentsType[]) =>
-    str.map((s, i) => {
+export const calcFuncInBatch = (str: string[], name: string[], value: string[], type: ComponentsType[]) => {
+    // const dispatch = useRootDispatch();
+    // const { globalAlerts } = useRootSelector(store => store.runtime);
+    // globalAlerts && dispatch(setGlobalAlert(undefined));
+
+    return str.map((s, i) => {
         try {
             return calcFunc(
                 s,
@@ -28,7 +32,9 @@ export const calcFuncInBatch = (str: string[], name: string[], value: string[], 
         } catch (e) {
             if (e instanceof Error) {
                 console.error(s, e);
-                return undefined;
+                // dispatch(setGlobalAlert(e.message));
+                return type[i] === 'number' ? '0' : 'none';
             }
         }
     });
+};

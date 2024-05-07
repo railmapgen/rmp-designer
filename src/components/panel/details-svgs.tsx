@@ -16,6 +16,7 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 export function DetailsSvgs() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
+    const { globalAlerts } = useRootSelector(store => store.runtime);
     const { t } = useTranslation();
 
     const p = param.svgs.map((s, i) => {
@@ -61,6 +62,7 @@ export function DetailsSvgs() {
             <Heading fontSize="x-large" p={2}>
                 Svgs
             </Heading>
+            {globalAlerts ? globalAlerts : undefined}
             <Accordion width="100%" allowMultiple>
                 {...p}
             </Accordion>

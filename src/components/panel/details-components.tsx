@@ -4,18 +4,26 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Box,
-    Heading,
+    Box, Button, Flex,
+    Heading, IconButton,
 } from '@chakra-ui/react';
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import React from 'react';
+import { RmgFields, RmgFieldsField, RmgLabel } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
+import { MdCircle } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setComponentValue } from '../../redux/param/param-slice';
-import { ComponentsType, ComponentsTypeOptions } from '../../constants/constants';
+import { addComponent, deleteComponent, setColor, setComponentValue } from '../../redux/param/param-slice';
+import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
+import { openPaletteAppClip } from '../../redux/runtime/runtime-slice';
+import { nanoid } from '../../util/helper';
+import ColourUtil from './colour-util';
 
 export function DetailsComponents() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
+    const {
+        paletteAppClip: { output },
+    } = useRootSelector(state => state.runtime);
     const { t } = useTranslation();
 
     const getType = (type: ComponentsType) => {
@@ -30,6 +38,15 @@ export function DetailsComponents() {
         return undefined;
     };
 
+    const handleAddNewComponent = () => {
+        dispatch(addComponent({
+            id: nanoid(),
+            label: nanoid(),
+            type: 'text',
+            defaultValue: 'text',
+        }))
+    }
+
     const p = param.components.map((c, index) => {
         const { id, label, type, defaultValue, value } = c;
         const field: RmgFieldsField[] = [
@@ -37,7 +54,7 @@ export function DetailsComponents() {
                 label: 'Label',
                 type: 'input',
                 value: label,
-                onChange: v => dispatch(setComponentValue({ index: index, value: { ...c, label: v } })),
+                onChange: v => dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } })),
             },
             {
                 label: 'Type',
@@ -52,6 +69,12 @@ export function DetailsComponents() {
                 type: 'input',
                 value: defaultValue,
                 onChange: v => dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } })),
+            },
+            {
+                label: '',
+                type: 'custom',
+                oneLine: true,
+                component: <Button size="md" onClick={() => dispatch(deleteComponent(index))}>Remove</Button>,
             },
         ];
 
@@ -70,13 +93,50 @@ export function DetailsComponents() {
         );
     });
 
+    const [isThemeRequested, setIsThemeRequested] = React.useState(false);
+    React.useEffect(() => {
+        if (isThemeRequested && output) {
+            dispatch(setColor({ ...param.color!, defaultValue: output }));
+            setIsThemeRequested(false);
+        }
+    }, [output?.toString()]);
+
     return (
         <Box width="100%">
-            <Heading fontSize="x-large" p={2}>
-                Variables
-            </Heading>
+            <Flex p={2}>
+                <Heading p={2} fontSize="x-large" width="100%">
+                    Variables
+                </Heading>
+                <Button onClick={handleAddNewComponent}>+</Button>
+            </Flex>
             <Accordion width="100%" allowMultiple>
                 {...p}
+                {param.color ? (
+                    <AccordionItem key="color">
+                        <AccordionButton p={2}>
+                            <Box as="span" flex="1" textAlign="left">
+                                {param.color.label}
+                            </Box>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel>
+                            <RmgLabel label="Default Color">
+                                <IconButton
+                                    aria-label={t('Color')}
+                                    color={param.color.defaultValue[3]}
+                                    bg={param.color.defaultValue[2]}
+                                    size="md"
+                                    _hover={{ bg: ColourUtil.fade(param.color.defaultValue[2], 0.7) }}
+                                    icon={<MdCircle />}
+                                    onClick={() => {
+                                        setIsThemeRequested(true);
+                                        dispatch(openPaletteAppClip(param.color?.defaultValue));
+                                    }}
+                                />
+                            </RmgLabel>
+                        </AccordionPanel>
+                    </AccordionItem>
+                ) : undefined}
             </Accordion>
         </Box>
     );

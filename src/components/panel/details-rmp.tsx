@@ -9,11 +9,19 @@ import {
 } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setComponentValue } from '../../redux/param/param-slice';
+import { setColor, setComponentValue } from '../../redux/param/param-slice';
+import { IconButton } from '@chakra-ui/react';
+import ColourUtil from './colour-util';
+import { MdCircle } from 'react-icons/md';
+import { openPaletteAppClip } from '../../redux/runtime/runtime-slice';
+import React from 'react';
 
 export function RmpDetails() {
-    const param = useRootSelector(store => store.param);
     const dispatch = useRootDispatch();
+    const param = useRootSelector(store => store.param);
+    const {
+        paletteAppClip: { output },
+    } = useRootSelector(state => state.runtime);
     const { t } = useTranslation();
 
     const field: RmgFieldsField[] = param.components.map((c, index) => {
@@ -49,11 +57,37 @@ export function RmpDetails() {
         }
     });
 
+    const [isThemeRequested, setIsThemeRequested] = React.useState(false);
+    React.useEffect(() => {
+        if (isThemeRequested && output) {
+            dispatch(setColor({ ...param.color!, value: output }));
+            setIsThemeRequested(false);
+        }
+    }, [output?.toString()]);
+
+    const color = param.color?.value ?? param.color?.defaultValue;
+
     return (
         <RmgSidePanel isOpen={true} header="Dummy header">
             <RmgSidePanelHeader onClose={() => {}}>{t('panel.details.header')}</RmgSidePanelHeader>
             <RmgSidePanelBody>
                 <RmgFields fields={field} />
+                {param.color ? (
+                    <RmgLabel label={param.color.label}>
+                        <IconButton
+                            aria-label={t('Color')}
+                            color={color[3]}
+                            bg={color[2]}
+                            size="md"
+                            _hover={{ bg: ColourUtil.fade(color[2], 0.7) }}
+                            icon={<MdCircle />}
+                            onClick={() => {
+                                setIsThemeRequested(true);
+                                dispatch(openPaletteAppClip(color));
+                            }}
+                        />
+                    </RmgLabel>
+                ) : undefined}
             </RmgSidePanelBody>
             <RmgSidePanelFooter> 1234 </RmgSidePanelFooter>
         </RmgSidePanel>

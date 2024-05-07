@@ -1,6 +1,6 @@
 import React from 'react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
-import { AttrsProps, Components, SvgsElem } from '../../constants/constants';
+import { AttrsProps, SvgsElem } from '../../constants/constants';
 import { Svgs, SvgsComponentProps } from '../../constants/svgs';
 import { calcFuncInBatch } from '../../util/parse';
 
@@ -76,7 +76,7 @@ const defaultRectSvgAttrs: RectSvgAttrs = {
     rx: '0',
     ry: '0',
     opacity: '1',
-    fill: '"white"',
+    fill: '"black"',
     stroke: '"none"',
 };
 
@@ -145,7 +145,7 @@ const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
 
 const rectIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
-        <rect fill="black" x="2" y="6" width="10" height="10" />
+        <rect fill="currentColor" x="7" y="7" width="10" height="10" />
     </svg>
 );
 
