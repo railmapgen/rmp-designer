@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Id, Param, SvgsElem } from '../../constants/constants';
-import { RectSvgAttrs } from "../../components/svgs/rect";
-import { Svgs, SvgsAttrs, SvgsType } from '../../constants/svgs';
+import { RectSvgAttrs } from '../../components/svgs/rect';
+import { SvgsAttrs, SvgsType } from '../../constants/svgs';
 import { Components } from '../../constants/components';
 
 const defaultRectSvgAttrs: RectSvgAttrs = {
@@ -46,7 +46,7 @@ const paramSlice = createSlice({
         setType: (state, action: PayloadAction<'MiscNode' | 'Station'>) => {
             state.type = action.payload;
         },
-        setColor: (state, action: PayloadAction<Components>) => {
+        setColor: (state, action: PayloadAction<Components | undefined>) => {
             state.color = action.payload;
         },
         setSvgs: (state, action: PayloadAction<[]>) => {
@@ -73,7 +73,18 @@ const paramSlice = createSlice({
     },
 });
 
-export const { setId, setType, setColor, setSvgs, addSvg, setSvgValue, setComponents, addComponent, deleteComponent, setComponentValue } = paramSlice.actions;
+export const {
+    setId,
+    setType,
+    setColor,
+    setSvgs,
+    addSvg,
+    setSvgValue,
+    setComponents,
+    addComponent,
+    deleteComponent,
+    setComponentValue,
+} = paramSlice.actions;
 
 const paramReducer = paramSlice.reducer;
 export default paramReducer;

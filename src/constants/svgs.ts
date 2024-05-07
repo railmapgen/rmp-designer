@@ -7,7 +7,7 @@ export enum SvgsType {
 }
 
 export interface SvgsAttrs {
-    [SvgsType.Rect]?: RectSvgAttrs;
+    [SvgsType.Rect]: RectSvgAttrs;
 }
 
 // export type SvgsAttrs = RectSvgAttrs;
