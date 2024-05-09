@@ -1,9 +1,9 @@
 {
-    "homepage": "https://railmapgen.github.io/seed-project",
-    "name": "seed-project",
-    "repository": "github:railmapgen/seed-project",
+    "homepage": "https://railmapgen.github.io/rmp-style-generator",
+    "name": "rmp-style-generator",
+    "repository": "github:railmapgen/rmp-style-generator",
     "bugs": {
-        "url": "https://github.com/railmapgen/seed-project/issues"
+        "url": "https://github.com/railmapgen/rmp-style-generator/issues"
     },
     "license": "GPL-3.0-only",
     "dependencies": {
