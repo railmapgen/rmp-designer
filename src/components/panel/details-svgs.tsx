@@ -4,7 +4,7 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Box,
+    Box, Flex,
     Heading,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
@@ -59,9 +59,11 @@ export function DetailsSvgs() {
 
     return (
         <Box width="100%">
-            <Heading fontSize="x-large" p={2}>
-                Svgs
-            </Heading>
+            <Flex p={2}>
+                <Heading fontSize="x-large" p={2}>
+                    Svgs
+                </Heading>
+            </Flex>
             {globalAlerts ? globalAlerts : undefined}
             <Accordion width="100%" allowMultiple>
                 {...p}

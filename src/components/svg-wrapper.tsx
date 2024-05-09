@@ -44,8 +44,8 @@ export default function SvgWrapper() {
                 id,
                 type,
                 isCore: false,
-                x: String(x - svgWidth / 2),
-                y: String(y - svgHeight / 2),
+                x: String(roundToNearestN(x - svgWidth / 2, 1)),
+                y: String(roundToNearestN(y - svgHeight / 2, 1)),
                 attrs: attr,
             };
 
