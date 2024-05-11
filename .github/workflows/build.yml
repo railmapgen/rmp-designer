@@ -41,6 +41,14 @@ jobs:
         env:
           BUMP_VERSION: ${{ inputs.bump_version }}
 
+      - name: Release
+        id: release
+        run: ./scripts/release.sh
+        shell: bash
+        env:
+          VERSION: ${{ steps.build.outputs.RMG_VER }}
+          ENV: ${{ inputs.auto_deploy }}
+
 #      - name: Release
 #        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
 #        uses: railmapgen/releaser@main
