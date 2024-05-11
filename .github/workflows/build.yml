@@ -41,14 +41,14 @@ jobs:
         env:
           BUMP_VERSION: ${{ inputs.bump_version }}
 
-      - name: Release
-        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
-        uses: railmapgen/releaser@main
-        with:
-          app_name: seed-project
-          version: ${{ steps.build.outputs.RMG_VER }}
-          environment: ${{ inputs.auto_deploy }}
-          dist: dist
-          github_token: ${{ secrets.RMG_BUILD_AND_RELEASE }}
-          gitlab_token: ${{ secrets.GITLAB_RELEASE }}
-          gitee_token: ${{ secrets.GITEE_RELEASE }}
+#      - name: Release
+#        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
+#        uses: railmapgen/releaser@main
+#        with:
+#          app_name: rmp-style-generator
+#          version: ${{ steps.build.outputs.RMG_VER }}
+#          environment: ${{ inputs.auto_deploy }}
+#          dist: dist
+#          github_token: ${{ secrets.RMG_BUILD_AND_RELEASE }}
+#          gitlab_token: ${{ secrets.GITLAB_RELEASE }}
+#          gitee_token: ${{ secrets.GITEE_RELEASE }}
