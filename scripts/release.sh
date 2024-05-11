@@ -1,10 +1,9 @@
 #!/bin/bash
 set -eux
 
-ls ./
-ls ../
+cp -r ./dist ../
 
-exit 0
+ls ../
 
 # Checkout to gh-pages branch
 { git checkout gh-pages; } || { git checkout -b gh-pages; }
@@ -14,13 +13,15 @@ cd ..
 rm -rf rmp-style-generator/*
 
 # Copy artefacts
-cp -r dist/* GITHUB_TARGET
+cp -r dist/* rmp-style-generator
+
+cd rmp-style-generator
 
 # Bypass JEKYLL
-touch GITHUB_TARGET/.nojekyll
+touch .nojekyll
 
 # Write INFO.JSON
-cat >GITHUB_TARGET/info.json <<EOF
+cat >info.json <<EOF
 {
   "component": "rmp-style-generator",
   "version": "$VERSION",
@@ -30,7 +31,6 @@ cat >GITHUB_TARGET/info.json <<EOF
 EOF
 
 # Push
-cd rmp-style-generator
 git add .
 git commit -m "Release version $VERSION to $ENV"
 git push -u origin gh-pages
