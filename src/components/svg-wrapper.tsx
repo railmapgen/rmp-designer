@@ -187,7 +187,7 @@ export default function SvgWrapper() {
                         id={id}
                         key={id}
                         isCore={isCore}
-                        // @ts-expect-error
+                        // @ts-expect-error type
                         attrs={attrs}
                         x={x}
                         y={y}

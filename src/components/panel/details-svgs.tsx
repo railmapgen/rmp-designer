@@ -103,7 +103,7 @@ export function DetailsSvgs() {
                 <AccordionPanel>
                     <RmgFields fields={field} />
                     <F
-                        // @ts-ignore
+                        // @ts-expect-error type
                         attrs={s.attrs}
                         id={s.id}
                         handleAttrsUpdate={(index, attrs) => {
