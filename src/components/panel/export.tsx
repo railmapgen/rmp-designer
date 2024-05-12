@@ -61,6 +61,7 @@ const generateCode = (param: Param) => {
     const variableGet = param.components
         .map(c => `\n        ${c.id} = default${ClassName}Attributes.${c.id},`)
         .concat(param.color ? `\n        color = default${ClassName}Attributes.color,` : '');
+    // @ts-expect-error type
     const Svgs = String(param.svgs.map(s => '            ' + svgs[s.type].output(s)));
 
     return imports
