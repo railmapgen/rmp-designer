@@ -1,7 +1,7 @@
 import React from 'react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { AttrsProps, SvgsElem } from '../../constants/constants';
-import { Svgs, SvgsComponentProps } from '../../constants/svgs';
+import { Svgs, SvgsAttrsType, SvgsComponentProps } from '../../constants/svgs';
 import { calcFuncInBatch } from '../../util/parse';
 
 export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
@@ -14,6 +14,7 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
         opacity = defaultRectSvgAttrs.opacity,
         fill = defaultRectSvgAttrs.fill,
         stroke = defaultRectSvgAttrs.stroke,
+        strokeWidth = defaultRectSvgAttrs.strokeWidth,
     } = attrs ?? defaultRectSvgAttrs;
 
     const onPointerDown = React.useCallback(
@@ -30,15 +31,19 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
     );
 
     const [calX, calY] = calcFuncInBatch(
+        id,
         [x, y],
         variable.map(s => s.id),
         variable.map(s => s.value),
+        ['number', 'number'],
         variable.map(s => s.type)
     );
     const [calWidth, calHeight, calRx, calRy, calOpacity, calFill, calStroke] = calcFuncInBatch(
+        id,
         [width, height, rx, ry, opacity, fill, stroke],
         ['x', 'y', ...variable.map(s => s.id)],
         [calX, calY, ...variable.map(s => s.value)],
+        attrsType,
         ['number', 'number', ...variable.map(s => s.type)]
     );
     return (
@@ -47,6 +52,7 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
+            style={{ cursor: 'move' }}
             x={calX}
             y={calY}
             width={calWidth}
@@ -56,6 +62,7 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
             fill={calFill}
             opacity={calOpacity}
             stroke={calStroke}
+            strokeWidth={strokeWidth}
         />
     );
 };
@@ -68,7 +75,10 @@ export interface RectSvgAttrs {
     opacity: string;
     fill: string;
     stroke: string;
+    strokeWidth: string;
 }
+
+const attrsType: SvgsAttrsType[] = ['number', 'number', 'number', 'number', 'number', 'string', 'string', 'number'];
 
 const defaultRectSvgAttrs: RectSvgAttrs = {
     width: '10',
@@ -78,6 +88,7 @@ const defaultRectSvgAttrs: RectSvgAttrs = {
     opacity: '1',
     fill: '"black"',
     stroke: '"none"',
+    strokeWidth: '0',
 };
 
 const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
@@ -126,17 +137,25 @@ const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
         {
             type: 'input',
             label: 'fill',
-            value: attrs.fill.substring(1, attrs.fill.length - 1),
+            value: attrs.fill,
             onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, fill: `"${value}"` });
+                handleAttrsUpdate(id, { ...attrs, fill: `${value}` });
             },
         },
         {
             type: 'input',
             label: 'stroke',
-            value: attrs.stroke.substring(1, attrs.stroke.length - 1),
+            value: attrs.stroke,
             onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, stroke: `"${value}"` });
+                handleAttrsUpdate(id, { ...attrs, stroke: `${value}` });
+            },
+        },
+        {
+            type: 'input',
+            label: 'stroke width',
+            value: attrs.strokeWidth,
+            onChange: value => {
+                handleAttrsUpdate(id, { ...attrs, strokeWidth: value });
             },
         },
     ];

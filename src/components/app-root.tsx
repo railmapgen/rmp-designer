@@ -20,6 +20,7 @@ export default function AppRoot() {
     const param = useRootSelector(store => store.param);
     const {
         paletteAppClip: { input },
+        globalAlerts,
     } = useRootSelector(state => state.runtime);
     const [openExport, setOpenExport] = React.useState(false);
 
@@ -36,7 +37,9 @@ export default function AppRoot() {
                         </Flex>
                         <Flex p={2} direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
                             <Settings />
-                            <Button onClick={() => setOpenExport(true)}>Export</Button>
+                            <Button onClick={() => setOpenExport(true)} isDisabled={globalAlerts.size !== 0}>
+                                Export
+                            </Button>
                         </Flex>
                         <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
                             <DetailsSvgs />

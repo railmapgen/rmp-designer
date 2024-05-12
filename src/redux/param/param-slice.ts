@@ -12,6 +12,7 @@ const defaultRectSvgAttrs: RectSvgAttrs = {
     opacity: '1',
     fill: '"black"',
     stroke: '"none"',
+    strokeWidth: '0',
 };
 
 const paramSlice = createSlice({
@@ -49,7 +50,7 @@ const paramSlice = createSlice({
         setColor: (state, action: PayloadAction<Components | undefined>) => {
             state.color = action.payload;
         },
-        setSvgs: (state, action: PayloadAction<[]>) => {
+        setSvgs: (state, action: PayloadAction<Array<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>>) => {
             state.svgs = action.payload;
         },
         addSvg: (state, action: PayloadAction<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>) => {
@@ -57,6 +58,9 @@ const paramSlice = createSlice({
         },
         setSvgValue: (state, action: PayloadAction<{ index: number; value: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> }>) => {
             state.svgs[action.payload.index] = action.payload.value;
+        },
+        deleteSvg: (state, action: PayloadAction<number>) => {
+            state.svgs = state.svgs.filter((s, i) => i !== action.payload);
         },
         setComponents: (state, action: PayloadAction<Components[]>) => {
             state.components = action.payload;
@@ -80,6 +84,7 @@ export const {
     setSvgs,
     addSvg,
     setSvgValue,
+    deleteSvg,
     setComponents,
     addComponent,
     deleteComponent,

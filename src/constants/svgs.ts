@@ -12,6 +12,8 @@ export interface SvgsAttrs {
 
 // export type SvgsAttrs = RectSvgAttrs;
 
+export type SvgsAttrsType = 'string' | 'number' | 'boolean';
+
 export interface Variable {
     id: string;
     value: string;

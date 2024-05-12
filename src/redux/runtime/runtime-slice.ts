@@ -25,7 +25,7 @@ interface RuntimeState {
         input: Theme | undefined;
         output: Theme | undefined;
     };
-    globalAlerts?: string;
+    globalAlerts: Map<string, string>;
 }
 
 const initialState: RuntimeState = {
@@ -37,7 +37,7 @@ const initialState: RuntimeState = {
         input: undefined,
         output: undefined,
     },
-    globalAlerts: undefined,
+    globalAlerts: new Map<string, string>(),
 };
 
 const runtimeSlice = createSlice({
@@ -76,13 +76,14 @@ const runtimeSlice = createSlice({
             state.paletteAppClip.input = undefined;
             state.paletteAppClip.output = action.payload;
         },
-        /**
-         * If linkedApp is true, alert will try to open link in the current domain.
-         * E.g. linkedApp=true, url='/rmp' will open https://railmapgen.github.io/rmp/
-         * If you want to open a url outside the domain, DO NOT set or pass FALSE to linkedApp.
-         */
-        setGlobalAlert: (state, action: PayloadAction<string | undefined>) => {
-            state.globalAlerts = action.payload;
+        addGlobalAlert: (state, action: PayloadAction<{ id: string; str: string }>) => {
+            state.globalAlerts.set(action.payload.id, action.payload.str);
+        },
+        removeGlobalAlert: (state, action: PayloadAction<string>) => {
+            state.globalAlerts.has(action.payload) && state.globalAlerts.delete(action.payload);
+        },
+        clearGlobalAlerts: state => {
+            state.globalAlerts.clear();
         },
     },
 });
@@ -98,7 +99,9 @@ export const {
     openPaletteAppClip,
     closePaletteAppClip,
     onPaletteAppClipEmit,
-    setGlobalAlert,
+    addGlobalAlert,
+    removeGlobalAlert,
+    clearGlobalAlerts,
 } = runtimeSlice.actions;
 
 const runtimeReducer = runtimeSlice.reducer;

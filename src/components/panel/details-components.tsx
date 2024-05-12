@@ -4,15 +4,24 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Box, Button, Flex,
-    Heading, IconButton,
+    Box,
+    Button,
+    Flex,
+    Heading,
+    IconButton,
 } from '@chakra-ui/react';
-import React from 'react';
 import { RmgFields, RmgFieldsField, RmgLabel } from '@railmapgen/rmg-components';
+import React from 'react';
+import { MdArrowDownward, MdArrowUpward, MdCircle, MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import { MdCircle } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { addComponent, deleteComponent, setColor, setComponentValue } from '../../redux/param/param-slice';
+import {
+    addComponent,
+    deleteComponent,
+    setColor,
+    setComponents,
+    setComponentValue,
+} from '../../redux/param/param-slice';
 import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
 import { openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import { nanoid } from '../../util/helper';
@@ -39,13 +48,33 @@ export function DetailsComponents() {
     };
 
     const handleAddNewComponent = () => {
-        dispatch(addComponent({
-            id: nanoid(),
-            label: nanoid(),
-            type: 'text',
-            defaultValue: 'text',
-        }))
-    }
+        dispatch(
+            addComponent({
+                id: nanoid(),
+                label: nanoid(),
+                type: 'text',
+                defaultValue: 'text',
+            })
+        );
+    };
+
+    const handleMove = (index: number, d: number) => {
+        const dest = index + d;
+        if (dest >= 0 && dest < param.components.length) {
+            dispatch(
+                setComponents(
+                    param.components
+                        .filter((s, i) => i < Math.min(index, dest))
+                        .concat(param.components[Math.max(index, dest)])
+                        .concat(
+                            param.components.filter((s, i) => i > Math.min(index, dest) && i < Math.max(index, dest))
+                        )
+                        .concat(param.components[Math.min(index, dest)])
+                        .concat(param.components.filter((s, i) => i > Math.max(index, dest)))
+                )
+            );
+        }
+    };
 
     const p = param.components.map((c, index) => {
         const { id, label, type, defaultValue, value } = c;
@@ -54,7 +83,8 @@ export function DetailsComponents() {
                 label: 'Label',
                 type: 'input',
                 value: label,
-                onChange: v => dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } })),
+                onChange: v =>
+                    dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } })),
             },
             {
                 label: 'Type',
@@ -74,7 +104,19 @@ export function DetailsComponents() {
                 label: '',
                 type: 'custom',
                 oneLine: true,
-                component: <Button size="md" onClick={() => dispatch(deleteComponent(index))}>Remove</Button>,
+                component: (
+                    <>
+                        <Button size="md" onClick={() => handleMove(index, -1)}>
+                            <MdArrowUpward />
+                        </Button>
+                        <Button size="md" onClick={() => handleMove(index, 1)}>
+                            <MdArrowDownward />
+                        </Button>
+                        <Button size="md" onClick={() => dispatch(deleteComponent(index))}>
+                            <MdClose />
+                        </Button>
+                    </>
+                ),
             },
         ];
 

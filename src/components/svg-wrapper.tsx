@@ -1,30 +1,18 @@
-import React from "react";
+import React from 'react';
 import useEvent from 'react-use-event-hook';
 import { useRootDispatch, useRootSelector } from '../redux';
-import { SvgsAttrs, SvgsType } from "../constants/svgs";
-import svgs from "./svgs/svgs";
-import { getComponentValue } from "../util/parse";
-import { Id, SvgsElem } from '../constants/constants';
-import { getMousePosition, nanoid, roundToNearestN } from '../util/helper';
-import {
-    addSelected,
-    removeSelected,
-    setActive,
-    setMode,
-    setRefresh,
-    setSelected,
-} from '../redux/runtime/runtime-slice';
+import { addSelected, removeSelected, setActive, setMode, setSelected } from '../redux/runtime/runtime-slice';
 import { addSvg, setSvgValue } from '../redux/param/param-slice';
+import { Id, SvgsElem } from '../constants/constants';
+import { SvgsAttrs, SvgsType } from '../constants/svgs';
+import svgs from './svgs/svgs';
+import { getComponentValue } from '../util/parse';
+import { getMousePosition, nanoid, roundToNearestN } from '../util/helper';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
-    const {
-        selected,
-        refresh,
-        mode,
-        active,
-    } = useRootSelector(state => state.runtime);
+    const { selected, mode, active } = useRootSelector(state => state.runtime);
     const svgWidth = 500;
     const svgHeight = 500;
     const canvasScale = 1;
@@ -91,11 +79,15 @@ export default function SvgWrapper() {
             selected.forEach(s => {
                 param.svgs.forEach((svg, index) => {
                     if (svg.id === s) {
-                        const newX = !Number.isNaN(Number(svg.x)) ? String(roundToNearestN(Number(svg.x) - offset.x + x, 1)) : svg.x;
-                        const newY = !Number.isNaN(Number(svg.y)) ? String(roundToNearestN(Number(svg.y) - offset.y + y, 1)) : svg.y;
+                        const newX = !Number.isNaN(Number(svg.x))
+                            ? String(roundToNearestN(Number(svg.x) - offset.x + x, 1))
+                            : svg.x;
+                        const newY = !Number.isNaN(Number(svg.y))
+                            ? String(roundToNearestN(Number(svg.y) - offset.y + y, 1))
+                            : svg.y;
                         dispatch(setSvgValue({ index, value: { ...svg, x: newX, y: newY } }));
                     }
-                })
+                });
             });
             // dispatch(setRefresh());
             // console.log('move ', graph.current.getNodeAttributes(node));
@@ -118,7 +110,6 @@ export default function SvgWrapper() {
             }
         }
         dispatch(setActive(undefined));
-        // console.log('up ', graph.current.getNodeAttributes(node));
     });
 
     return (
@@ -166,10 +157,13 @@ export default function SvgWrapper() {
             })}
             <rect
                 id="canvas-border"
+                x={-svgWidth / 2 + 2.5}
+                y={-svgHeight / 2 + 2.5}
+                width={svgWidth - 5}
+                height={svgHeight - 5}
                 fill="none"
-                strokeWidth={3}
-                stroke="none"
-                style={{ height: 'var(--rmg-svg-height)', width: 'var(--rmg-svg-width)' }}
+                strokeWidth={5}
+                stroke="black"
             />
         </svg>
     );

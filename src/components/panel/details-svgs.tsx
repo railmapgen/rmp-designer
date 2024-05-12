@@ -4,14 +4,19 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Box, Flex,
+    Box,
+    Button,
+    Flex,
     Heading,
 } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
-import { useRootDispatch, useRootSelector } from '../../redux';
-import { setSvgValue } from '../../redux/param/param-slice';
-import Svgs from '../svgs/svgs';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { MdArrowDownward, MdArrowUpward, MdClose, MdError } from 'react-icons/md';
+import { useRootDispatch, useRootSelector } from '../../redux';
+import { removeGlobalAlert } from '../../redux/runtime/runtime-slice';
+import { deleteSvg, setSvgs, setSvgValue } from '../../redux/param/param-slice';
+import Svgs from '../svgs/svgs';
 
 export function DetailsSvgs() {
     const dispatch = useRootDispatch();
@@ -19,19 +24,66 @@ export function DetailsSvgs() {
     const { globalAlerts } = useRootSelector(store => store.runtime);
     const { t } = useTranslation();
 
-    const p = param.svgs.map((s, i) => {
+    const handleMove = (index: number, d: number) => {
+        const dest = index + d;
+        if (dest >= 0 && dest < param.svgs.length) {
+            dispatch(
+                setSvgs(
+                    param.svgs
+                        .filter((s, i) => i < Math.min(index, dest))
+                        .concat(param.svgs[Math.max(index, dest)])
+                        .concat(param.svgs.filter((s, i) => i > Math.min(index, dest) && i < Math.max(index, dest)))
+                        .concat(param.svgs[Math.min(index, dest)])
+                        .concat(param.svgs.filter((s, i) => i > Math.max(index, dest)))
+                )
+            );
+        }
+    };
+
+    const p = param.svgs.toReversed().map((s, index) => {
+        const i = param.svgs.length - index - 1; // reversed index
         const field: RmgFieldsField[] = [
             {
                 label: 'x',
                 type: 'input',
                 value: s.x,
-                onChange: value => dispatch(setSvgValue({ index: i, value: { ...s, x: value } })),
+                onChange: value => {
+                    dispatch(setSvgValue({ index: i, value: { ...s, x: value } }));
+                    dispatch(removeGlobalAlert(s.id));
+                },
             },
             {
                 label: 'y',
                 type: 'input',
                 value: s.y,
-                onChange: value => dispatch(setSvgValue({ index: i, value: { ...s, y: value } })),
+                onChange: value => {
+                    dispatch(setSvgValue({ index: i, value: { ...s, y: value } }));
+                    dispatch(removeGlobalAlert(s.id));
+                },
+            },
+            {
+                label: '',
+                type: 'custom',
+                oneLine: true,
+                component: (
+                    <>
+                        <Button size="md" onClick={() => handleMove(i, 1)}>
+                            <MdArrowUpward />
+                        </Button>
+                        <Button size="md" onClick={() => handleMove(i, -1)}>
+                            <MdArrowDownward />
+                        </Button>
+                        <Button
+                            size="md"
+                            onClick={() => {
+                                dispatch(removeGlobalAlert(s.id));
+                                dispatch(deleteSvg(i));
+                            }}
+                        >
+                            <MdClose />
+                        </Button>
+                    </>
+                ),
             },
         ];
         const F = Svgs[s.type].attrsComponent;
@@ -41,6 +93,7 @@ export function DetailsSvgs() {
                     <Box as="span" flex="1" textAlign="left">
                         {Svgs[s.type].displayName}
                     </Box>
+                    {globalAlerts.has(s.id) ? <MdError color="#D9534F" /> : ''}
                     <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel>
@@ -48,9 +101,10 @@ export function DetailsSvgs() {
                     <F
                         attrs={s.attrs}
                         id={s.id}
-                        handleAttrsUpdate={(index, attrs) =>
-                            dispatch(setSvgValue({ index: i, value: { ...s, attrs } }))
-                        }
+                        handleAttrsUpdate={(index, attrs) => {
+                            dispatch(setSvgValue({ index: i, value: { ...s, attrs } }));
+                            dispatch(removeGlobalAlert(s.id));
+                        }}
                     />
                 </AccordionPanel>
             </AccordionItem>
@@ -64,7 +118,6 @@ export function DetailsSvgs() {
                     Svgs
                 </Heading>
             </Flex>
-            {globalAlerts ? globalAlerts : undefined}
             <Accordion width="100%" allowMultiple>
                 {...p}
             </Accordion>
