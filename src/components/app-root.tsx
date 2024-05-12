@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Flex } from '@chakra-ui/react';
-import WindowHeader from './window-header';
+import WindowHeader from './header/window-header';
 import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../redux';

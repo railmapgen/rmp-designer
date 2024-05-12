@@ -41,6 +41,13 @@ const paramSlice = createSlice({
         ],
     } as Param,
     reducers: {
+        setParam: (state, action: PayloadAction<Param>) => {
+            state.id = action.payload.id;
+            state.type = action.payload.type;
+            state.color = action.payload.color;
+            state.svgs = action.payload.svgs;
+            state.components = action.payload.components;
+        },
         setId: (state, action: PayloadAction<string>) => {
             state.id = action.payload;
         },
@@ -78,6 +85,7 @@ const paramSlice = createSlice({
 });
 
 export const {
+    setParam,
     setId,
     setType,
     setColor,

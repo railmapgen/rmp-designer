@@ -14,7 +14,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdError } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { removeGlobalAlert } from '../../redux/runtime/runtime-slice';
+import { backupParam, removeGlobalAlert } from '../../redux/runtime/runtime-slice';
 import { deleteSvg, setSvgs, setSvgValue } from '../../redux/param/param-slice';
 import Svgs from '../svgs/svgs';
 
@@ -27,6 +27,7 @@ export function DetailsSvgs() {
     const handleMove = (index: number, d: number) => {
         const dest = index + d;
         if (dest >= 0 && dest < param.svgs.length) {
+            dispatch(backupParam(param));
             dispatch(
                 setSvgs(
                     param.svgs
@@ -48,6 +49,7 @@ export function DetailsSvgs() {
                 type: 'input',
                 value: s.x,
                 onChange: value => {
+                    dispatch(backupParam(param));
                     dispatch(setSvgValue({ index: i, value: { ...s, x: value } }));
                     dispatch(removeGlobalAlert(s.id));
                 },
@@ -57,6 +59,7 @@ export function DetailsSvgs() {
                 type: 'input',
                 value: s.y,
                 onChange: value => {
+                    dispatch(backupParam(param));
                     dispatch(setSvgValue({ index: i, value: { ...s, y: value } }));
                     dispatch(removeGlobalAlert(s.id));
                 },
@@ -76,6 +79,7 @@ export function DetailsSvgs() {
                         <Button
                             size="md"
                             onClick={() => {
+                                dispatch(backupParam(param));
                                 dispatch(removeGlobalAlert(s.id));
                                 dispatch(deleteSvg(i));
                             }}
@@ -99,9 +103,11 @@ export function DetailsSvgs() {
                 <AccordionPanel>
                     <RmgFields fields={field} />
                     <F
+                        // @ts-ignore
                         attrs={s.attrs}
                         id={s.id}
                         handleAttrsUpdate={(index, attrs) => {
+                            dispatch(backupParam(param));
                             dispatch(setSvgValue({ index: i, value: { ...s, attrs } }));
                             dispatch(removeGlobalAlert(s.id));
                         }}

@@ -4,18 +4,15 @@ import { AttrsProps, SvgsElem } from '../../constants/constants';
 import { Svgs, SvgsAttrsType, SvgsComponentProps } from '../../constants/svgs';
 import { calcFuncInBatch } from '../../util/parse';
 
-export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
+export const Circle = (props: SvgsComponentProps<CircleSvgAttrs>) => {
     const { id, x, y, attrs, handlePointerDown, handlePointerMove, handlePointerUp, variable } = props;
     const {
-        width = defaultRectSvgAttrs.width,
-        height = defaultRectSvgAttrs.height,
-        rx = defaultRectSvgAttrs.rx,
-        ry = defaultRectSvgAttrs.ry,
-        opacity = defaultRectSvgAttrs.opacity,
-        fill = defaultRectSvgAttrs.fill,
-        stroke = defaultRectSvgAttrs.stroke,
-        strokeWidth = defaultRectSvgAttrs.strokeWidth,
-    } = attrs ?? defaultRectSvgAttrs;
+        r = defaultCircleSvgAttrs.r,
+        opacity = defaultCircleSvgAttrs.opacity,
+        fill = defaultCircleSvgAttrs.fill,
+        stroke = defaultCircleSvgAttrs.stroke,
+        strokeWidth = defaultCircleSvgAttrs.strokeWidth,
+    } = attrs ?? defaultCircleSvgAttrs;
 
     const onPointerDown = React.useCallback(
         (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, e),
@@ -38,27 +35,24 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
         ['number', 'number'],
         variable.map(s => s.type)
     );
-    const [calWidth, calHeight, calRx, calRy, calOpacity, calFill, calStroke, calStrokeWidth] = calcFuncInBatch(
+    const [calR, calOpacity, calFill, calStroke, calStrokeWidth] = calcFuncInBatch(
         id,
-        [width, height, rx, ry, opacity, fill, stroke, strokeWidth],
+        [r, opacity, fill, stroke, strokeWidth],
         ['x', 'y', ...variable.map(s => s.id)],
         [calX, calY, ...variable.map(s => s.value)],
         attrsType,
         ['number', 'number', ...variable.map(s => s.type)]
     );
     return (
-        <rect
+        <circle
             id={id}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}
             style={{ cursor: 'move' }}
-            x={calX}
-            y={calY}
-            width={calWidth}
-            height={calHeight}
-            rx={calRx}
-            ry={calRy}
+            cx={calX}
+            cy={calY}
+            r={calR}
             fill={calFill}
             opacity={calOpacity}
             stroke={calStroke}
@@ -67,24 +61,18 @@ export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
     );
 };
 
-export interface RectSvgAttrs {
-    width: string;
-    height: string;
-    rx: string;
-    ry: string;
+export interface CircleSvgAttrs {
+    r: string;
     opacity: string;
     fill: string;
     stroke: string;
     strokeWidth: string;
 }
 
-const attrsType: SvgsAttrsType[] = ['number', 'number', 'number', 'number', 'number', 'string', 'string', 'number'];
+const attrsType: SvgsAttrsType[] = ['number', 'number', 'string', 'string', 'number'];
 
-const defaultRectSvgAttrs: RectSvgAttrs = {
-    width: '10',
-    height: '10',
-    rx: '0',
-    ry: '0',
+const defaultCircleSvgAttrs: CircleSvgAttrs = {
+    r: '5',
     opacity: '1',
     fill: '"black"',
     stroke: '"none"',
@@ -92,11 +80,8 @@ const defaultRectSvgAttrs: RectSvgAttrs = {
 };
 
 const inputFromSvg = (elem: SVGElement) => {
-    const attr: RectSvgAttrs = {
-        width: elem.getAttribute('width') ?? '10',
-        height: elem.getAttribute('height') ?? '10',
-        rx: elem.getAttribute('rx') ?? '0',
-        ry: elem.getAttribute('ry') ?? '0',
+    const attr: CircleSvgAttrs = {
+        r: elem.getAttribute('r') ?? '0',
         opacity: elem.getAttribute('opacity') ?? '1',
         fill: `"${elem.getAttribute('fill') ?? 'black'}"`,
         stroke: `"${elem.getAttribute('stroke') ?? 'none'}"`,
@@ -105,39 +90,15 @@ const inputFromSvg = (elem: SVGElement) => {
     return attr;
 };
 
-const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
+const attrsComponent = (props: AttrsProps<CircleSvgAttrs>) => {
     const { id, attrs, handleAttrsUpdate } = props;
     const rectSvgAttrsField: RmgFieldsField[] = [
         {
             type: 'input',
             label: 'width',
-            value: attrs.width,
+            value: attrs.r,
             onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, width: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'height',
-            value: attrs.height,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, height: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'rx',
-            value: attrs.rx,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, rx: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'ry',
-            value: attrs.ry,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, ry: value });
+                handleAttrsUpdate(id, { ...attrs, r: value });
             },
         },
         {
@@ -176,25 +137,25 @@ const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
     return <RmgFields fields={rectSvgAttrsField} />;
 };
 
-const rectIcon = (
+const circleIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
-        <rect fill="currentColor" x="7" y="7" width="10" height="10" />
+        <circle fill="currentColor" cx="12" cy="12" r="5" />
     </svg>
 );
 
-const outputString = (props: SvgsElem<RectSvgAttrs>) => {
+const outputString = (props: SvgsElem<CircleSvgAttrs>) => {
     const { isCore, x, y, attrs } = props;
-    return `<rect ${isCore ? 'id={`${id}`}' : ''} x={${x}} y={${y}} width={${attrs.width}} height={${attrs.height}} rx={${attrs.rx}} ry={${attrs.ry}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
+    return `<circle ${isCore ? 'id={`${id}`}' : ''} cx={${x}} cy={${y}} r={${attrs.r}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
 };
 
-const rectSvgs: Svgs<RectSvgAttrs> = {
-    component: Rect,
-    icon: rectIcon,
+const circleSvgs: Svgs<CircleSvgAttrs> = {
+    component: Circle,
+    icon: circleIcon,
     attrsComponent,
-    defaultAttrs: defaultRectSvgAttrs,
-    displayName: 'Rectangle',
+    defaultAttrs: defaultCircleSvgAttrs,
+    displayName: 'Circle',
     output: outputString,
     inputFromSvg,
 };
 
-export default rectSvgs;
+export default circleSvgs;

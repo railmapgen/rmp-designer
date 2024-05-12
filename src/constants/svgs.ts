@@ -1,13 +1,19 @@
 import { AttrsProps, Id, SvgsElem } from './constants';
 import { ComponentsType } from './components';
 import { RectSvgAttrs } from '../components/svgs/rect';
+import { PathSvgAttrs } from '../components/svgs/path';
+import { CircleSvgAttrs } from '../components/svgs/circle';
 
 export enum SvgsType {
     Rect = 'rect',
+    Path = 'path',
+    Circle = 'circle',
 }
 
 export interface SvgsAttrs {
     [SvgsType.Rect]: RectSvgAttrs;
+    [SvgsType.Path]: PathSvgAttrs;
+    [SvgsType.Circle]: CircleSvgAttrs;
 }
 
 // export type SvgsAttrs = RectSvgAttrs;
@@ -39,4 +45,5 @@ export interface Svgs<T> {
     attrsComponent: React.FC<AttrsProps<T>>;
     displayName: string;
     output: (props: SvgsElem<T>) => string;
+    inputFromSvg: (props: SVGElement) => T;
 }

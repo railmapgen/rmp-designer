@@ -23,7 +23,7 @@ import {
     setComponentValue,
 } from '../../redux/param/param-slice';
 import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
-import { openPaletteAppClip } from '../../redux/runtime/runtime-slice';
+import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import { nanoid } from '../../util/helper';
 import ColourUtil from './colour-util';
 
@@ -48,6 +48,7 @@ export function DetailsComponents() {
     };
 
     const handleAddNewComponent = () => {
+        dispatch(backupParam(param));
         dispatch(
             addComponent({
                 id: nanoid(),
@@ -61,6 +62,7 @@ export function DetailsComponents() {
     const handleMove = (index: number, d: number) => {
         const dest = index + d;
         if (dest >= 0 && dest < param.components.length) {
+            dispatch(backupParam(param));
             dispatch(
                 setComponents(
                     param.components
@@ -83,22 +85,29 @@ export function DetailsComponents() {
                 label: 'Label',
                 type: 'input',
                 value: label,
-                onChange: v =>
-                    dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } })),
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } }));
+                },
             },
             {
                 label: 'Type',
                 type: 'select',
                 options: ComponentsTypeOptions,
                 value: type,
-                onChange: v =>
-                    dispatch(setComponentValue({ index: index, value: { ...c, type: v as ComponentsType } })),
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(setComponentValue({ index: index, value: { ...c, type: v as ComponentsType } }));
+                },
             },
             {
                 label: 'Default value',
                 type: 'input',
                 value: defaultValue,
-                onChange: v => dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } })),
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } }));
+                },
             },
             {
                 label: '',
@@ -112,7 +121,13 @@ export function DetailsComponents() {
                         <Button size="md" onClick={() => handleMove(index, 1)}>
                             <MdArrowDownward />
                         </Button>
-                        <Button size="md" onClick={() => dispatch(deleteComponent(index))}>
+                        <Button
+                            size="md"
+                            onClick={() => {
+                                dispatch(backupParam(param));
+                                dispatch(deleteComponent(index));
+                            }}
+                        >
                             <MdClose />
                         </Button>
                     </>
@@ -138,6 +153,7 @@ export function DetailsComponents() {
     const [isThemeRequested, setIsThemeRequested] = React.useState(false);
     React.useEffect(() => {
         if (isThemeRequested && output) {
+            dispatch(backupParam(param));
             dispatch(setColor({ ...param.color!, defaultValue: output }));
             setIsThemeRequested(false);
         }

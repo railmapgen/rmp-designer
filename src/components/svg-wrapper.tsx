@@ -1,23 +1,32 @@
 import React from 'react';
 import useEvent from 'react-use-event-hook';
 import { useRootDispatch, useRootSelector } from '../redux';
-import { addSelected, removeSelected, setActive, setMode, setSelected } from '../redux/runtime/runtime-slice';
+import {
+    addSelected, backupParam,
+    clearSelected,
+    removeSelected,
+    setActive,
+    setMode,
+    setSelected,
+    setSvgViewBoxMin,
+} from '../redux/runtime/runtime-slice';
 import { addSvg, setSvgValue } from '../redux/param/param-slice';
 import { Id, SvgsElem } from '../constants/constants';
 import { SvgsAttrs, SvgsType } from '../constants/svgs';
 import svgs from './svgs/svgs';
 import { getComponentValue } from '../util/parse';
-import { getMousePosition, nanoid, roundToNearestN } from '../util/helper';
+import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
-    const { selected, mode, active } = useRootSelector(state => state.runtime);
+    const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
     const svgWidth = 500;
     const svgHeight = 500;
     const canvasScale = 1;
     const color = param.color ? param.color.value ?? param.color.defaultValue : ['', '', '#000000', '#FFF'];
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
+    const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
 
     const handleBackgroundDown = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
         const { x, y } = getMousePosition(e);
@@ -25,6 +34,7 @@ export default function SvgWrapper() {
             dispatch(setMode('free'));
             const rand = nanoid(10);
             const id: Id = `id_${rand}`;
+            const { x: svgX, y: svgY } = pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin);
             const type = mode.slice(5) as SvgsType;
             const attr = structuredClone(svgs[type].defaultAttrs);
 
@@ -32,13 +42,37 @@ export default function SvgWrapper() {
                 id,
                 type,
                 isCore: false,
-                x: String(roundToNearestN(x - svgWidth / 2, 1)),
-                y: String(roundToNearestN(y - svgHeight / 2, 1)),
+                x: String(roundToNearestN(svgX, 1)),
+                y: String(roundToNearestN(svgY, 1)),
                 attrs: attr,
             };
-
-            // const { x: svgX, y: svgY } = pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin);
             dispatch(addSvg(svgElem));
+        } else if (mode === 'free') {
+            // set initial position of the pointer, this is used in handleBackgroundMove
+            setOffset({ x, y });
+            setSvgViewBoxMinTmp(svgViewBoxMin);
+            if (!e.shiftKey) {
+                // when user holding the shift key and mis-click the background
+                // preserve the current selection
+                dispatch(setActive('background'));
+                dispatch(clearSelected());
+            }
+        }
+    });
+    const handleBackgroundMove = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        const { x, y } = getMousePosition(e);
+        if (active === 'background') {
+            dispatch(
+                setSvgViewBoxMin({
+                    x: svgViewBoxMinTmp.x + ((offset.x - x) * svgViewBoxZoom) / 100,
+                    y: svgViewBoxMinTmp.y + ((offset.y - y) * svgViewBoxZoom) / 100,
+                })
+            );
+        }
+    });
+    const handleBackgroundUp = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        if (active === 'background' && !e.shiftKey) {
+            dispatch(setActive(undefined)); // svg mouse event only
         }
     });
     const handlePointerDown = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
@@ -50,6 +84,7 @@ export default function SvgWrapper() {
 
         setOffset({ x, y });
 
+        dispatch(backupParam(param));
         dispatch(setActive(node));
 
         if (!e.shiftKey) {
@@ -74,16 +109,17 @@ export default function SvgWrapper() {
     });
     const handlePointerMove = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
         const { x, y } = getMousePosition(e);
+        e.stopPropagation();
 
         if (mode === 'free' && active === node) {
             selected.forEach(s => {
                 param.svgs.forEach((svg, index) => {
                     if (svg.id === s) {
                         const newX = !Number.isNaN(Number(svg.x))
-                            ? String(roundToNearestN(Number(svg.x) - offset.x + x, 1))
+                            ? String(roundToNearestN(Number(svg.x) - ((offset.x - x) * svgViewBoxZoom) / 100, 1))
                             : svg.x;
                         const newY = !Number.isNaN(Number(svg.y))
-                            ? String(roundToNearestN(Number(svg.y) - offset.y + y, 1))
+                            ? String(roundToNearestN(Number(svg.y) - ((offset.y - y) * svgViewBoxZoom) / 100, 1))
                             : svg.y;
                         dispatch(setSvgValue({ index, value: { ...svg, x: newX, y: newY } }));
                     }
@@ -118,15 +154,21 @@ export default function SvgWrapper() {
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
             height={svgHeight * canvasScale}
-            viewBox={`${-svgWidth / 2} ${-svgHeight / 2} ${svgWidth} ${svgHeight}`}
+            viewBox={`${svgViewBoxMin.x} ${svgViewBoxMin.y} ${(svgWidth * svgViewBoxZoom) / 100} ${
+                (svgHeight * svgViewBoxZoom) / 100
+            }`}
             colorInterpolationFilters="sRGB"
             style={{
                 ['--rmg-svg-width' as any]: svgWidth + 'px',
                 ['--rmg-svg-height' as any]: svgHeight + 'px',
                 ['--rmg-theme-colour' as any]: color[2],
                 ['--rmg-theme-fg' as any]: color[3],
+                userSelect: 'none',
+                touchAction: 'none',
             }}
             onPointerDown={handleBackgroundDown}
+            onPointerMove={handleBackgroundMove}
+            onPointerUp={handleBackgroundUp}
         >
             <rect
                 id="canvas-bg"
@@ -145,7 +187,8 @@ export default function SvgWrapper() {
                         id={id}
                         key={id}
                         isCore={isCore}
-                        attrs={attrs!}
+                        // @ts-expect-error
+                        attrs={attrs}
                         x={x}
                         y={y}
                         handlePointerDown={handlePointerDown}

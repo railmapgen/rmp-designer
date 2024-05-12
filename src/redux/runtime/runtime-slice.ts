@@ -1,31 +1,27 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Id, RuntimeActive, RuntimeMode, Theme } from '../../constants/constants';
+import { Id, Param, RuntimeActive, RuntimeMode, Theme } from '../../constants/constants';
 
 /**
  * RuntimeState contains all the data that do not require any persistence.
  * All of them can be initiated with default value.
  */
 interface RuntimeState {
-    /**
-     * Current selection (nodes and edges id, possible multiple selection).
-     */
     selected: Set<Id>;
     active: RuntimeActive;
-    /**
-     * Watch these refresh indicators to know whether there is a change in `window.graph`.
-     */
     refresh: number;
     mode: RuntimeMode;
-    /**
-     * The state for color picker modal from rmg-palette.
-     * prevTheme is used to save the temporary value and display in the app clip after clicking the theme button.
-     * nextTheme is used to save the temporary value and let the component decide how to do with the newly selected.
-     */
+    svgViewBoxZoom: number;
+    svgViewBoxMin: {
+        x: number;
+        y: number;
+    };
     paletteAppClip: {
         input: Theme | undefined;
         output: Theme | undefined;
     };
     globalAlerts: Map<string, string>;
+    history: Param[];
+    undo_history: Param[];
 }
 
 const initialState: RuntimeState = {
@@ -33,11 +29,18 @@ const initialState: RuntimeState = {
     active: undefined,
     refresh: Date.now(),
     mode: 'free',
+    svgViewBoxZoom: 100,
+    svgViewBoxMin: {
+        x: -250,
+        y: -250,
+    },
     paletteAppClip: {
         input: undefined,
         output: undefined,
     },
     globalAlerts: new Map<string, string>(),
+    history: [],
+    undo_history: [],
 };
 
 const runtimeSlice = createSlice({
@@ -85,6 +88,25 @@ const runtimeSlice = createSlice({
         clearGlobalAlerts: state => {
             state.globalAlerts.clear();
         },
+        setSvgViewBoxZoom: (state, action: PayloadAction<number>) => {
+            state.svgViewBoxZoom = action.payload;
+        },
+        setSvgViewBoxMin: (state, action: PayloadAction<{ x: number; y: number }>) => {
+            state.svgViewBoxMin = action.payload;
+        },
+        backupParam: (state, action: PayloadAction<Param>) => {
+            state.history.push(action.payload);
+            state.undo_history = [];
+        },
+        backupUndo: (state, action: PayloadAction<Param>) => {
+            state.undo_history.push(action.payload);
+        },
+        backupRedo: state => {
+            state.undo_history.pop();
+        },
+        backupRemove: state => {
+            state.history.pop();
+        },
     },
 });
 
@@ -102,6 +124,12 @@ export const {
     addGlobalAlert,
     removeGlobalAlert,
     clearGlobalAlerts,
+    setSvgViewBoxZoom,
+    setSvgViewBoxMin,
+    backupParam,
+    backupUndo,
+    backupRedo,
+    backupRemove,
 } = runtimeSlice.actions;
 
 const runtimeReducer = runtimeSlice.reducer;
