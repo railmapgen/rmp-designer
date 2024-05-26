@@ -7,7 +7,6 @@ export type Id = `id_${string}`;
 export interface SvgsElem<T> {
     id: Id;
     type: SvgsType;
-    isCore: boolean;
     x: string;
     y: string;
     attrs: T;
@@ -19,6 +18,7 @@ export interface Param {
     svgs: Array<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>;
     components: Components[];
     color?: Components;
+    core?: string;
 }
 
 export interface AttrsProps<T> {

@@ -51,11 +51,9 @@ export default function WindowHeader() {
                     icon={<MdRedo />}
                     isDisabled={undo_history.length === 0}
                     onClick={() => {
-                        console.log(undo_history);
                         dispatch(backupParam(param));
                         dispatch(setParam(undo_history[undo_history.length - 1]));
                         dispatch(backupRedo());
-                        console.log(param);
                     }}
                 />
                 <ZoomPopover />

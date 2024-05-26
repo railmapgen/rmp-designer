@@ -183,8 +183,8 @@ const rectIcon = (
 );
 
 const outputString = (props: SvgsElem<RectSvgAttrs>) => {
-    const { isCore, x, y, attrs } = props;
-    return `<rect ${isCore ? 'id={`${id}`}' : ''} x={${x}} y={${y}} width={${attrs.width}} height={${attrs.height}} rx={${attrs.rx}} ry={${attrs.ry}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
+    const { x, y, attrs } = props;
+    return `<rect x={${x}} y={${y}} width={${attrs.width}} height={${attrs.height}} rx={${attrs.rx}} ry={${attrs.ry}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
 };
 
 const rectSvgs: Svgs<RectSvgAttrs> = {

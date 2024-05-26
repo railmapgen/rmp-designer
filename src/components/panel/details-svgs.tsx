@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdError } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { backupParam, removeGlobalAlert } from '../../redux/runtime/runtime-slice';
-import { deleteSvg, setSvgs, setSvgValue } from '../../redux/param/param-slice';
+import { deleteSvg, setCore, setSvgs, setSvgValue } from '../../redux/param/param-slice';
 import Svgs from '../svgs/svgs';
 
 export function DetailsSvgs() {
@@ -63,6 +63,15 @@ export function DetailsSvgs() {
                     dispatch(setSvgValue({ index: i, value: { ...s, y: value } }));
                     dispatch(removeGlobalAlert(s.id));
                 },
+            },
+            {
+                label: 'Connectable',
+                type: 'switch',
+                isChecked: param.core ? param.core === s.id : false,
+                onChange: value => {
+                    dispatch(setCore(value ? s.id : undefined));
+                },
+                hidden: param.type !== 'Station',
             },
             {
                 label: '',

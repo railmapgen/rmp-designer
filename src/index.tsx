@@ -1,13 +1,14 @@
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { StrictMode } from 'react';
 import { Provider } from 'react-redux';
-import AppRoot from './components/app-root';
-import store from './redux';
-import i18n from './i18n/config';
 import { createRoot, Root } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
+import AppRoot from './components/app-root';
+import store from './redux';
 import initStore from './redux/init';
+import { setParam } from './redux/param/param-slice';
 import { Events } from './constants/constants';
+import i18n from './i18n/config';
 
 let root: Root;
 
@@ -30,3 +31,6 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.injectUITools();
     rmgRuntime.event(Events.APP_LOAD, {});
 });
+
+const param = localStorage.getItem('rmp-style-gen__param');
+param !== null && store.dispatch(setParam(JSON.parse(param)));

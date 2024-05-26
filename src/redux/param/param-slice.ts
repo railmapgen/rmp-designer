@@ -25,7 +25,6 @@ const paramSlice = createSlice({
             {
                 id: 'id_qwq' as Id,
                 type: SvgsType.Rect,
-                isCore: false,
                 x: '20',
                 y: '20',
                 attrs: defaultRectSvgAttrs,
@@ -47,6 +46,7 @@ const paramSlice = createSlice({
             state.color = action.payload.color;
             state.svgs = action.payload.svgs;
             state.components = action.payload.components;
+            state.core = action.payload.core;
         },
         setId: (state, action: PayloadAction<string>) => {
             state.id = action.payload;
@@ -81,6 +81,9 @@ const paramSlice = createSlice({
         setComponentValue: (state, action: PayloadAction<{ index: number; value: Components }>) => {
             state.components[action.payload.index] = action.payload.value;
         },
+        setCore: (state, action: PayloadAction<string | undefined>) => {
+            state.core = action.payload;
+        },
     },
 });
 
@@ -97,6 +100,7 @@ export const {
     addComponent,
     deleteComponent,
     setComponentValue,
+    setCore,
 } = paramSlice.actions;
 
 const paramReducer = paramSlice.reducer;

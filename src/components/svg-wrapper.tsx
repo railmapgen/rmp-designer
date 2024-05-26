@@ -2,7 +2,8 @@ import React from 'react';
 import useEvent from 'react-use-event-hook';
 import { useRootDispatch, useRootSelector } from '../redux';
 import {
-    addSelected, backupParam,
+    addSelected,
+    backupParam,
     clearSelected,
     removeSelected,
     setActive,
@@ -16,13 +17,15 @@ import { SvgsAttrs, SvgsType } from '../constants/svgs';
 import svgs from './svgs/svgs';
 import { getComponentValue } from '../util/parse';
 import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
+import { useWindowSize } from '../util/hook';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
     const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
-    const svgWidth = 500;
-    const svgHeight = 500;
+    const size = useWindowSize();
+    const svgWidth = 500; // size.width ?? 720 - 40;
+    const svgHeight = 500; // ((size.height ?? 720) * 3) / 5;
     const canvasScale = 1;
     const color = param.color ? param.color.value ?? param.color.defaultValue : ['', '', '#000000', '#FFF'];
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -41,7 +44,6 @@ export default function SvgWrapper() {
             const svgElem: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> = {
                 id,
                 type,
-                isCore: false,
                 x: String(roundToNearestN(svgX, 1)),
                 y: String(roundToNearestN(svgY, 1)),
                 attrs: attr,
@@ -178,15 +180,14 @@ export default function SvgWrapper() {
                 style={{ height: 'var(--rmg-svg-height)', width: 'var(--rmg-svg-width)' }}
             />
             <rect id="canvas-x" x={-svgWidth / 2} y={-1} width={svgWidth} height={2} fill="black" />
-            <rect id="canvas-y" x={-1} y={-svgHeight / 2} width={2} height={svgWidth} fill="black" />
+            <rect id="canvas-y" x={-1} y={-svgHeight / 2} width={2} height={svgHeight} fill="black" />
             {param.svgs.map(s => {
-                const { id, type, isCore, x, y, attrs } = s;
+                const { id, type, x, y, attrs } = s;
                 const F = svgs[type].component;
                 return (
                     <F
                         id={id}
                         key={id}
-                        isCore={isCore}
                         // @ts-expect-error type
                         attrs={attrs}
                         x={x}

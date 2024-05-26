@@ -24,6 +24,10 @@ export const createStore = (preloadedState: Partial<RootState> = {}) =>
 const store = createStore();
 export type RootStore = typeof store;
 
+store.subscribe(() => {
+    localStorage.setItem('rmp-style-gen__param', JSON.stringify(store.getState().param));
+});
+
 export type RootDispatch = typeof store.dispatch;
 export const useRootDispatch = () => useDispatch<RootDispatch>();
 export const useRootSelector: TypedUseSelectorHook<RootState> = useSelector;

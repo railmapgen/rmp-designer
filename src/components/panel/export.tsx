@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Param } from '../../constants/constants';
 import svgs from '../svgs/svgs';
+import { nanoid } from '../../util/helper';
 
 export const Export = (props: { isOpen: boolean; onClose: () => void; param: Param }) => {
     const { isOpen, onClose, param } = props;
@@ -22,7 +23,9 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
     const [code, setCode] = React.useState('');
     React.useEffect(() => {
         if (isOpen) {
-            setCode(generateCode(param));
+            // setCode(generateCode(param));
+            // console.log(JSON.stringify({ ...param, id: nanoid(10) }));
+            setCode(JSON.stringify({ ...param, id: nanoid(6) }));
         }
     }, [isOpen]);
 
