@@ -48,7 +48,6 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
                 const newElem: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> = {
                     id,
                     type: svgTag,
-                    isCore: false,
                     x,
                     y,
                     attrs: attr,
