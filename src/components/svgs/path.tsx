@@ -155,8 +155,8 @@ const pathIcon = (
 );
 
 const outputString = (props: SvgsElem<PathSvgAttrs>) => {
-    const { isCore, x, y, attrs } = props;
-    return `<g transform={\`translate(\${${x}}, \${${y}})\`}><path ${isCore ? 'id={`${id}`}' : ''} d={${attrs.d}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} strokeLinecap={${attrs.strokeLinecap}} strokeLinejoin={${attrs.strokeLinejoin}} /></g>\n`;
+    const { x, y, attrs } = props;
+    return `<g transform={\`translate(\${${x}}, \${${y}})\`}><path id={\`\${id}\`}' d={${attrs.d}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} strokeLinecap={${attrs.strokeLinecap}} strokeLinejoin={${attrs.strokeLinejoin}} /></g>\n`;
 };
 
 const pathSvgs: Svgs<PathSvgAttrs> = {

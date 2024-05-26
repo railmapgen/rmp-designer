@@ -144,8 +144,8 @@ const circleIcon = (
 );
 
 const outputString = (props: SvgsElem<CircleSvgAttrs>) => {
-    const { isCore, x, y, attrs } = props;
-    return `<circle ${isCore ? 'id={`${id}`}' : ''} cx={${x}} cy={${y}} r={${attrs.r}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
+    const { x, y, attrs } = props;
+    return `<circle id={\`\${id}\`} cx={${x}} cy={${y}} r={${attrs.r}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
 };
 
 const circleSvgs: Svgs<CircleSvgAttrs> = {
