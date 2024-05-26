@@ -173,7 +173,7 @@ const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
             },
         },
     ];
-    return <RmgFields fields={rectSvgAttrsField} />;
+    return <RmgFields fields={rectSvgAttrsField} minW="100px" />;
 };
 
 const rectIcon = (

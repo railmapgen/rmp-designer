@@ -134,7 +134,7 @@ const attrsComponent = (props: AttrsProps<CircleSvgAttrs>) => {
             },
         },
     ];
-    return <RmgFields fields={rectSvgAttrsField} />;
+    return <RmgFields fields={rectSvgAttrsField} minW="100px" />;
 };
 
 const circleIcon = (

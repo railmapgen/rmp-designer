@@ -3,7 +3,6 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { AttrsProps, SvgsElem } from '../../constants/constants';
 import { Svgs, SvgsAttrsType, SvgsComponentProps } from '../../constants/svgs';
 import { calcFuncInBatch } from '../../util/parse';
-import { RectSvgAttrs } from './rect';
 
 export const Path = (props: SvgsComponentProps<PathSvgAttrs>) => {
     const { id, x, y, attrs, handlePointerDown, handlePointerMove, handlePointerUp, variable } = props;
@@ -145,7 +144,7 @@ const attrsComponent = (props: AttrsProps<PathSvgAttrs>) => {
             },
         },
     ];
-    return <RmgFields fields={rectSvgAttrsField} />;
+    return <RmgFields fields={rectSvgAttrsField} minW="100px" />;
 };
 
 const pathIcon = (

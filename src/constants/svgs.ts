@@ -3,17 +3,20 @@ import { ComponentsType } from './components';
 import { RectSvgAttrs } from '../components/svgs/rect';
 import { PathSvgAttrs } from '../components/svgs/path';
 import { CircleSvgAttrs } from '../components/svgs/circle';
+import { TextSvgAttrs } from '../components/svgs/text';
 
 export enum SvgsType {
     Rect = 'rect',
-    Path = 'path',
     Circle = 'circle',
+    Path = 'path',
+    Text = 'text',
 }
 
 export interface SvgsAttrs {
     [SvgsType.Rect]: RectSvgAttrs;
-    [SvgsType.Path]: PathSvgAttrs;
     [SvgsType.Circle]: CircleSvgAttrs;
+    [SvgsType.Path]: PathSvgAttrs;
+    [SvgsType.Text]: TextSvgAttrs;
 }
 
 // export type SvgsAttrs = RectSvgAttrs;
