@@ -1,179 +1,13 @@
 import React from 'react';
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
-import { AttrsProps, SvgsElem } from '../../constants/constants';
-import { Svgs, SvgsAttrsType, SvgsComponentProps } from '../../constants/svgs';
-import { calcFuncInBatch } from '../../util/parse';
+import { Svgs } from '../../constants/svgs';
 
-export const Rect = (props: SvgsComponentProps<RectSvgAttrs>) => {
-    const { id, x, y, attrs, handlePointerDown, handlePointerMove, handlePointerUp, variable } = props;
-    const {
-        width = defaultRectSvgAttrs.width,
-        height = defaultRectSvgAttrs.height,
-        rx = defaultRectSvgAttrs.rx,
-        ry = defaultRectSvgAttrs.ry,
-        opacity = defaultRectSvgAttrs.opacity,
-        fill = defaultRectSvgAttrs.fill,
-        stroke = defaultRectSvgAttrs.stroke,
-        strokeWidth = defaultRectSvgAttrs.strokeWidth,
-    } = attrs ?? defaultRectSvgAttrs;
-
-    const onPointerDown = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, e),
-        [id, handlePointerDown]
-    );
-    const onPointerMove = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerMove(id, e),
-        [id, handlePointerMove]
-    );
-    const onPointerUp = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerUp(id, e),
-        [id, handlePointerUp]
-    );
-
-    const [calX, calY] = calcFuncInBatch(
-        id,
-        [x, y],
-        variable.map(s => s.id),
-        variable.map(s => s.value),
-        ['number', 'number'],
-        variable.map(s => s.type)
-    );
-    const [calWidth, calHeight, calRx, calRy, calOpacity, calFill, calStroke, calStrokeWidth] = calcFuncInBatch(
-        id,
-        [width, height, rx, ry, opacity, fill, stroke, strokeWidth],
-        ['x', 'y', ...variable.map(s => s.id)],
-        [calX, calY, ...variable.map(s => s.value)],
-        attrsType,
-        ['number', 'number', ...variable.map(s => s.type)]
-    );
-    return (
-        <rect
-            id={id}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            style={{ cursor: 'move' }}
-            x={calX}
-            y={calY}
-            width={calWidth}
-            height={calHeight}
-            rx={calRx}
-            ry={calRy}
-            fill={calFill}
-            opacity={calOpacity}
-            stroke={calStroke}
-            strokeWidth={calStrokeWidth}
-        />
-    );
-};
-
-export interface RectSvgAttrs {
-    width: string;
-    height: string;
-    rx: string;
-    ry: string;
-    opacity: string;
-    fill: string;
-    stroke: string;
-    strokeWidth: string;
-}
-
-const attrsType: SvgsAttrsType[] = ['number', 'number', 'number', 'number', 'number', 'string', 'string', 'number'];
-
-const defaultRectSvgAttrs: RectSvgAttrs = {
+const defaultRectSvgAttrs: Record<string, string> = {
     width: '10',
     height: '10',
     rx: '0',
     ry: '0',
     opacity: '1',
     fill: '"black"',
-    stroke: '"none"',
-    strokeWidth: '0',
-};
-
-const inputFromSvg = (elem: SVGElement) => {
-    const attr: RectSvgAttrs = {
-        width: elem.getAttribute('width') ?? '10',
-        height: elem.getAttribute('height') ?? '10',
-        rx: elem.getAttribute('rx') ?? '0',
-        ry: elem.getAttribute('ry') ?? '0',
-        opacity: elem.getAttribute('opacity') ?? '1',
-        fill: `"${elem.getAttribute('fill') ?? 'black'}"`,
-        stroke: `"${elem.getAttribute('stroke') ?? 'none'}"`,
-        strokeWidth: elem.getAttribute('strokeWidth') ?? '0',
-    };
-    return attr;
-};
-
-const attrsComponent = (props: AttrsProps<RectSvgAttrs>) => {
-    const { id, attrs, handleAttrsUpdate } = props;
-    const rectSvgAttrsField: RmgFieldsField[] = [
-        {
-            type: 'input',
-            label: 'width',
-            value: attrs.width,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, width: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'height',
-            value: attrs.height,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, height: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'rx',
-            value: attrs.rx,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, rx: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'ry',
-            value: attrs.ry,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, ry: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'opacity',
-            value: attrs.opacity,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, opacity: value });
-            },
-        },
-        {
-            type: 'input',
-            label: 'fill',
-            value: attrs.fill,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, fill: `${value}` });
-            },
-        },
-        {
-            type: 'input',
-            label: 'stroke',
-            value: attrs.stroke,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, stroke: `${value}` });
-            },
-        },
-        {
-            type: 'input',
-            label: 'stroke width',
-            value: attrs.strokeWidth,
-            onChange: value => {
-                handleAttrsUpdate(id, { ...attrs, strokeWidth: value });
-            },
-        },
-    ];
-    return <RmgFields fields={rectSvgAttrsField} minW="100px" />;
 };
 
 const rectIcon = (
@@ -182,19 +16,10 @@ const rectIcon = (
     </svg>
 );
 
-const outputString = (props: SvgsElem<RectSvgAttrs>) => {
-    const { x, y, attrs } = props;
-    return `<rect x={${x}} y={${y}} width={${attrs.width}} height={${attrs.height}} rx={${attrs.rx}} ry={${attrs.ry}} opacity={${attrs.opacity}} fill={${attrs.fill}} stroke={${attrs.stroke}} strokeWidth={${attrs.strokeWidth}} />\n`;
-};
-
-const rectSvgs: Svgs<RectSvgAttrs> = {
-    component: Rect,
+const rectSvgs: Svgs = {
     icon: rectIcon,
-    attrsComponent,
     defaultAttrs: defaultRectSvgAttrs,
     displayName: 'Rectangle',
-    output: outputString,
-    inputFromSvg,
 };
 
 export default rectSvgs;

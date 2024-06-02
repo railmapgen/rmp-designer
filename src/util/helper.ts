@@ -4,7 +4,6 @@ export const getMousePosition = (e: React.MouseEvent) => {
     const bbox = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - bbox.left;
     const y = e.clientY - bbox.top;
-    // console.log(e.clientX, bbox.left, e.clientY, bbox.top, x, y);
     return { x, y };
 };
 
@@ -17,4 +16,17 @@ export const pointerPosToSVGCoord = (
 
 export const roundToNearestN = (x: number, n: number) => Math.round(x / n) * n;
 
-export const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',10)
+export const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
+
+export const mapRecord = <K extends string, V, R>(
+    record: Record<K, V>,
+    callback: (key: K, value: V) => R
+): Record<K, R> => {
+    return Object.entries(record).reduce(
+        (acc, [key, value]) => {
+            acc[key as K] = callback(key as K, value as V);
+            return acc;
+        },
+        {} as Record<K, R>
+    );
+};

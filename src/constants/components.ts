@@ -20,7 +20,7 @@ export interface Components {
 
 export const colorComponents: Components = {
     id: 'color',
-    label: 'Color',
+    label: 'color',
     type: 'color',
     defaultValue: ['beijing', 'bj1', '#c23a30', MonoColour.white] as Theme,
 };

@@ -11,12 +11,10 @@ import {
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { SvgsAttrs, SvgsType } from '../../constants/svgs';
-import svgs from '../svgs/svgs';
-import { Id, SvgsElem } from '../../constants/constants';
-import { nanoid, roundToNearestN } from '../../util/helper';
-import { addSvg } from '../../redux/param/param-slice';
+import { SvgsElem } from '../../constants/constants';
+import { nanoid } from '../../util/helper';
 import { useRootDispatch } from '../../redux';
+import { setSvgs } from '../../redux/param/param-slice';
 
 export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) => {
     const { isOpen, onClose } = props;
@@ -35,25 +33,32 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
 
     const handleImport = () => {
         const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-        for (const svgTag of Object.values(SvgsType)) {
-            const elems = svgDoc.getElementsByTagName(svgTag);
-            for (let i = 0; i < elems.length; i++) {
-                const elem = elems[i];
-                const id: Id = `id_${nanoid(10)}`;
-                const x = elem.getAttribute(svgTag === 'circle' ? 'cx' : 'x') ?? '0';
-                const y = elem.getAttribute(svgTag === 'circle' ? 'cy' : 'y') ?? '0';
-                const attr = svgs[svgTag].inputFromSvg(elem);
-                console.log(attr);
-                const newElem: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> = {
-                    id,
-                    type: svgTag,
-                    x,
-                    y,
-                    attrs: attr,
-                };
-                dispatch(addSvg(newElem));
-            }
+        const doc = parser.parseFromString(svgString, 'image/svg+xml');
+
+        const dfs = (element: Element): SvgsElem => {
+            const attributes: Record<string, string> = {};
+            Array.from(element.attributes).forEach(attr => {
+                attributes[attr.name] = `"${attr.value}"`;
+            });
+
+            const children: SvgsElem[] = [];
+            Array.from(element.children).forEach(child => {
+                children.push(dfs(child));
+            });
+
+            return {
+                id: `id_${nanoid(10)}`,
+                type: element.tagName,
+                attrs: attributes,
+                children: children.length === 0 ? undefined : children,
+            };
+        };
+
+        const svgRoot = doc.documentElement;
+        const svgElements = dfs(svgRoot);
+        console.log(svgElements);
+        if (svgElements.children) {
+            dispatch(setSvgs(svgElements.children));
         }
         onClose();
     };
@@ -80,4 +85,4 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
             </ModalContent>
         </Modal>
     );
-}
+};

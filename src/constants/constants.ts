@@ -1,31 +1,31 @@
 import { ColourHex, MonoColour } from '@railmapgen/rmg-palette-resources';
-import { SvgsAttrs, SvgsType } from './svgs';
+import { SvgsType } from './svgs';
 import { Components } from './components';
 
 export type Id = `id_${string}`;
 
-export interface SvgsElem<T> {
+export interface SvgsElem {
     id: Id;
-    type: SvgsType;
-    x: string;
-    y: string;
-    attrs: T;
+    type: string;
+    attrs: Record<string, string>;
+    children?: SvgsElem[];
 }
 
 export interface Param {
     id: string;
     type: 'MiscNode' | 'Station';
-    svgs: Array<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>;
+    svgs: SvgsElem[];
     components: Components[];
     color?: Components;
     core?: string;
 }
 
-export interface AttrsProps<T> {
-    id: string;
-    attrs: T;
-    handleAttrsUpdate: (id: string, attrs: T) => void;
-}
+export const defaultParam: Param = {
+    id: 'new',
+    type: 'MiscNode',
+    svgs: [],
+    components: [],
+};
 
 export type Theme = [string, string, ColourHex, MonoColour];
 

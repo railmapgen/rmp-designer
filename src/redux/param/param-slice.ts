@@ -1,44 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Id, Param, SvgsElem } from '../../constants/constants';
-import { RectSvgAttrs } from '../../components/svgs/rect';
-import { SvgsAttrs, SvgsType } from '../../constants/svgs';
+import { defaultParam, Param, SvgsElem } from '../../constants/constants';
 import { Components } from '../../constants/components';
-
-const defaultRectSvgAttrs: RectSvgAttrs = {
-    width: '10',
-    height: '10',
-    rx: '0',
-    ry: '0',
-    opacity: '1',
-    fill: '"black"',
-    stroke: '"none"',
-    strokeWidth: '0',
-};
 
 const paramSlice = createSlice({
     name: 'param',
-    initialState: {
-        id: 'new',
-        type: 'MiscNode',
-        color: undefined,
-        svgs: [
-            {
-                id: 'id_qwq' as Id,
-                type: SvgsType.Rect,
-                x: '20',
-                y: '20',
-                attrs: defaultRectSvgAttrs,
-            },
-        ],
-        components: [
-            {
-                id: 'd',
-                type: 'number',
-                label: 'd',
-                defaultValue: 0,
-            },
-        ],
-    } as Param,
+    initialState: defaultParam,
     reducers: {
         setParam: (state, action: PayloadAction<Param>) => {
             state.id = action.payload.id;
@@ -57,13 +23,13 @@ const paramSlice = createSlice({
         setColor: (state, action: PayloadAction<Components | undefined>) => {
             state.color = action.payload;
         },
-        setSvgs: (state, action: PayloadAction<Array<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>>) => {
+        setSvgs: (state, action: PayloadAction<SvgsElem[]>) => {
             state.svgs = action.payload;
         },
-        addSvg: (state, action: PayloadAction<SvgsElem<SvgsAttrs[keyof SvgsAttrs]>>) => {
+        addSvg: (state, action: PayloadAction<SvgsElem>) => {
             state.svgs.push(action.payload);
         },
-        setSvgValue: (state, action: PayloadAction<{ index: number; value: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> }>) => {
+        setSvgValue: (state, action: PayloadAction<{ index: number; value: SvgsElem }>) => {
             state.svgs[action.payload.index] = action.payload.value;
         },
         deleteSvg: (state, action: PayloadAction<number>) => {

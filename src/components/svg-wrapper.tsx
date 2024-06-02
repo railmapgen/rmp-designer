@@ -13,11 +13,11 @@ import {
 } from '../redux/runtime/runtime-slice';
 import { addSvg, setSvgValue } from '../redux/param/param-slice';
 import { Id, SvgsElem } from '../constants/constants';
-import { SvgsAttrs, SvgsType } from '../constants/svgs';
-import svgs from './svgs/svgs';
-import { getComponentValue } from '../util/parse';
+import { SvgsType } from '../constants/svgs';
 import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
 import { useWindowSize } from '../util/hook';
+import { CreateSvgs } from './svgs/createSvgs';
+import svgs from './svgs/svgs';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
@@ -40,13 +40,16 @@ export default function SvgWrapper() {
             const { x: svgX, y: svgY } = pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin);
             const type = mode.slice(5) as SvgsType;
             const attr = structuredClone(svgs[type].defaultAttrs);
+            const [keyX, keyY] = type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
 
-            const svgElem: SvgsElem<SvgsAttrs[keyof SvgsAttrs]> = {
+            const svgElem: SvgsElem = {
                 id,
                 type,
-                x: String(roundToNearestN(svgX, 1)),
-                y: String(roundToNearestN(svgY, 1)),
-                attrs: attr,
+                attrs: {
+                    [keyX]: String(roundToNearestN(svgX, 1)),
+                    [keyY]: String(roundToNearestN(svgY, 1)),
+                    ...attr,
+                },
             };
             dispatch(addSvg(svgElem));
         } else if (mode === 'free') {
@@ -116,19 +119,34 @@ export default function SvgWrapper() {
         if (mode === 'free' && active === node) {
             selected.forEach(s => {
                 param.svgs.forEach((svg, index) => {
+                    const [keyX, keyY] = svg.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
                     if (svg.id === s) {
-                        const newX = !Number.isNaN(Number(svg.x))
-                            ? String(roundToNearestN(Number(svg.x) - ((offset.x - x) * svgViewBoxZoom) / 100, 1))
-                            : svg.x;
-                        const newY = !Number.isNaN(Number(svg.y))
-                            ? String(roundToNearestN(Number(svg.y) - ((offset.y - y) * svgViewBoxZoom) / 100, 1))
-                            : svg.y;
-                        dispatch(setSvgValue({ index, value: { ...svg, x: newX, y: newY } }));
+                        const newX = !Number.isNaN(Number(svg.attrs[keyX]))
+                            ? String(
+                                  roundToNearestN(Number(svg.attrs[keyX]) - ((offset.x - x) * svgViewBoxZoom) / 100, 1)
+                              )
+                            : svg.attrs[keyX];
+                        const newY = !Number.isNaN(Number(svg.attrs[keyY]))
+                            ? String(
+                                  roundToNearestN(Number(svg.attrs[keyY]) - ((offset.y - y) * svgViewBoxZoom) / 100, 1)
+                              )
+                            : svg.attrs[keyY];
+                        dispatch(
+                            setSvgValue({
+                                index,
+                                value: {
+                                    ...svg,
+                                    attrs: {
+                                        ...svg.attrs,
+                                        [keyX]: newX,
+                                        [keyY]: newY,
+                                    },
+                                },
+                            })
+                        );
                     }
                 });
             });
-            // dispatch(setRefresh());
-            // console.log('move ', graph.current.getNodeAttributes(node));
         }
     });
     const handlePointerUp = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
@@ -182,20 +200,15 @@ export default function SvgWrapper() {
             <rect id="canvas-x" x={-svgWidth / 2} y={-1} width={svgWidth} height={2} fill="black" />
             <rect id="canvas-y" x={-1} y={-svgHeight / 2} width={2} height={svgHeight} fill="black" />
             {param.svgs.map(s => {
-                const { id, type, x, y, attrs } = s;
-                const F = svgs[type].component;
+                const components = param.color ? [...param.components, param.color] : param.components;
                 return (
-                    <F
-                        id={id}
-                        key={id}
-                        // @ts-expect-error type
-                        attrs={attrs}
-                        x={x}
-                        y={y}
+                    <CreateSvgs
+                        key={s.id}
+                        svgsElem={s}
+                        components={components}
                         handlePointerDown={handlePointerDown}
                         handlePointerMove={handlePointerMove}
                         handlePointerUp={handlePointerUp}
-                        variable={getComponentValue(param.components)}
                     />
                 );
             })}

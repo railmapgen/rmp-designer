@@ -18,7 +18,8 @@ const listenerMiddleware = createListenerMiddleware();
 export const createStore = (preloadedState: Partial<RootState> = {}) =>
     configureStore({
         reducer: rootReducer,
-        middleware: getDefaultMiddleware => getDefaultMiddleware({ serializableCheck: false }).prepend(listenerMiddleware.middleware),
+        middleware: getDefaultMiddleware =>
+            getDefaultMiddleware({ serializableCheck: false }).prepend(listenerMiddleware.middleware),
         preloadedState,
     });
 const store = createStore();
