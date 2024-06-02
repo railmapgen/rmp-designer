@@ -31,6 +31,28 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
         },
     ];
 
+    function convertStyleStringToObject(style: any): Record<string, string> {
+        if (typeof style === 'object') {
+            return style;
+        } else if (typeof style === 'string') {
+            const styleObj: Record<string, string> = {};
+            const styleArray = style.split(';');
+            styleArray.forEach(item => {
+                const [property, value] = item.split(':');
+                if (property && value) {
+                    const trimmedProperty = property.trim();
+                    const trimmedValue = value.trim();
+                    const camelCaseProperty = trimmedProperty.replace(/-([a-z])/g, (match, letter) =>
+                        letter.toUpperCase()
+                    );
+                    styleObj[camelCaseProperty] = trimmedValue;
+                }
+            });
+            return styleObj;
+        }
+        return {};
+    }
+
     const handleImport = () => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(svgString, 'image/svg+xml');
@@ -38,7 +60,12 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
         const dfs = (element: Element): SvgsElem => {
             const attributes: Record<string, string> = {};
             Array.from(element.attributes).forEach(attr => {
-                attributes[attr.name] = `"${attr.value}"`;
+                if (attr.name === 'style') {
+                    console.log(convertStyleStringToObject(attr.value));
+                    attributes[attr.name] = JSON.stringify(convertStyleStringToObject(attr.value));
+                } else {
+                    attributes[attr.name] = `"${attr.value}"`;
+                }
             });
 
             const children: SvgsElem[] = [];
