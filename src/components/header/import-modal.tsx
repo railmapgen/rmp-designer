@@ -68,6 +68,10 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
                 }
             });
 
+            if (element.tagName !== 'g' && element.textContent) {
+                attributes['_rmp_children_text'] = `"${element.textContent}"`;
+            }
+
             const children: SvgsElem[] = [];
             Array.from(element.children).forEach(child => {
                 children.push(dfs(child));
