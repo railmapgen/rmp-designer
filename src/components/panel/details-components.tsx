@@ -35,18 +35,6 @@ export function DetailsComponents() {
     } = useRootSelector(state => state.runtime);
     const { t } = useTranslation();
 
-    const getType = (type: ComponentsType) => {
-        switch (type) {
-            case 'number':
-                return 'number';
-            case 'switch':
-                return 'boolean';
-            case 'textarea' || 'text':
-                return 'string';
-        }
-        return undefined;
-    };
-
     const handleAddNewComponent = () => {
         dispatch(backupParam(param));
         dispatch(
@@ -79,10 +67,10 @@ export function DetailsComponents() {
     };
 
     const p = param.components.map((c, index) => {
-        const { id, label, type, defaultValue, value } = c;
+        const { id, label, type, defaultValue } = c;
         const field: RmgFieldsField[] = [
             {
-                label: 'Label',
+                label: t('panel.components.label'),
                 type: 'input',
                 value: label,
                 onChange: v => {
@@ -91,7 +79,7 @@ export function DetailsComponents() {
                 },
             },
             {
-                label: 'Type',
+                label: t('panel.components.type'),
                 type: 'select',
                 options: ComponentsTypeOptions,
                 value: type,
@@ -101,7 +89,7 @@ export function DetailsComponents() {
                 },
             },
             {
-                label: 'Default value',
+                label: t('panel.components.defaultValue'),
                 type: 'input',
                 value: defaultValue,
                 onChange: v => {
@@ -163,7 +151,7 @@ export function DetailsComponents() {
         <Box width="100%">
             <Flex p={2}>
                 <Heading p={2} fontSize="x-large" width="100%">
-                    Variables
+                    {t('panel.components.title')}
                 </Heading>
                 <Button onClick={handleAddNewComponent}>+</Button>
             </Flex>
@@ -178,7 +166,7 @@ export function DetailsComponents() {
                             <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                            <RmgLabel label="Default Color">
+                            <RmgLabel label={t('panel.components.defaultColor')}>
                                 <IconButton
                                     aria-label={t('Color')}
                                     color={param.color.defaultValue[3]}

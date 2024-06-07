@@ -51,6 +51,7 @@ export default function SvgWrapper() {
                     ...attr,
                 },
             };
+            dispatch(backupParam(param));
             dispatch(addSvg(svgElem));
         } else if (mode === 'free') {
             // set initial position of the pointer, this is used in handleBackgroundMove

@@ -1,1 +1,36 @@
-{}
+{
+    "header": {
+        "about": {
+            "title": "About RMP Style Generator",
+            "intro": "intro"
+        },
+        "import": {
+            "new": "New",
+            "pasteSVG": "Paste SVG",
+            "uploadSVG": "Upload SVG"
+        }
+    },
+    "panel": {
+        "tools": {
+            "showLess": "Show less"
+        },
+        "details": {
+            "header": "RMP Details Panel"
+        },
+        "svgs": {
+            "title": "SVG Components",
+            "type": "Type",
+            "core": "Connectable",
+            "attrKey": "Attributes key",
+            "attrValue": "Attributes value",
+            "addTextChildren": "Add text content"
+        },
+        "components": {
+            "title": "Variables",
+            "label": "Label",
+            "type": "Type",
+            "defaultValue": "Default value",
+            "defaultColor": "Default color"
+        }
+    }
+}

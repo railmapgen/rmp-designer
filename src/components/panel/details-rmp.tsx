@@ -4,7 +4,6 @@ import {
     RmgLabel,
     RmgSidePanel,
     RmgSidePanelBody,
-    RmgSidePanelFooter,
     RmgSidePanelHeader,
 } from '@railmapgen/rmg-components';
 import { IconButton } from '@chakra-ui/react';
@@ -25,7 +24,7 @@ export function RmpDetails() {
     const { t } = useTranslation();
 
     const field: RmgFieldsField[] = param.components.map((c, index) => {
-        const { id, label, type, defaultValue, value } = c;
+        const { label, type, defaultValue, value } = c;
         if (type === 'number' || type === 'text') {
             return {
                 label: label,
@@ -98,7 +97,6 @@ export function RmpDetails() {
                     </RmgLabel>
                 ) : undefined}
             </RmgSidePanelBody>
-            <RmgSidePanelFooter> 1234 </RmgSidePanelFooter>
         </RmgSidePanel>
     );
 }

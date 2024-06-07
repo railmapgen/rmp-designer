@@ -61,10 +61,10 @@ export default function WindowHeader() {
                     <MenuButton as={IconButton} size="sm" variant="ghost" icon={<MdUpload />} />
                     <MenuList>
                         <MenuItem icon={<MdOpenInNew />} onClick={() => dispatch(setParam(defaultParam))}>
-                            New
+                            {t('header.import.new')}
                         </MenuItem>
                         <MenuItem icon={<MdSave />} onClick={() => setOpenImportSvg(true)}>
-                            Import from SVG
+                            {t('header.import.pasteSVG')}
                         </MenuItem>
                     </MenuList>
                 </Menu>

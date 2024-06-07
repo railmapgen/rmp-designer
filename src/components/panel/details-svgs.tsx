@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { backupParam, removeGlobalAlert } from '../../redux/runtime/runtime-slice';
-import { deleteSvg, setCore, setSvgs } from '../../redux/param/param-slice';
+import { setCore, setSvgs } from '../../redux/param/param-slice';
 import { SvgsElem } from '../../constants/constants';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { MoveChildrenModal } from './details-svgs-move-children';
@@ -62,7 +62,6 @@ export function DetailsSvgs() {
             data: SvgsElem,
             key: 'type' | 'attrs',
             value: string | Record<string, string>,
-            path: number[],
             index: number
         ): SvgsElem => {
             if (index >= path.length) {
@@ -73,13 +72,29 @@ export function DetailsSvgs() {
                 }
             }
             const newChildren = structuredClone(data.children!);
-            newChildren[path[index]] = dfsChangeValue(data.children![path[index]], key, value, path, index + 1);
+            newChildren[path[index]] = dfsChangeValue(data.children![path[index]], key, value, index + 1);
             return { ...data, children: newChildren };
         };
         const newSvgs = structuredClone(param.svgs);
-        newSvgs[path[0]] = dfsChangeValue(newSvgs[path[0]], key, value, path, 1);
+        newSvgs[path[0]] = dfsChangeValue(newSvgs[path[0]], key, value, 1);
         dispatch(backupParam(param));
         dispatch(setSvgs(newSvgs));
+        dispatch(removeGlobalAlert(id));
+    };
+
+    const handleRemove = (id: string, path: number[]) => {
+        const dfsRemove = (data: SvgsElem[], index: number): SvgsElem[] => {
+            if (index + 1 >= path.length) {
+                return data.filter((s, i) => i !== path[index]);
+            }
+            const newChildren = dfsRemove(data[path[index]].children!, index + 1);
+            return data
+                .filter((s, i) => i < path[index])
+                .concat([{ ...data[path[index]], children: newChildren.length === 0 ? undefined : newChildren }])
+                .concat(data.filter((c, i) => i > path[index]));
+        };
+        dispatch(backupParam(param));
+        dispatch(setSvgs(dfsRemove(param.svgs, 0)));
         dispatch(removeGlobalAlert(id));
     };
 
@@ -92,13 +107,13 @@ export function DetailsSvgs() {
             const i = param.svgs.length - index - 1; // reversed index
             const field: RmgFieldsField[] = [
                 {
-                    label: 'type',
+                    label: t('panel.svgs.type'),
                     type: 'input',
                     value: s.type,
                     onChange: value => handleSetValue(s.id, 'type', value, [...path, i]),
                 },
                 {
-                    label: 'Connectable',
+                    label: t('panel.svgs.core'),
                     type: 'switch',
                     isChecked: param.core ? param.core === s.id : false,
                     onChange: value => {
@@ -129,14 +144,7 @@ export function DetailsSvgs() {
                             >
                                 <MdDriveFileMoveOutline />
                             </Button>
-                            <Button
-                                size="md"
-                                onClick={() => {
-                                    dispatch(backupParam(param));
-                                    dispatch(removeGlobalAlert(s.id));
-                                    dispatch(deleteSvg(i));
-                                }}
-                            >
+                            <Button size="md" onClick={() => handleRemove(s.id, [...path, i])}>
                                 <MdClose />
                             </Button>
                         </>
@@ -146,7 +154,7 @@ export function DetailsSvgs() {
             const attrsField = Object.entries(s.attrs).map(([key, value]) => {
                 const field: RmgFieldsField[] = [
                     {
-                        label: 'Attributes key',
+                        label: t('panel.svgs.attrKey'),
                         type: 'input',
                         value: key,
                         onChange: v => {
@@ -155,7 +163,7 @@ export function DetailsSvgs() {
                         },
                     },
                     {
-                        label: 'Value',
+                        label: t('panel.svgs.attrValue'),
                         type: 'input',
                         value: value,
                         onChange: v => handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: v }, [...path, i]),
@@ -187,7 +195,7 @@ export function DetailsSvgs() {
                             handleSetValue(s.id, 'attrs', { ...s.attrs, _rmp_children_text: '"value"' }, [...path, i])
                         }
                     >
-                        Add text children
+                        {t('panel.svgs.addTextChildren')}
                     </Button>
                 ) : null;
             return (
@@ -224,7 +232,7 @@ export function DetailsSvgs() {
             <Box width="100%">
                 <Flex p={2}>
                     <Heading fontSize="x-large" p={2}>
-                        Svgs
+                        {t('panel.svgs.title')}
                     </Heading>
                 </Flex>
                 <Accordion width="100%" allowMultiple>

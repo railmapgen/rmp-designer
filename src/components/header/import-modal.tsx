@@ -98,7 +98,7 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
         <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>Import from SVG</ModalHeader>
+                <ModalHeader>{t('header.import.pasteSVG')}</ModalHeader>
                 <ModalCloseButton />
 
                 <ModalBody paddingBottom={10}>
