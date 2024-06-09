@@ -1,16 +1,15 @@
-import { Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { Heading, HStack, IconButton } from '@chakra-ui/react';
 import { RmgEnvBadge, RmgWindowHeader } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdHelp, MdOpenInNew, MdRedo, MdSave, MdUndo, MdUpload } from 'react-icons/md';
+import { MdHelp, MdRedo, MdUndo } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setParam } from '../../redux/param/param-slice';
 import { backupParam, backupRedo, backupRemove, backupUndo } from '../../redux/runtime/runtime-slice';
-import { defaultParam } from '../../constants/constants';
 import AboutModal from './about-modal';
 import { ZoomPopover } from './zoom-popover';
-import { ImportFromSvg } from './import-modal';
+import OpenActions from './open-actions';
 
 export default function WindowHeader() {
     const { t } = useTranslation();
@@ -22,7 +21,6 @@ export default function WindowHeader() {
     const appVersion = rmgRuntime.getAppVersion();
 
     const [openAbout, setOpenAbout] = React.useState(false);
-    const [openImportSvg, setOpenImportSvg] = React.useState(false);
 
     return (
         <RmgWindowHeader>
@@ -57,17 +55,7 @@ export default function WindowHeader() {
                     }}
                 />
                 <ZoomPopover />
-                <Menu id="download">
-                    <MenuButton as={IconButton} size="sm" variant="ghost" icon={<MdUpload />} />
-                    <MenuList>
-                        <MenuItem icon={<MdOpenInNew />} onClick={() => dispatch(setParam(defaultParam))}>
-                            {t('header.import.new')}
-                        </MenuItem>
-                        <MenuItem icon={<MdSave />} onClick={() => setOpenImportSvg(true)}>
-                            {t('header.import.pasteSVG')}
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
+                <OpenActions />
                 <IconButton
                     size="sm"
                     variant="ghost"
@@ -78,7 +66,6 @@ export default function WindowHeader() {
                 />
             </HStack>
             <AboutModal isOpen={openAbout} onClose={() => setOpenAbout(false)} />
-            <ImportFromSvg isOpen={openImportSvg} onClose={() => setOpenImportSvg(false)} />
         </RmgWindowHeader>
     );
 }

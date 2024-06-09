@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Flex } from '@chakra-ui/react';
+import { Button, Flex, HStack } from '@chakra-ui/react';
 import WindowHeader from './header/window-header';
 import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +22,7 @@ export default function AppRoot() {
         paletteAppClip: { input },
         globalAlerts,
     } = useRootSelector(state => state.runtime);
+    const [isDetailsOpen, setDetailsOpen] = React.useState(false);
     const [openExport, setOpenExport] = React.useState(false);
 
     return (
@@ -33,13 +34,18 @@ export default function AppRoot() {
                         <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
                             <ToolsPanel />
                             <SvgWrapper />
-                            <RmpDetails />
+                            <RmpDetails isOpen={isDetailsOpen} onClose={() => setDetailsOpen(false)} />
                         </Flex>
                         <Flex p={2} direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
-                            <Settings />
-                            <Button onClick={() => setOpenExport(true)} isDisabled={globalAlerts.size !== 0}>
-                                Export
-                            </Button>
+                            <HStack>
+                                <Settings />
+                                <Button onClick={() => setOpenExport(true)} isDisabled={globalAlerts.size !== 0}>
+                                    Export
+                                </Button>
+                                <Button hidden={isDetailsOpen} onClick={() => setDetailsOpen(true)}>
+                                    Open RMP Details
+                                </Button>
+                            </HStack>
                         </Flex>
                         <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
                             <DetailsSvgs />

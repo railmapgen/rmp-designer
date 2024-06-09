@@ -1,7 +1,7 @@
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setColor, setId, setType } from '../../redux/param/param-slice';
+import { setColor, setType } from '../../redux/param/param-slice';
 import { colorComponents } from '../../constants/components';
 
 export function Settings() {
@@ -10,12 +10,6 @@ export function Settings() {
     const { t } = useTranslation();
 
     const field: RmgFieldsField[] = [
-        {
-            label: 'Class name (BjsubwayBasic, GzmtrBasic)',
-            type: 'input',
-            value: param.id,
-            onChange: value => dispatch(setId(value)),
-        },
         {
             label: 'Type',
             type: 'select',

@@ -15,7 +15,8 @@ import { setColor, setComponentValue } from '../../redux/param/param-slice';
 import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import ColourUtil from './colour-util';
 
-export function RmpDetails() {
+export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
+    const { isOpen, onClose } = props;
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
     const {
@@ -76,8 +77,8 @@ export function RmpDetails() {
     const color = param.color?.value ?? param.color?.defaultValue;
 
     return (
-        <RmgSidePanel isOpen={true} header="Dummy header">
-            <RmgSidePanelHeader onClose={() => {}}>{t('panel.details.header')}</RmgSidePanelHeader>
+        <RmgSidePanel isOpen={isOpen} header="Dummy header">
+            <RmgSidePanelHeader onClose={onClose}>{t('panel.details.header')}</RmgSidePanelHeader>
             <RmgSidePanelBody>
                 <RmgFields fields={field} />
                 {param.color ? (
