@@ -10,12 +10,12 @@ ls ../
 
 # Clear folder
 cd ..
-rm -rf rmp-style-generator/*
+rm -rf rmp-designer/*
 
 # Copy artefacts
-cp -r dist/* rmp-style-generator
+cp -r dist/* rmp-designer
 
-cd rmp-style-generator
+cd rmp-designer
 
 # Bypass JEKYLL
 touch .nojekyll
@@ -23,7 +23,7 @@ touch .nojekyll
 # Write INFO.JSON
 cat >info.json <<EOF
 {
-  "component": "rmp-style-generator",
+  "component": "rmp-designer",
   "version": "$VERSION",
   "environment": "$ENV",
   "instance": "GitHub"

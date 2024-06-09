@@ -26,7 +26,7 @@ const store = createStore();
 export type RootStore = typeof store;
 
 store.subscribe(() => {
-    localStorage.setItem('rmp-style-gen__param', JSON.stringify(store.getState().param));
+    localStorage.setItem('rmp-designer__param', JSON.stringify(store.getState().param));
 });
 
 export type RootDispatch = typeof store.dispatch;

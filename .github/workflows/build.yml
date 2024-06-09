@@ -56,7 +56,7 @@ jobs:
 #        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
 #        uses: railmapgen/releaser@main
 #        with:
-#          app_name: rmp-style-generator
+#          app_name: rmp-designer
 #          version: ${{ steps.build.outputs.RMG_VER }}
 #          environment: ${{ inputs.auto_deploy }}
 #          dist: dist

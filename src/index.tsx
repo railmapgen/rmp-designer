@@ -32,5 +32,5 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.event(Events.APP_LOAD, {});
 });
 
-const param = localStorage.getItem('rmp-style-gen__param');
+const param = localStorage.getItem('rmp-designer__param');
 param !== null && store.dispatch(setParam(JSON.parse(param)));
