@@ -52,14 +52,14 @@ jobs:
           VERSION: ${{ steps.build.outputs.RMG_VER }}
           ENV: ${{ inputs.auto_deploy }}
 
-#      - name: Release
-#        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
-#        uses: railmapgen/releaser@main
-#        with:
-#          app_name: rmp-designer
-#          version: ${{ steps.build.outputs.RMG_VER }}
-#          environment: ${{ inputs.auto_deploy }}
-#          dist: dist
-#          github_token: ${{ secrets.RMG_BUILD_AND_RELEASE }}
-#          gitlab_token: ${{ secrets.GITLAB_RELEASE }}
-#          gitee_token: ${{ secrets.GITEE_RELEASE }}
+      - name: Release
+        if: ${{ inputs.auto_deploy == 'UAT' || inputs.auto_deploy == 'PRD' }}
+        uses: railmapgen/releaser@main
+        with:
+          app_name: rmp-designer
+          version: ${{ steps.build.outputs.RMG_VER }}
+          environment: ${{ inputs.auto_deploy }}
+          dist: dist
+          github_token: ${{ secrets.RMG_BUILD_AND_RELEASE }}
+          gitlab_token: ${{ secrets.GITLAB_RELEASE }}
+          gitee_token: ${{ secrets.GITEE_RELEASE }}
