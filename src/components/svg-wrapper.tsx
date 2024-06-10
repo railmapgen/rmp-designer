@@ -18,14 +18,15 @@ import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from 
 import { useWindowSize } from '../util/hook';
 import { CreateSvgs } from './svgs/createSvgs';
 import svgs from './svgs/svgs';
+import { updateTransformString } from '../util/parse';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
     const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
     const size = useWindowSize();
-    const svgWidth = 500; // size.width ?? 720 - 40;
-    const svgHeight = 500; // ((size.height ?? 720) * 3) / 5;
+    const svgWidth = (size.width ?? 720) - 40;
+    const svgHeight = ((size.height ?? 720) * 3) / 5;
     const canvasScale = 1;
     const color = param.color ? param.color.value ?? param.color.defaultValue : ['', '', '#000000', '#FFF'];
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
@@ -120,31 +121,39 @@ export default function SvgWrapper() {
         if (mode === 'free' && active === node) {
             selected.forEach(s => {
                 param.svgs.forEach((svg, index) => {
-                    const [keyX, keyY] = svg.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
                     if (svg.id === s) {
-                        const newX = !Number.isNaN(Number(svg.attrs[keyX]))
-                            ? String(
-                                  roundToNearestN(Number(svg.attrs[keyX]) - ((offset.x - x) * svgViewBoxZoom) / 100, 1)
-                              )
-                            : svg.attrs[keyX];
-                        const newY = !Number.isNaN(Number(svg.attrs[keyY]))
-                            ? String(
-                                  roundToNearestN(Number(svg.attrs[keyY]) - ((offset.y - y) * svgViewBoxZoom) / 100, 1)
-                              )
-                            : svg.attrs[keyY];
-                        dispatch(
-                            setSvgValue({
-                                index,
-                                value: {
-                                    ...svg,
-                                    attrs: {
-                                        ...svg.attrs,
-                                        [keyX]: newX,
-                                        [keyY]: newY,
+                        const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
+                        const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
+                        if (svg.type === 'g') {
+                            const newTransform = updateTransformString(svg.attrs['transform'] ?? '', dx, dy);
+                            dispatch(
+                                setSvgValue({
+                                    index,
+                                    value: { ...svg, attrs: { ...svg.attrs, transform: newTransform } },
+                                })
+                            );
+                        } else {
+                            const [keyX, keyY] = svg.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
+                            const newX = !Number.isNaN(Number(svg.attrs[keyX]))
+                                ? String(roundToNearestN(Number(svg.attrs[keyX]) + dx, 1))
+                                : svg.attrs[keyX];
+                            const newY = !Number.isNaN(Number(svg.attrs[keyY]))
+                                ? String(roundToNearestN(Number(svg.attrs[keyY]) + dy, 1))
+                                : svg.attrs[keyY];
+                            dispatch(
+                                setSvgValue({
+                                    index,
+                                    value: {
+                                        ...svg,
+                                        attrs: {
+                                            ...svg.attrs,
+                                            [keyX]: newX,
+                                            [keyY]: newY,
+                                        },
                                     },
-                                },
-                            })
-                        );
+                                })
+                            );
+                        }
                     }
                 });
             });
@@ -191,15 +200,8 @@ export default function SvgWrapper() {
             onPointerMove={handleBackgroundMove}
             onPointerUp={handleBackgroundUp}
         >
-            <rect
-                id="canvas-bg"
-                x={-svgWidth / 2}
-                y={-svgHeight / 2}
-                fill="white"
-                style={{ height: 'var(--rmg-svg-height)', width: 'var(--rmg-svg-width)' }}
-            />
-            <rect id="canvas-x" x={-svgWidth / 2} y={-1} width={svgWidth} height={2} fill="black" />
-            <rect id="canvas-y" x={-1} y={-svgHeight / 2} width={2} height={svgHeight} fill="black" />
+            <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />
+            <rect id="canvas-y" x={-1} y={-200000} width={2} height={400000} fill="black" />
             {param.svgs.map(s => {
                 const components = param.color ? [...param.components, param.color] : param.components;
                 return (
@@ -213,16 +215,6 @@ export default function SvgWrapper() {
                     />
                 );
             })}
-            <rect
-                id="canvas-border"
-                x={-svgWidth / 2 + 2.5}
-                y={-svgHeight / 2 + 2.5}
-                width={svgWidth - 5}
-                height={svgHeight - 5}
-                fill="none"
-                strokeWidth={5}
-                stroke="black"
-            />
         </svg>
     );
 }

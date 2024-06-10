@@ -77,7 +77,7 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
     const color = param.color?.value ?? param.color?.defaultValue;
 
     return (
-        <RmgSidePanel isOpen={isOpen} header="Dummy header">
+        <RmgSidePanel isOpen={isOpen} header="Dummy header" alwaysOverlay>
             <RmgSidePanelHeader onClose={onClose}>{t('panel.details.header')}</RmgSidePanelHeader>
             <RmgSidePanelBody>
                 <RmgFields fields={field} />
