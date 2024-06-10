@@ -6,6 +6,7 @@ import {
     AccordionPanel,
     Box,
     Button,
+    Checkbox,
     Flex,
     Heading,
     HStack,
@@ -15,16 +16,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { backupParam, removeGlobalAlert } from '../../redux/runtime/runtime-slice';
+import { addSelected, backupParam, removeGlobalAlert, removeSelected } from '../../redux/runtime/runtime-slice';
 import { setCore, setSvgs } from '../../redux/param/param-slice';
-import { SvgsElem } from '../../constants/constants';
+import { Id, SvgsElem } from '../../constants/constants';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { MoveChildrenModal } from './details-svgs-move-children';
 
 export function DetailsSvgs() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
-    const { globalAlerts } = useRootSelector(store => store.runtime);
+    const { globalAlerts, selected } = useRootSelector(store => store.runtime);
     const { t } = useTranslation();
 
     const handleMove = (index: number, d: number, path: number[]) => {
@@ -102,7 +103,7 @@ export function DetailsSvgs() {
     const [moveChildrenId, setMoveChildrenId] = React.useState<number[]>([]);
     const [moveChildrenElem, setMoveChildrenElem] = React.useState<SvgsElem>();
 
-    const dfsField = (svgs: SvgsElem[], path: number[]) =>
+    const dfsField = (svgs: SvgsElem[], path: number[], father: Id) =>
         svgs.toReversed().map((s, index) => {
             const i = param.svgs.length - index - 1; // reversed index
             const field: RmgFieldsField[] = [
@@ -186,7 +187,8 @@ export function DetailsSvgs() {
                 ];
                 return <RmgFields key={key} fields={field} />;
             });
-            const displayChildren = supportsChildren(s.type) && s.children ? dfsField(s.children, [...path, i]) : [];
+            const displayChildren =
+                supportsChildren(s.type) && s.children ? dfsField(s.children, [...path, i], s.id) : [];
             const displayTextChildrenButton =
                 supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
                     <Button
@@ -198,9 +200,21 @@ export function DetailsSvgs() {
                         {t('panel.svgs.addTextChildren')}
                     </Button>
                 ) : null;
+            const handleCheck = (e: React.ChangeEvent) => {
+                e.stopPropagation();
+                if (selected.has(s.id)) {
+                    dispatch(removeSelected(s.id));
+                    if (selected.has(father)) {
+                        dispatch(removeSelected(father));
+                    }
+                } else {
+                    dispatch(addSelected(s.id));
+                }
+            };
             return (
                 <AccordionItem key={s.id}>
                     <AccordionButton p={2}>
+                        <Checkbox isChecked={selected.has(s.id) || selected.has(father)} onChange={handleCheck} />
                         <Box as="span" flex="1" textAlign="left">
                             {s.type}
                         </Box>
@@ -236,7 +250,7 @@ export function DetailsSvgs() {
                     </Heading>
                 </Flex>
                 <Accordion width="100%" allowMultiple>
-                    {...dfsField(param.svgs, [])}
+                    {...dfsField(param.svgs, [], 'id_@root')}
                 </Accordion>
             </Box>
             <MoveChildrenModal

@@ -11,7 +11,7 @@ import {
     setSelected,
     setSvgViewBoxMin,
 } from '../redux/runtime/runtime-slice';
-import { addSvg, setSvgValue } from '../redux/param/param-slice';
+import { addSvg, setSvgs } from '../redux/param/param-slice';
 import { Id, SvgsElem } from '../constants/constants';
 import { SvgsType } from '../constants/svgs';
 import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
@@ -82,7 +82,7 @@ export default function SvgWrapper() {
             dispatch(setActive(undefined)); // svg mouse event only
         }
     });
-    const handlePointerDown = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
+    const handlePointerDown = useEvent((node: Id, path: Id[], e: React.PointerEvent<SVGElement>) => {
         e.stopPropagation();
 
         const el = e.currentTarget;
@@ -96,7 +96,7 @@ export default function SvgWrapper() {
 
         if (!e.shiftKey) {
             // no shift key -> non multiple selection case
-            if (!selected.has(node)) {
+            if (path.filter(s => selected.has(s)).length === 0) {
                 // set the current as the only one no matter what the previous selected were
                 dispatch(setSelected(new Set<Id>([node])));
             } else {
@@ -112,65 +112,58 @@ export default function SvgWrapper() {
                 dispatch(addSelected(node));
             }
         }
-        // console.log('down ', graph.current.getNodeAttributes(node));
     });
-    const handlePointerMove = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
+    const handlePointerMove = useEvent((node: Id, path: Id[], e: React.PointerEvent<SVGElement>) => {
         const { x, y } = getMousePosition(e);
         e.stopPropagation();
 
-        if (mode === 'free' && active === node) {
-            selected.forEach(s => {
-                param.svgs.forEach((svg, index) => {
-                    if (svg.id === s) {
-                        const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
-                        const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
-                        if (svg.type === 'g') {
-                            const newTransform = updateTransformString(svg.attrs['transform'] ?? '', dx, dy);
-                            dispatch(
-                                setSvgValue({
-                                    index,
-                                    value: { ...svg, attrs: { ...svg.attrs, transform: newTransform } },
-                                })
-                            );
-                        } else {
-                            const [keyX, keyY] = svg.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
-                            const newX = !Number.isNaN(Number(svg.attrs[keyX]))
-                                ? String(roundToNearestN(Number(svg.attrs[keyX]) + dx, 1))
-                                : svg.attrs[keyX];
-                            const newY = !Number.isNaN(Number(svg.attrs[keyY]))
-                                ? String(roundToNearestN(Number(svg.attrs[keyY]) + dy, 1))
-                                : svg.attrs[keyY];
-                            dispatch(
-                                setSvgValue({
-                                    index,
-                                    value: {
-                                        ...svg,
-                                        attrs: {
-                                            ...svg.attrs,
-                                            [keyX]: newX,
-                                            [keyY]: newY,
-                                        },
-                                    },
-                                })
-                            );
-                        }
+        const dfsMoveNodes = (svgs: SvgsElem[]): SvgsElem[] => {
+            if (svgs.length === 0) {
+                return [];
+            }
+            return svgs.map(s => {
+                if (selected.has(s.id)) {
+                    const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
+                    const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
+                    if (s.type === 'g') {
+                        const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
+                        return { ...s, attrs: { ...s.attrs, transform: newTransform } };
+                    } else {
+                        const [keyX, keyY] = s.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
+                        const newX = !Number.isNaN(Number(s.attrs[keyX]))
+                            ? String(roundToNearestN(Number(s.attrs[keyX]) + dx, 1))
+                            : s.attrs[keyX];
+                        const newY = !Number.isNaN(Number(s.attrs[keyY]))
+                            ? String(roundToNearestN(Number(s.attrs[keyY]) + dy, 1))
+                            : s.attrs[keyY];
+                        return { ...s, attrs: { ...s.attrs, [keyX]: newX, [keyY]: newY } };
                     }
-                });
+                } else {
+                    if (s.children && s.children.length > 0) {
+                        const ch = dfsMoveNodes(s.children);
+                        return { ...s, children: ch.length !== 0 ? ch : undefined };
+                    } else {
+                        return s;
+                    }
+                }
             });
+        };
+
+        if (mode === 'free' && active === node) {
+            dispatch(setSvgs(dfsMoveNodes(param.svgs)));
         }
     });
-    const handlePointerUp = useEvent((node: Id, e: React.PointerEvent<SVGElement>) => {
+    const handlePointerUp = useEvent((node: Id, path: Id[], e: React.PointerEvent<SVGElement>) => {
         if (mode === 'free') {
             if (active) {
                 // the node is pointed down before
                 // check the offset and if it's not 0, it must be a click not move
-                const { x, y } = getMousePosition(e);
-                if (offset.x - x === 0 && offset.y - y === 0) {
-                    // no-op for click as the node is already added in pointer down
-                } else {
-                    // its a moving node operation, save the final coordinate
-                    // dispatch(saveGraph(graph.current.export()));
-                }
+                // const { x, y } = getMousePosition(e);
+                // if (offset.x - x === 0 && offset.y - y === 0) {
+                // no-op for click as the node is already added in pointer down
+                // } else {
+                // its a moving node operation
+                // }
             } else {
                 // no-op for a new node is just placed, already added to selected in pointer down
             }
@@ -209,6 +202,7 @@ export default function SvgWrapper() {
                         key={s.id}
                         svgsElem={s}
                         components={components}
+                        prefix={[s.id]}
                         handlePointerDown={handlePointerDown}
                         handlePointerMove={handlePointerMove}
                         handlePointerUp={handlePointerUp}

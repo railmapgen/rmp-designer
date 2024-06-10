@@ -9,27 +9,28 @@ import { useRootDispatch, useRootSelector } from '../../redux';
 export interface CreateSvgsProps {
     svgsElem: SvgsElem;
     components: Components[];
-    handlePointerDown: (id: Id, e: React.PointerEvent<SVGElement>) => void;
-    handlePointerMove: (id: Id, e: React.PointerEvent<SVGElement>) => void;
-    handlePointerUp: (id: Id, e: React.PointerEvent<SVGElement>) => void;
+    prefix: Id[];
+    handlePointerDown: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
+    handlePointerMove: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
+    handlePointerUp: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
 }
 
 export const CreateSvgs = (props: CreateSvgsProps) => {
-    const { svgsElem, components, handlePointerUp, handlePointerMove, handlePointerDown } = props;
+    const { svgsElem, components, prefix, handlePointerUp, handlePointerMove, handlePointerDown } = props;
     const { id, type, attrs } = svgsElem;
     const dispatch = useRootDispatch();
     const { globalAlerts } = useRootSelector(state => state.runtime);
 
     const onPointerDown = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, e),
+        (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, [...prefix, id], e),
         [id, handlePointerDown]
     );
     const onPointerMove = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerMove(id, e),
+        (e: React.PointerEvent<SVGElement>) => handlePointerMove(id, [...prefix, id], e),
         [id, handlePointerMove]
     );
     const onPointerUp = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerUp(id, e),
+        (e: React.PointerEvent<SVGElement>) => handlePointerUp(id, [...prefix, id], e),
         [id, handlePointerUp]
     );
     const hasGlobalAlert = globalAlerts.has(id);
@@ -86,9 +87,10 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
                       key={s.id}
                       svgsElem={s}
                       components={components}
-                      handlePointerDown={() => {}}
-                      handlePointerMove={() => {}}
-                      handlePointerUp={() => {}}
+                      prefix={[...prefix, id]}
+                      handlePointerDown={handlePointerDown}
+                      handlePointerMove={handlePointerMove}
+                      handlePointerUp={handlePointerUp}
                   />
               ))
             : '_rmp_children_text' in newAttrs
