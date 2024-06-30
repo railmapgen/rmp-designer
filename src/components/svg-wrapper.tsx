@@ -26,7 +26,7 @@ export default function SvgWrapper() {
     const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
     const size = useWindowSize();
     const svgWidth = (size.width ?? 720) - 40;
-    const svgHeight = ((size.height ?? 720) * 3) / 5;
+    const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
 
@@ -128,13 +128,13 @@ export default function SvgWrapper() {
                         return { ...s, attrs: { ...s.attrs, transform: newTransform } };
                     } else {
                         const newX =
-                            !Number.isNaN(Number(s.attrs[x])) || s.attrs[x] === undefined
-                                ? String(roundToNearestN(Number(s.attrs[x] ?? 0) + dx, 1))
-                                : s.attrs[x];
+                            !Number.isNaN(Number(s.attrs.x)) || s.attrs.x === undefined
+                                ? String(roundToNearestN(Number(s.attrs.x ?? 0) + dx, 1))
+                                : s.attrs.x;
                         const newY =
-                            !Number.isNaN(Number(s.attrs[y])) || s.attrs[y] === undefined
-                                ? String(roundToNearestN(Number(s.attrs[y] ?? 0) + dy, 1))
-                                : s.attrs[y];
+                            !Number.isNaN(Number(s.attrs.y)) || s.attrs.y === undefined
+                                ? String(roundToNearestN(Number(s.attrs.y ?? 0) + dy, 1))
+                                : s.attrs.y;
                         return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     }
                 } else {
