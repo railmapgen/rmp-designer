@@ -82,9 +82,9 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
     );
     const Children =
         supportsChildren(type) && svgsElem.children
-            ? svgsElem.children.map(s => (
+            ? svgsElem.children.map((s, i) => (
                   <CreateSvgs
-                      key={s.id}
+                      key={i}
                       svgsElem={s}
                       components={components}
                       prefix={[...prefix, id]}
@@ -103,17 +103,23 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
         'style' in newAttrs && typeof newAttrs.style === 'object'
             ? { ...(newAttrs.style as object), cursor: 'move' }
             : { cursor: 'move' };
-    return React.createElement(
-        type,
-        {
-            ...newAttrs,
-            id: id,
-            key: id,
-            onPointerDown,
-            onPointerMove,
-            onPointerUp,
-            style: newStyle,
-        },
-        ...Children
+    return (
+        <g id={`g_${id}`} key={`g_${id}`} transform={`translate(${newAttrs.x ?? 0}, ${newAttrs.y ?? 0})`}>
+            {React.createElement(
+                type,
+                {
+                    ...newAttrs,
+                    id: id,
+                    key: id,
+                    x: 0,
+                    y: 0,
+                    onPointerDown,
+                    onPointerMove,
+                    onPointerUp,
+                    style: newStyle,
+                },
+                ...Children
+            )}
+        </g>
     );
 };

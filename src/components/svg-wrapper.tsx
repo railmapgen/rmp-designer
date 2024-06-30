@@ -129,14 +129,15 @@ export default function SvgWrapper() {
                         const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
                         return { ...s, attrs: { ...s.attrs, transform: newTransform } };
                     } else {
-                        const [keyX, keyY] = s.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
-                        const newX = !Number.isNaN(Number(s.attrs[keyX]))
-                            ? String(roundToNearestN(Number(s.attrs[keyX]) + dx, 1))
-                            : s.attrs[keyX];
-                        const newY = !Number.isNaN(Number(s.attrs[keyY]))
-                            ? String(roundToNearestN(Number(s.attrs[keyY]) + dy, 1))
-                            : s.attrs[keyY];
-                        return { ...s, attrs: { ...s.attrs, [keyX]: newX, [keyY]: newY } };
+                        const newX =
+                            !Number.isNaN(Number(s.attrs[x])) || s.attrs[x] === undefined
+                                ? String(roundToNearestN(Number(s.attrs[x] ?? 0) + dx, 1))
+                                : s.attrs[x];
+                        const newY =
+                            !Number.isNaN(Number(s.attrs[y])) || s.attrs[y] === undefined
+                                ? String(roundToNearestN(Number(s.attrs[y] ?? 0) + dy, 1))
+                                : s.attrs[y];
+                        return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     }
                 } else {
                     if (s.children && s.children.length > 0) {
