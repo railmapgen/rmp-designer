@@ -1,3 +1,37 @@
 {
-    "Open": "開啟"
+    "header": {
+        "about": {
+            "title": "關於 RMP 設計器",
+            "intro": "一個 RMP 大師節點設計器，支持將任何 SVG 添加到 RMP。"
+        },
+        "import": {
+            "new": "新建項目",
+            "pasteSVG": "粘貼 SVG",
+            "uploadParam": "上傳項目",
+            "uploadSVG": "上傳 SVG"
+        }
+    },
+    "panel": {
+        "tools": {
+            "showLess": "顯示更少"
+        },
+        "details": {
+            "header": "RMP 詳情面板"
+        },
+        "svgs": {
+            "title": "SVG 組件",
+            "type": "類型",
+            "core": "可被連接",
+            "attrKey": "屬性鍵",
+            "attrValue": "屬性值",
+            "addTextChildren": "添加文本內容"
+        },
+        "components": {
+            "title": "變量",
+            "label": "標籤",
+            "type": "類型",
+            "defaultValue": "默認值",
+            "defaultColor": "默認顏色"
+        }
+    }
 }

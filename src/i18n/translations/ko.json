@@ -1,3 +1,37 @@
 {
-    "Open": "열기"
+    "header": {
+        "about": {
+            "title": "RMP 디자이너 소개",
+            "intro": "RMP 마스터 노드 디자이너로, RMP에 어떤 SVG든 추가할 수 있습니다."
+        },
+        "import": {
+            "new": "새로 만들기",
+            "pasteSVG": "SVG 붙여넣기",
+            "uploadParam": "프로젝트 업로드",
+            "uploadSVG": "SVG 업로드"
+        }
+    },
+    "panel": {
+        "tools": {
+            "showLess": "간단히 보기"
+        },
+        "details": {
+            "header": "RMP 세부 정보 패널"
+        },
+        "svgs": {
+            "title": "SVG 구성 요소",
+            "type": "유형",
+            "core": "연결 가능",
+            "attrKey": "속성 키",
+            "attrValue": "속성 값",
+            "addTextChildren": "텍스트 콘텐츠 추가"
+        },
+        "components": {
+            "title": "변수",
+            "label": "라벨",
+            "type": "유형",
+            "defaultValue": "기본 값",
+            "defaultColor": "기본 색상"
+        }
+    }
 }

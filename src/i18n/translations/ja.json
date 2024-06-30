@@ -1,3 +1,37 @@
 {
-    "Open": "開く"
+    "header": {
+        "about": {
+            "title": "RMP デザイナーについて",
+            "intro": "RMPマスターノードデザイナーで、RMPに任意のSVGを追加することができます。"
+        },
+        "import": {
+            "new": "新規",
+            "pasteSVG": "SVGを貼り付け",
+            "uploadParam": "プロジェクトをアップロード",
+            "uploadSVG": "SVGをアップロード"
+        }
+    },
+    "panel": {
+        "tools": {
+            "showLess": "少なく表示"
+        },
+        "details": {
+            "header": "RMP詳細パネル"
+        },
+        "svgs": {
+            "title": "SVGコンポーネント",
+            "type": "タイプ",
+            "core": "接続可能",
+            "attrKey": "属性キー",
+            "attrValue": "属性値",
+            "addTextChildren": "テキストコンテンツを追加"
+        },
+        "components": {
+            "title": "変数",
+            "label": "ラベル",
+            "type": "タイプ",
+            "defaultValue": "デフォルト値",
+            "defaultColor": "デフォルト色"
+        }
+    }
 }

@@ -2,7 +2,7 @@
     "header": {
         "about": {
             "title": "About RMP Designer",
-            "intro": "intro"
+            "intro": "A RMP master node designer, enabling the addition of any SVG to RMP."
         },
         "import": {
             "new": "New",
