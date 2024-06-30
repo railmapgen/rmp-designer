@@ -85,6 +85,11 @@ const runtimeSlice = createSlice({
         removeGlobalAlert: (state, action: PayloadAction<string>) => {
             state.globalAlerts.has(action.payload) && state.globalAlerts.delete(action.payload);
         },
+        removeGlobalAlertArray: (state, action: PayloadAction<string[] | Set<string>>) => {
+            action.payload.forEach(s => {
+                state.globalAlerts.has(s) && state.globalAlerts.delete(s);
+            });
+        },
         clearGlobalAlerts: state => {
             state.globalAlerts.clear();
         },
@@ -123,6 +128,7 @@ export const {
     onPaletteAppClipEmit,
     addGlobalAlert,
     removeGlobalAlert,
+    removeGlobalAlertArray,
     clearGlobalAlerts,
     setSvgViewBoxZoom,
     setSvgViewBoxMin,

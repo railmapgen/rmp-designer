@@ -4,17 +4,22 @@ import { useRootDispatch, useRootSelector } from '../redux';
 import {
     addSelected,
     backupParam,
+    backupRedo,
+    backupRemove,
+    backupUndo,
     clearSelected,
+    removeGlobalAlertArray,
     removeSelected,
     setActive,
     setMode,
     setSelected,
     setSvgViewBoxMin,
+    setSvgViewBoxZoom,
 } from '../redux/runtime/runtime-slice';
-import { addSvg, setSvgs } from '../redux/param/param-slice';
+import { addSvg, setParam, setSvgs } from '../redux/param/param-slice';
 import { Id, SvgsElem } from '../constants/constants';
 import { SvgsType } from '../constants/svgs';
-import { getMousePosition, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
+import { getMousePosition, isMacClient, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
 import { useWindowSize } from '../util/hook';
 import { CreateSvgs } from './svgs/createSvgs';
 import svgs from './svgs/svgs';
@@ -23,7 +28,9 @@ import { updateTransformString } from '../util/parse';
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
-    const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
+    const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom, history, undo_history } = useRootSelector(
+        state => state.runtime
+    );
     const size = useWindowSize();
     const svgWidth = (size.width ?? 720) - 40;
     const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
@@ -170,6 +177,73 @@ export default function SvgWrapper() {
         dispatch(setActive(undefined));
     });
 
+    const handleBackgroundWheel = useEvent((e: React.WheelEvent<SVGSVGElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let newSvgViewBoxZoom = svgViewBoxZoom;
+        if (e.deltaY > 0 && svgViewBoxZoom + 10 < 400) newSvgViewBoxZoom = svgViewBoxZoom + 10;
+        else if (e.deltaY < 0 && svgViewBoxZoom - 10 > 0) newSvgViewBoxZoom = svgViewBoxZoom - 10;
+        dispatch(setSvgViewBoxZoom(newSvgViewBoxZoom));
+
+        // the position the pointer points will still be in the same place after zooming
+        const { x, y } = getMousePosition(e);
+        const bbox = e.currentTarget.getBoundingClientRect();
+        // calculate the proportion of the pointer in the canvas
+        const [x_factor, y_factor] = [x / bbox.width, y / bbox.height];
+        // the final svgViewBoxMin will be the position the pointer points minus
+        // the left/top part of the new canvas (new width/height times the proportion)
+        dispatch(
+            setSvgViewBoxMin({
+                x: svgViewBoxMin.x + (x * svgViewBoxZoom) / 100 - ((svgWidth * newSvgViewBoxZoom) / 100) * x_factor,
+                y: svgViewBoxMin.y + (y * svgViewBoxZoom) / 100 - ((svgHeight * newSvgViewBoxZoom) / 100) * y_factor,
+            })
+        );
+    });
+
+    const handleKeyDown = useEvent(async (e: React.KeyboardEvent<SVGSVGElement>) => {
+        // tabIndex need to be on the element to make onKeyDown worked
+        // https://www.delftstack.com/howto/react/onkeydown-react/
+        if (isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
+            // remove all the selected nodes and edges
+            if (selected.size > 0) {
+                const dfsRemove = (data: SvgsElem[]): SvgsElem[] => {
+                    const p = data.filter(s => !selected.has(s.id));
+                    return p.map(s => {
+                        const children = s.children ? dfsRemove(s.children) : undefined;
+                        return { ...s, children: children ? (children.length === 0 ? [] : children) : undefined };
+                    });
+                };
+                dispatch(backupParam(param));
+                dispatch(setSvgs(dfsRemove(param.svgs)));
+                dispatch(removeGlobalAlertArray(selected));
+                dispatch(clearSelected());
+            }
+        } else if (e.key.startsWith('Arrow')) {
+            const d = 100;
+            const x_factor = e.key.endsWith('Left') ? -1 : e.key.endsWith('Right') ? 1 : 0;
+            const y_factor = e.key.endsWith('Up') ? -1 : e.key.endsWith('Down') ? 1 : 0;
+            dispatch(setSvgViewBoxMin(pointerPosToSVGCoord(d * x_factor, d * y_factor, svgViewBoxZoom, svgViewBoxMin)));
+        } else if (e.key === 'z' && (isMacClient ? e.metaKey && !e.shiftKey : e.ctrlKey)) {
+            if (isMacClient) e.preventDefault(); // Cmd Z will step backward in safari and chrome
+            if (history.length > 0) {
+                dispatch(backupUndo(param));
+                dispatch(setParam(history[history.length - 1]));
+                dispatch(backupRemove());
+            }
+        } else if (e.key === 's') {
+            // dispatch(setMode('select'));
+        } else if (
+            (isMacClient && e.key === 'z' && e.metaKey && e.shiftKey) ||
+            (!isMacClient && e.key === 'y' && e.ctrlKey)
+        ) {
+            if (undo_history.length > 0) {
+                dispatch(backupParam(param));
+                dispatch(setParam(undo_history[undo_history.length - 1]));
+                dispatch(backupRedo());
+            }
+        }
+    });
+
     return (
         <svg
             id="rmp-style-gen-svg"
@@ -185,6 +259,8 @@ export default function SvgWrapper() {
             onPointerDown={handleBackgroundDown}
             onPointerMove={handleBackgroundMove}
             onPointerUp={handleBackgroundUp}
+            onWheel={handleBackgroundWheel}
+            onKeyDown={handleKeyDown}
             tabIndex={0}
         >
             <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />

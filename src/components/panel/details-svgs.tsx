@@ -16,7 +16,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { addSelected, backupParam, removeGlobalAlert, removeSelected } from '../../redux/runtime/runtime-slice';
+import {
+    addSelected,
+    backupParam,
+    clearGlobalAlerts,
+    removeGlobalAlert,
+    removeSelected,
+} from '../../redux/runtime/runtime-slice';
 import { setCore, setSvgs } from '../../redux/param/param-slice';
 import { Id, SvgsElem } from '../../constants/constants';
 import { supportsChildren } from '../../util/svgTagWithChildren';
@@ -96,7 +102,7 @@ export function DetailsSvgs() {
         };
         dispatch(backupParam(param));
         dispatch(setSvgs(dfsRemove(param.svgs, 0)));
-        dispatch(removeGlobalAlert(id));
+        dispatch(clearGlobalAlerts());
     };
 
     const [isMoveChildrenOpen, setIsMoveChildrenOpen] = React.useState(false);

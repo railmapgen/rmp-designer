@@ -3,6 +3,7 @@ import React from 'react';
 import { MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../redux';
+import { clearGlobalAlerts } from '../../redux/runtime/runtime-slice';
 import { setParam, setSvgs } from '../../redux/param/param-slice';
 import { defaultParam, Param } from '../../constants/constants';
 import { ImportFromSvg, loadSvgs } from './import-svg-modal';
@@ -28,6 +29,7 @@ export default function OpenActions() {
         } else {
             throw new Error('Invalid param');
         }
+        dispatch(clearGlobalAlerts());
     };
 
     const handleUploadParam = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +52,7 @@ export default function OpenActions() {
 
         // clear field for next upload
         event.target.value = '';
+        dispatch(clearGlobalAlerts());
     };
     const handleUploadSvg = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -71,13 +74,20 @@ export default function OpenActions() {
 
         // clear field for next upload
         event.target.value = '';
+        dispatch(clearGlobalAlerts());
     };
 
     return (
         <Menu id="upload">
             <MenuButton as={IconButton} size="sm" variant="ghost" icon={<MdUpload />} />
             <MenuList>
-                <MenuItem icon={<MdOpenInNew />} onClick={() => dispatch(setParam(defaultParam))}>
+                <MenuItem
+                    icon={<MdOpenInNew />}
+                    onClick={() => {
+                        dispatch(setParam(defaultParam));
+                        dispatch(clearGlobalAlerts());
+                    }}
+                >
                     {t('header.import.new')}
                 </MenuItem>
                 <input

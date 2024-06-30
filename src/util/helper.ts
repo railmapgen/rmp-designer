@@ -30,3 +30,5 @@ export const mapRecord = <K extends string, V, R>(
         {} as Record<K, R>
     );
 };
+
+export const isMacClient = navigator.platform.startsWith('Mac');

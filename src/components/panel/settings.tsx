@@ -11,7 +11,7 @@ export function Settings() {
 
     const field: RmgFieldsField[] = [
         {
-            label: 'Type',
+            label: t('panel.components.type'),
             type: 'select',
             options: { MiscNode: 'MiscNode', Station: 'Station' },
             value: param.type,
