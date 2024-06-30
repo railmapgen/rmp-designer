@@ -27,8 +27,6 @@ export default function SvgWrapper() {
     const size = useWindowSize();
     const svgWidth = (size.width ?? 720) - 40;
     const svgHeight = ((size.height ?? 720) * 3) / 5;
-    const canvasScale = 1;
-    const color = param.color ? param.color.value ?? param.color.defaultValue : ['', '', '#000000', '#FFF'];
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
 
@@ -177,22 +175,17 @@ export default function SvgWrapper() {
             id="rmp-style-gen-svg"
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
-            height={svgHeight * canvasScale}
+            width={svgWidth}
+            height={svgHeight}
             viewBox={`${svgViewBoxMin.x} ${svgViewBoxMin.y} ${(svgWidth * svgViewBoxZoom) / 100} ${
                 (svgHeight * svgViewBoxZoom) / 100
             }`}
             colorInterpolationFilters="sRGB"
-            style={{
-                ['--rmg-svg-width' as any]: svgWidth + 'px',
-                ['--rmg-svg-height' as any]: svgHeight + 'px',
-                ['--rmg-theme-colour' as any]: color[2],
-                ['--rmg-theme-fg' as any]: color[3],
-                userSelect: 'none',
-                touchAction: 'none',
-            }}
+            style={{ position: 'absolute', left: 40, userSelect: 'none', touchAction: 'none' }}
             onPointerDown={handleBackgroundDown}
             onPointerMove={handleBackgroundMove}
             onPointerUp={handleBackgroundUp}
+            tabIndex={0}
         >
             <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />
             <rect id="canvas-y" x={-1} y={-200000} width={2} height={400000} fill="black" />
