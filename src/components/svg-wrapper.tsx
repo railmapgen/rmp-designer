@@ -26,9 +26,7 @@ export default function SvgWrapper() {
     const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom } = useRootSelector(state => state.runtime);
     const size = useWindowSize();
     const svgWidth = (size.width ?? 720) - 40;
-    const svgHeight = ((size.height ?? 720) * 3) / 5;
-    const canvasScale = 1;
-    const color = param.color ? param.color.value ?? param.color.defaultValue : ['', '', '#000000', '#FFF'];
+    const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
 
@@ -129,14 +127,15 @@ export default function SvgWrapper() {
                         const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
                         return { ...s, attrs: { ...s.attrs, transform: newTransform } };
                     } else {
-                        const [keyX, keyY] = s.type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
-                        const newX = !Number.isNaN(Number(s.attrs[keyX]))
-                            ? String(roundToNearestN(Number(s.attrs[keyX]) + dx, 1))
-                            : s.attrs[keyX];
-                        const newY = !Number.isNaN(Number(s.attrs[keyY]))
-                            ? String(roundToNearestN(Number(s.attrs[keyY]) + dy, 1))
-                            : s.attrs[keyY];
-                        return { ...s, attrs: { ...s.attrs, [keyX]: newX, [keyY]: newY } };
+                        const newX =
+                            !Number.isNaN(Number(s.attrs.x)) || s.attrs.x === undefined
+                                ? String(roundToNearestN(Number(s.attrs.x ?? 0) + dx, 1))
+                                : s.attrs.x;
+                        const newY =
+                            !Number.isNaN(Number(s.attrs.y)) || s.attrs.y === undefined
+                                ? String(roundToNearestN(Number(s.attrs.y ?? 0) + dy, 1))
+                                : s.attrs.y;
+                        return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     }
                 } else {
                     if (s.children && s.children.length > 0) {
@@ -176,22 +175,17 @@ export default function SvgWrapper() {
             id="rmp-style-gen-svg"
             xmlns="http://www.w3.org/2000/svg"
             xmlnsXlink="http://www.w3.org/1999/xlink"
-            height={svgHeight * canvasScale}
+            width={svgWidth}
+            height={svgHeight}
             viewBox={`${svgViewBoxMin.x} ${svgViewBoxMin.y} ${(svgWidth * svgViewBoxZoom) / 100} ${
                 (svgHeight * svgViewBoxZoom) / 100
             }`}
             colorInterpolationFilters="sRGB"
-            style={{
-                ['--rmg-svg-width' as any]: svgWidth + 'px',
-                ['--rmg-svg-height' as any]: svgHeight + 'px',
-                ['--rmg-theme-colour' as any]: color[2],
-                ['--rmg-theme-fg' as any]: color[3],
-                userSelect: 'none',
-                touchAction: 'none',
-            }}
+            style={{ position: 'absolute', left: 40, userSelect: 'none', touchAction: 'none' }}
             onPointerDown={handleBackgroundDown}
             onPointerMove={handleBackgroundMove}
             onPointerUp={handleBackgroundUp}
+            tabIndex={0}
         >
             <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />
             <rect id="canvas-y" x={-1} y={-200000} width={2} height={400000} fill="black" />

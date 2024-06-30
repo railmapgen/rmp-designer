@@ -5,6 +5,7 @@ import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmap
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../redux';
 import { closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
+import { useWindowSize } from '../util/hook';
 import { ToolsPanel } from './panel/tools';
 import SvgWrapper from './svg-wrapper';
 import { RmpDetails } from './panel/details-rmp';
@@ -24,6 +25,8 @@ export default function AppRoot() {
     } = useRootSelector(state => state.runtime);
     const [isDetailsOpen, setDetailsOpen] = React.useState(false);
     const [openExport, setOpenExport] = React.useState(false);
+    const size = useWindowSize();
+    const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
 
     return (
         <RmgThemeProvider>
@@ -31,7 +34,7 @@ export default function AppRoot() {
                 <WindowHeader />
                 <RmgPage>
                     <RmgErrorBoundary allowReset>
-                        <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
+                        <Flex direction="row" height={svgHeight} overflow="hidden" sx={{ position: 'relative' }}>
                             <ToolsPanel />
                             <SvgWrapper />
                             <RmpDetails isOpen={isDetailsOpen} onClose={() => setDetailsOpen(false)} />
