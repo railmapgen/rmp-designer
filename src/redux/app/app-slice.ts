@@ -1,22 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CanvasColor } from '../../constants/constants';
 
 interface AppState {
-    counter: number;
+    canvasColor: CanvasColor;
 }
 
 const initialState: AppState = {
-    counter: 0,
+    canvasColor: 'auto',
 };
 
 const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        bumpCounter: state => {
-            state.counter++;
+        setAppState: (state, action: PayloadAction<AppState>) => {
+            state.canvasColor = action.payload.canvasColor;
+        },
+        setCanvas: (state, action: PayloadAction<CanvasColor>) => {
+            state.canvasColor = action.payload;
         },
     },
 });
 
-export const { bumpCounter } = appSlice.actions;
-export default appSlice.reducer;
+export const { setAppState, setCanvas } = appSlice.actions;
+
+const appReducer = appSlice.reducer;
+export default appReducer;

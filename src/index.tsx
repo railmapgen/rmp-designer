@@ -7,6 +7,7 @@ import AppRoot from './components/app-root';
 import store from './redux';
 import initStore from './redux/init';
 import { setParam } from './redux/param/param-slice';
+import { setAppState } from './redux/app/app-slice';
 import { Events } from './constants/constants';
 import i18n from './i18n/config';
 
@@ -32,5 +33,8 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.event(Events.APP_LOAD, {});
 });
 
+const appState = localStorage.getItem('rmp-designer__app');
 const param = localStorage.getItem('rmp-designer__param');
+
+appState !== null && store.dispatch(setAppState(JSON.parse(appState)));
 param !== null && store.dispatch(setParam(JSON.parse(param)));

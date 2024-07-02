@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Flex, HStack } from '@chakra-ui/react';
+import { Button, Flex, HStack, Spacer } from '@chakra-ui/react';
 import WindowHeader from './header/window-header';
 import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
@@ -40,13 +40,14 @@ export default function AppRoot() {
                             <RmpDetails isOpen={isDetailsOpen} onClose={() => setDetailsOpen(false)} />
                         </Flex>
                         <Flex p={2} direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
-                            <HStack>
+                            <HStack width="100%">
                                 <Settings />
                                 <Button onClick={() => setOpenExport(true)} isDisabled={globalAlerts.size !== 0}>
                                     Export
                                 </Button>
+                                <Spacer />
                                 <Button hidden={isDetailsOpen} onClick={() => setDetailsOpen(true)}>
-                                    Open RMP Details
+                                    {t('panel.details.header')}
                                 </Button>
                             </HStack>
                         </Flex>

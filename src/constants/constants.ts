@@ -33,6 +33,8 @@ export type RuntimeMode = 'free' | `svgs-${SvgsType}`;
 
 export type RuntimeActive = 'background' | Id | undefined;
 
+export type CanvasColor = 'white' | 'dark' | 'auto';
+
 export enum Events {
     APP_LOAD = 'APP_LOAD',
 }

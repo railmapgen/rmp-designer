@@ -8,7 +8,6 @@ import { Id, Param, RuntimeActive, RuntimeMode, Theme } from '../../constants/co
 interface RuntimeState {
     selected: Set<Id>;
     active: RuntimeActive;
-    refresh: number;
     mode: RuntimeMode;
     svgViewBoxZoom: number;
     svgViewBoxMin: {
@@ -27,7 +26,6 @@ interface RuntimeState {
 const initialState: RuntimeState = {
     selected: new Set<Id>(),
     active: undefined,
-    refresh: Date.now(),
     mode: 'free',
     svgViewBoxZoom: 100,
     svgViewBoxMin: {
@@ -61,9 +59,6 @@ const runtimeSlice = createSlice({
         },
         setActive: (state, action: PayloadAction<Id | 'background' | undefined>) => {
             state.active = action.payload;
-        },
-        setRefresh: state => {
-            state.refresh = Date.now();
         },
         setMode: (state, action: PayloadAction<RuntimeMode>) => {
             state.mode = action.payload;
@@ -121,7 +116,6 @@ export const {
     removeSelected,
     clearSelected,
     setActive,
-    setRefresh,
     setMode,
     openPaletteAppClip,
     closePaletteAppClip,

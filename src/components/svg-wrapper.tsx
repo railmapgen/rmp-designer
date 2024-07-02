@@ -28,6 +28,7 @@ import { updateTransformString } from '../util/parse';
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
+    const { canvasColor } = useRootSelector(store => store.app);
     const { selected, mode, active, svgViewBoxMin, svgViewBoxZoom, history, undo_history } = useRootSelector(
         state => state.runtime
     );
@@ -36,6 +37,8 @@ export default function SvgWrapper() {
     const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
+    const canvasBackground =
+        canvasColor === 'dark' ? 'var(--chakra-colors-gray-800)' : canvasColor === 'white' ? 'white' : '';
 
     const handleBackgroundDown = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
         const { x, y } = getMousePosition(e);
@@ -255,7 +258,13 @@ export default function SvgWrapper() {
                 (svgHeight * svgViewBoxZoom) / 100
             }`}
             colorInterpolationFilters="sRGB"
-            style={{ position: 'absolute', left: 40, userSelect: 'none', touchAction: 'none' }}
+            style={{
+                position: 'absolute',
+                left: 40,
+                userSelect: 'none',
+                touchAction: 'none',
+                backgroundColor: canvasBackground,
+            }}
             onPointerDown={handleBackgroundDown}
             onPointerMove={handleBackgroundMove}
             onPointerUp={handleBackgroundUp}
