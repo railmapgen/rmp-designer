@@ -18,7 +18,7 @@ export function Settings() {
             onChange: value => dispatch(setType(value as 'MiscNode' | 'Station')),
         },
         {
-            label: 'Color',
+            label: t('color'),
             type: 'switch',
             isChecked: !!param.color,
             onChange: value => dispatch(setColor(value ? colorComponents : undefined)),

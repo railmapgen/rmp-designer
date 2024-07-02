@@ -1,4 +1,11 @@
 {
+    "color": "Color",
+    "warning": "Warning",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "remove": "Remove",
+    "close": "Close",
+
     "header": {
         "about": {
             "title": "About RMP Designer",

@@ -82,9 +82,9 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
             <RmgSidePanelBody>
                 <RmgFields fields={field} />
                 {param.color ? (
-                    <RmgLabel label={param.color.label}>
+                    <RmgLabel label={t('color')}>
                         <IconButton
-                            aria-label={t('Color')}
+                            aria-label={t('color')}
                             color={color[3]}
                             bg={color[2]}
                             size="md"

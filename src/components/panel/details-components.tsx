@@ -161,14 +161,14 @@ export function DetailsComponents() {
                     <AccordionItem key="color">
                         <AccordionButton p={2}>
                             <Box as="span" flex="1" textAlign="left">
-                                {param.color.label}
+                                {t('color')}
                             </Box>
                             <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
                             <RmgLabel label={t('panel.components.defaultColor')}>
                                 <IconButton
-                                    aria-label={t('Color')}
+                                    aria-label={t('color')}
                                     color={param.color.defaultValue[3]}
                                     bg={param.color.defaultValue[2]}
                                     size="md"

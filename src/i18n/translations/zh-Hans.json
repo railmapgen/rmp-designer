@@ -1,4 +1,11 @@
 {
+    "color": "颜色",
+    "warning": "警告",
+    "cancel": "取消",
+    "apply": "应用",
+    "remove": "移除",
+    "close": "关闭",
+
     "header": {
         "about": {
             "title": "关于 RMP 设计器",

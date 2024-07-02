@@ -1,4 +1,11 @@
 {
+    "color": "색깔",
+    "warning": "경고",
+    "cancel": "취소",
+    "apply": "사용",
+    "remove": "삭제",
+    "close": "다시",
+
     "header": {
         "about": {
             "title": "RMP 디자이너 소개",

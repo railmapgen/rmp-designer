@@ -1,4 +1,11 @@
 {
+    "color": "カラー",
+    "warning": "警告",
+    "cancel": "キャンセル",
+    "apply": "適用",
+    "remove": "削除",
+    "close": "閉じる",
+
     "header": {
         "about": {
             "title": "RMP デザイナーについて",
