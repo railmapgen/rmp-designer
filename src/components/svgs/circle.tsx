@@ -11,7 +11,7 @@ const defaultCircleSvgAttrs: Record<string, string> = {
 
 const circleIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
-        <circle fill="currentColor" cx="12" cy="12" r="5" />
+        <circle fill="none" stroke="currentColor" strokeWidth="1.3" cx="12" cy="12" r="6.5" />
     </svg>
 );
 

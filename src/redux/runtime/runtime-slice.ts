@@ -31,7 +31,7 @@ const initialState: RuntimeState = {
     mode: 'free',
     svgViewBoxZoom: 100,
     svgViewBoxMin: {
-        x: -250,
+        x: -500,
         y: -250,
     },
     paletteAppClip: {

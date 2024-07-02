@@ -12,7 +12,7 @@ const defaultRectSvgAttrs: Record<string, string> = {
 
 const rectIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
-        <rect fill="currentColor" x="7" y="7" width="10" height="10" />
+        <rect fill="none" stroke="currentColor" strokeWidth="1.3" x="6" y="7.5" width="12" height="10" rx="2" />
     </svg>
 );
 

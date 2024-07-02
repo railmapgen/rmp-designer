@@ -3,8 +3,10 @@ import { ComponentsType } from './components';
 export enum SvgsType {
     Rect = 'rect',
     Circle = 'circle',
+    Polygon = 'polygon',
     Path = 'path',
     Text = 'text',
+    Any = 'any',
 }
 
 export interface Variable {

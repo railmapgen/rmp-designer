@@ -30,15 +30,14 @@ const AboutModal = (props: { isOpen: boolean; onClose: () => void }) => {
                 <ModalCloseButton />
 
                 <ModalBody paddingBottom={10}>
-                    <Flex direction="row">
+                    <Flex direction="row" p={5}>
                         <Image boxSize="128px" src={import.meta.env.BASE_URL + '/logo192.png'} />
                         <Flex direction="column" width="100%" alignItems="center" justifyContent="center">
                             <Text fontSize="xl" as="b">
                                 {t('RMP Designer')}
                             </Text>
+                            <br />
                             <Text>{appVersion}</Text>
-                            <Text />
-                            <Text fontSize="sm">{t('header.about.intro')}</Text>
                         </Flex>
                     </Flex>
 

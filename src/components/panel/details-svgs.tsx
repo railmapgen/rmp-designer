@@ -221,6 +221,7 @@ export function DetailsSvgs() {
                 <AccordionItem key={s.id}>
                     <AccordionButton p={2}>
                         <Checkbox isChecked={selected.has(s.id) || selected.has(father)} onChange={handleCheck} />
+                        <Box mr={2} />
                         <Box as="span" flex="1" textAlign="left">
                             {s.type}
                         </Box>
