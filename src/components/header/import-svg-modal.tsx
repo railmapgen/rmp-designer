@@ -65,6 +65,7 @@ export const loadSvgs = (svgString: string) => {
         return {
             id: `id_${nanoid(10)}`,
             type: element.tagName,
+            label: nanoid(5),
             attrs: attributes,
             children: children.length === 0 ? undefined : children,
         };
