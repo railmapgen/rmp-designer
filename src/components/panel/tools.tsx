@@ -5,7 +5,7 @@ import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setMode } from '../../redux/runtime/runtime-slice';
 import { SvgsType } from '../../constants/svgs';
-import svgs from '../svgs/svgs';
+import svgs from '../svgs/module/svgs';
 
 const buttonStyle: SystemStyleObject = {
     justifyContent: 'flex-start',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svgs } from '../../constants/svgs';
+import { Svgs } from '../../../constants/svgs';
 
 const defaultTextSvgAttrs: Record<string, string> = {
     _rmp_children_text: '"text"',

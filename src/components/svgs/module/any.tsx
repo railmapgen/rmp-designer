@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svgs } from '../../constants/svgs';
+import { Svgs } from '../../../constants/svgs';
 
 const defaultAnySvgAttrs: Record<string, string> = {};
 

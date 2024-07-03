@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svgs } from '../../constants/svgs';
+import { Svgs } from '../../../constants/svgs';
 
 const defaultPolygonSvgAttrs: Record<string, string> = {
     points: '"8,6 16,6 20,13 16,20 8,20 4,13"',

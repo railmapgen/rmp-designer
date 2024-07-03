@@ -6,6 +6,7 @@ export enum SvgsType {
     Polygon = 'polygon',
     Path = 'path',
     Text = 'text',
+    G = 'g',
     Any = 'any',
 }
 

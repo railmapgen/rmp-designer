@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Param } from '../../constants/constants';
-import svgs from '../svgs/svgs';
+import svgs from '../svgs/module/svgs';
 import { nanoid } from '../../util/helper';
 
 export const Export = (props: { isOpen: boolean; onClose: () => void; param: Param }) => {

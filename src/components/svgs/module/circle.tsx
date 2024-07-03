@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svgs } from '../../constants/svgs';
+import { Svgs } from '../../../constants/svgs';
 
 const defaultCircleSvgAttrs: Record<string, string> = {
     r: '5',

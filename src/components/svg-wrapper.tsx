@@ -22,7 +22,7 @@ import { SvgsType } from '../constants/svgs';
 import { getMousePosition, isMacClient, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
 import { useWindowSize } from '../util/hook';
 import { CreateSvgs } from './svgs/createSvgs';
-import svgs from './svgs/svgs';
+import svgs from './svgs/module/svgs';
 import { updateTransformString } from '../util/parse';
 
 export default function SvgWrapper() {
@@ -133,10 +133,7 @@ export default function SvgWrapper() {
                 if (selected.has(s.id)) {
                     const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
                     const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
-                    if (s.type === 'g') {
-                        const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
-                        return { ...s, attrs: { ...s.attrs, transform: newTransform } };
-                    } else {
+                    if (s.attrs.x || s.attrs.y) {
                         const newX =
                             !Number.isNaN(Number(s.attrs.x)) || s.attrs.x === undefined
                                 ? String(roundToNearestN(Number(s.attrs.x ?? 0) + dx, 1))
@@ -146,6 +143,11 @@ export default function SvgWrapper() {
                                 ? String(roundToNearestN(Number(s.attrs.y ?? 0) + dy, 1))
                                 : s.attrs.y;
                         return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
+                    } else if (s.attrs.transform) {
+                        const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
+                        return { ...s, attrs: { ...s.attrs, transform: newTransform } };
+                    } else {
+                        return s;
                     }
                 } else {
                     if (s.children && s.children.length > 0) {

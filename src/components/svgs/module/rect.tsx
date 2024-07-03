@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svgs } from '../../constants/svgs';
+import { Svgs } from '../../../constants/svgs';
 
 const defaultRectSvgAttrs: Record<string, string> = {
     width: '10',
