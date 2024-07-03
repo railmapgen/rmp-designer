@@ -134,7 +134,7 @@ export default function SvgWrapper() {
                 if (selected.has(s.id)) {
                     const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
                     const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
-                    if (s.attrs.x || s.attrs.y) {
+                    if (s.attrs.x || s.attrs.y || (!s.attrs.x && !s.attrs.y && !s.attrs.transform)) {
                         const newX =
                             !Number.isNaN(Number(s.attrs.x)) || s.attrs.x === undefined
                                 ? String(roundToNearestN(Number(s.attrs.x ?? 0) + dx, 1))
@@ -145,7 +145,7 @@ export default function SvgWrapper() {
                                 : s.attrs.y;
                         return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     } else if (s.attrs.transform) {
-                        const newTransform = updateTransformString(s.attrs['transform'] ?? '', dx, dy);
+                        const newTransform = updateTransformString(s.attrs.transform ?? '', dx, dy);
                         return { ...s, attrs: { ...s.attrs, transform: newTransform } };
                     } else {
                         return s;
