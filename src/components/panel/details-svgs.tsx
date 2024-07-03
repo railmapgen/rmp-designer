@@ -10,6 +10,7 @@ import {
     Flex,
     Heading,
     HStack,
+    Text,
 } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
@@ -61,13 +62,13 @@ export function DetailsSvgs() {
 
     const handleSetValue = (
         id: string,
-        key: 'type' | 'attrs',
+        key: 'type' | 'label' | 'attrs',
         value: string | Record<string, string>,
         path: number[]
     ) => {
         const dfsChangeValue = (
             data: SvgsElem,
-            key: 'type' | 'attrs',
+            key: 'type' | 'label' | 'attrs',
             value: string | Record<string, string>,
             index: number
         ): SvgsElem => {
@@ -114,7 +115,13 @@ export function DetailsSvgs() {
             const i = param.svgs.length - index - 1; // reversed index
             const field: RmgFieldsField[] = [
                 {
-                    label: t('panel.svgs.type'),
+                    label: t('panel.common.label'),
+                    type: 'input',
+                    value: s.label,
+                    onChange: value => handleSetValue(s.id, 'label', value, [...path, i]),
+                },
+                {
+                    label: t('panel.common.type'),
                     type: 'input',
                     value: s.type,
                     onChange: value => handleSetValue(s.id, 'type', value, [...path, i]),
@@ -223,7 +230,10 @@ export function DetailsSvgs() {
                         <Checkbox isChecked={selected.has(s.id) || selected.has(father)} onChange={handleCheck} />
                         <Box mr={2} />
                         <Box as="span" flex="1" textAlign="left">
-                            {s.type}
+                            <Text as="span" fontWeight="bold">
+                                {s.label}
+                            </Text>{' '}
+                            <Text as="span">&lt;{s.type}&gt;</Text>
                         </Box>
                         {globalAlerts.has(s.id) ? <MdError color="#D9534F" title={globalAlerts.get(s.id)} /> : ''}
                         <AccordionIcon />

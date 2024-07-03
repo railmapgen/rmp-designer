@@ -54,6 +54,7 @@ export default function SvgWrapper() {
             const svgElem: SvgsElem = {
                 id,
                 type,
+                label: nanoid(5),
                 attrs: {
                     [keyX]: String(roundToNearestN(svgX, 1)),
                     [keyY]: String(roundToNearestN(svgY, 1)),

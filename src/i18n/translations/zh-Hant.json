@@ -27,7 +27,6 @@
         },
         "svgs": {
             "title": "SVG 組件",
-            "type": "類型",
             "core": "可被連接",
             "attrKey": "屬性鍵",
             "attrValue": "屬性值",
@@ -35,10 +34,12 @@
         },
         "components": {
             "title": "變量",
-            "label": "標籤",
-            "type": "類型",
             "defaultValue": "默認值",
             "defaultColor": "默認顏色"
+        },
+        "common": {
+            "type": "類型",
+            "label": "標籤"
         }
     }
 }

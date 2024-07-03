@@ -27,7 +27,6 @@
         },
         "svgs": {
             "title": "SVGコンポーネント",
-            "type": "タイプ",
             "core": "接続可能",
             "attrKey": "属性キー",
             "attrValue": "属性値",
@@ -35,10 +34,12 @@
         },
         "components": {
             "title": "変数",
-            "label": "ラベル",
-            "type": "タイプ",
             "defaultValue": "デフォルト値",
             "defaultColor": "デフォルト色"
+        },
+        "common": {
+            "type": "タイプ",
+            "label": "ラベル"
         }
     }
 }

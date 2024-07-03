@@ -7,6 +7,7 @@ export type Id = `id_${string}`;
 export interface SvgsElem {
     id: Id;
     type: string;
+    label: string;
     attrs: Record<string, string>;
     children?: SvgsElem[];
 }

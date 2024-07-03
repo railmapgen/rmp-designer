@@ -27,7 +27,6 @@
         },
         "svgs": {
             "title": "SVG Components",
-            "type": "Type",
             "core": "Connectable",
             "attrKey": "Attributes key",
             "attrValue": "Attributes value",
@@ -35,10 +34,12 @@
         },
         "components": {
             "title": "Variables",
-            "label": "Label",
-            "type": "Type",
             "defaultValue": "Default value",
             "defaultColor": "Default color"
+        },
+        "common": {
+            "type": "Type",
+            "label": "Label"
         }
     }
 }

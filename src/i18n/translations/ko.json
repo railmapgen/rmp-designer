@@ -27,7 +27,6 @@
         },
         "svgs": {
             "title": "SVG 구성 요소",
-            "type": "유형",
             "core": "연결 가능",
             "attrKey": "속성 키",
             "attrValue": "속성 값",
@@ -35,10 +34,12 @@
         },
         "components": {
             "title": "변수",
-            "label": "라벨",
-            "type": "유형",
             "defaultValue": "기본 값",
             "defaultColor": "기본 색상"
+        },
+        "common": {
+            "type": "유형",
+            "label": "라벨"
         }
     }
 }

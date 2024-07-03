@@ -70,7 +70,7 @@ export function DetailsComponents() {
         const { id, label, type, defaultValue } = c;
         const field: RmgFieldsField[] = [
             {
-                label: t('panel.components.label'),
+                label: t('panel.common.label'),
                 type: 'input',
                 value: label,
                 onChange: v => {
@@ -79,7 +79,7 @@ export function DetailsComponents() {
                 },
             },
             {
-                label: t('panel.components.type'),
+                label: t('panel.common.type'),
                 type: 'select',
                 options: ComponentsTypeOptions,
                 value: type,
