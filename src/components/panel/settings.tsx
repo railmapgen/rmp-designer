@@ -11,11 +11,12 @@ export function Settings() {
 
     const field: RmgFieldsField[] = [
         {
-            label: t('panel.components.type'),
+            label: t('panel.common.type'),
             type: 'select',
             options: { MiscNode: 'MiscNode', Station: 'Station' },
             value: param.type,
             onChange: value => dispatch(setType(value as 'MiscNode' | 'Station')),
+            minW: 100,
         },
         {
             label: t('color'),
