@@ -30,7 +30,13 @@
             "core": "可被連接",
             "attrKey": "屬性鍵",
             "attrValue": "屬性值",
-            "addTextChildren": "添加文本內容"
+            "addTextChildren": "添加文本內容",
+            "attrMode": {
+                "title": "屬性模式",
+                "value": "值",
+                "var": "變量",
+                "advanced": "高級"
+            }
         },
         "components": {
             "title": "變量",

@@ -2,11 +2,11 @@ import React from 'react';
 import { Svgs } from '../../../constants/svgs';
 
 const defaultCircleSvgAttrs: Record<string, string> = {
-    r: '5',
-    opacity: '1',
-    fill: '"black"',
-    stroke: '"none"',
-    strokeWidth: '0',
+    r: '1"5"',
+    opacity: '1"1"',
+    fill: '1"black"',
+    stroke: '1"none"',
+    strokeWidth: '1"0"',
 };
 
 const circleIcon = (

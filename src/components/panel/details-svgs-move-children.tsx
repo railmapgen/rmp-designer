@@ -34,28 +34,29 @@ export const MoveChildrenModal = (props: {
     const dfsGetOptions = (svgs: SvgsElem[], path: number[]) => {
         return (
             <VStack p={5} width="100%">
-                {svgs
-                    .filter((s, i) => supportsChildren(s.type) && [...path, i].toString() !== selectedPath.toString())
-                    .map((s, i) => {
-                        return (
-                            <VStack key={s.id} width="100%">
-                                <Button
-                                    width="100%"
-                                    onClick={() => {
-                                        setDestPath([...path, i]);
-                                        onClose();
-                                    }}
-                                >
-                                    <Text as="span" fontWeight="bold">
-                                        {s.label}
-                                    </Text>
-                                    <Box mr={2} />
-                                    <Text as="span">&lt;{s.type}&gt;</Text>
-                                </Button>
-                                {s.children && supportsChildren(s.type) && dfsGetOptions(s.children, [...path, i])}
-                            </VStack>
-                        );
-                    })}
+                {svgs.map((s, i) => {
+                    if (!supportsChildren(s.type) || [...path, i].toString() === selectedPath.toString()) {
+                        return;
+                    }
+                    return (
+                        <VStack key={s.id} width="100%">
+                            <Button
+                                width="100%"
+                                onClick={() => {
+                                    setDestPath([...path, i]);
+                                    onClose();
+                                }}
+                            >
+                                <Text as="span" fontWeight="bold">
+                                    {s.label}
+                                </Text>
+                                <Box mr={2} />
+                                <Text as="span">&lt;{s.type}&gt;</Text>
+                            </Button>
+                            {s.children && supportsChildren(s.type) && dfsGetOptions(s.children, [...path, i])}
+                        </VStack>
+                    );
+                })}
             </VStack>
         );
     };

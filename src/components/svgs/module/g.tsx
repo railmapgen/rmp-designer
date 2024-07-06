@@ -1,9 +1,7 @@
 import React from 'react';
 import { Svgs } from '../../../constants/svgs';
 
-const defaultGSvgAttrs: Record<string, string> = {
-    d: '"M10 10"',
-};
+const defaultGSvgAttrs: Record<string, string> = {};
 
 const gIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>

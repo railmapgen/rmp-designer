@@ -30,7 +30,13 @@
             "core": "接続可能",
             "attrKey": "属性キー",
             "attrValue": "属性値",
-            "addTextChildren": "テキストコンテンツを追加"
+            "addTextChildren": "テキストコンテンツを追加",
+            "attrMode": {
+                "title": "属性モード",
+                "value": "値",
+                "var": "変数",
+                "advanced": "高度"
+            }
         },
         "components": {
             "title": "変数",

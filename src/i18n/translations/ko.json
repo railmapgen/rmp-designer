@@ -30,7 +30,13 @@
             "core": "연결 가능",
             "attrKey": "속성 키",
             "attrValue": "속성 값",
-            "addTextChildren": "텍스트 콘텐츠 추가"
+            "addTextChildren": "텍스트 콘텐츠 추가",
+            "attrMode": {
+                "title": "속성 모드",
+                "value": "값",
+                "var": "변수",
+                "advanced": "고급"
+            }
         },
         "components": {
             "title": "변수",

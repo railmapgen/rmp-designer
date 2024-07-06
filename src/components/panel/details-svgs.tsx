@@ -12,7 +12,7 @@ import {
     HStack,
     Text,
 } from '@chakra-ui/react';
-import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import { RmgAutoComplete, RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError } from 'react-icons/md';
@@ -28,6 +28,13 @@ import { setCore, setSvgs } from '../../redux/param/param-slice';
 import { Id, SvgsElem } from '../../constants/constants';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { MoveChildrenModal } from './details-svgs-move-children';
+
+interface AttrVarList {
+    id: string;
+    value: string;
+}
+
+type AttrVarMode = 'value' | 'var' | 'advanced';
 
 export function DetailsSvgs() {
     const dispatch = useRootDispatch();
@@ -110,9 +117,22 @@ export function DetailsSvgs() {
     const [moveChildrenId, setMoveChildrenId] = React.useState<number[]>([]);
     const [moveChildrenElem, setMoveChildrenElem] = React.useState<SvgsElem>();
 
+    const [varList, setVarList] = React.useState<AttrVarList[]>([]);
+    React.useEffect(() => {
+        const list = param.components.map(c => {
+            return { id: c.label, value: c.label };
+        });
+        if (param.color) {
+            list.push({ id: 'color[2]', value: 'color[2]' });
+            list.push({ id: 'color[3]', value: 'color[3]' });
+        }
+        list.push({ id: 'undefined', value: 'undefined' });
+        setVarList(list);
+    }, [param.components]);
+
     const dfsField = (svgs: SvgsElem[], path: number[], father: Id) =>
         svgs.toReversed().map((s, index) => {
-            const i = param.svgs.length - index - 1; // reversed index
+            const i = svgs.length - index - 1; // reversed index
             const field: RmgFieldsField[] = [
                 {
                     label: t('panel.common.label'),
@@ -166,6 +186,16 @@ export function DetailsSvgs() {
                 },
             ];
             const attrsField = Object.entries(s.attrs).map(([key, value]) => {
+                const mode = value.startsWith('1') ? 'value' : value.startsWith('2') ? 'var' : 'advanced';
+                const handleChangeMode = (mode: AttrVarMode, value: string) => {
+                    if (mode === 'value') {
+                        return `1"${value.slice(1)}"`;
+                    } else if (mode === 'var') {
+                        return `2undefined`;
+                    } else {
+                        return `3${value.slice(1)}`;
+                    }
+                };
                 const field: RmgFieldsField[] = [
                     {
                         label: t('panel.svgs.attrKey'),
@@ -177,10 +207,53 @@ export function DetailsSvgs() {
                         },
                     },
                     {
+                        label: t('panel.svgs.attrMode.title'),
+                        type: 'select',
+                        options: {
+                            value: t('panel.svgs.attrMode.value'),
+                            var: t('panel.svgs.attrMode.var'),
+                            advanced: t('panel.svgs.attrMode.advanced'),
+                        },
+                        value: mode,
+                        onChange: v =>
+                            handleSetValue(
+                                s.id,
+                                'attrs',
+                                { ...s.attrs, [key]: handleChangeMode(v as AttrVarMode, value) },
+                                [...path, i]
+                            ),
+                    },
+                    {
                         label: t('panel.svgs.attrValue'),
                         type: 'input',
-                        value: value,
-                        onChange: v => handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: v }, [...path, i]),
+                        value: mode === 'value' ? value.slice(2, -1) : value.slice(1),
+                        onChange: v =>
+                            handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: handleChangeMode(mode, '_' + v) }, [
+                                ...path,
+                                i,
+                            ]),
+                        hidden: mode === 'var',
+                    },
+                    {
+                        label: t('panel.svgs.attrValue'),
+                        type: 'custom',
+                        component: (
+                            <RmgAutoComplete
+                                data={varList}
+                                displayHandler={item => item.value}
+                                filter={(query, item) =>
+                                    item.id.toLowerCase().includes(query.toLowerCase()) ||
+                                    Object.values(item.id).some(name =>
+                                        name.toLowerCase().includes(query.toLowerCase())
+                                    )
+                                }
+                                value={value.slice(1)}
+                                onChange={item =>
+                                    handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: '2' + item.value }, [...path, i])
+                                }
+                            />
+                        ),
+                        hidden: mode !== 'var',
                     },
                     {
                         label: '',
@@ -200,14 +273,13 @@ export function DetailsSvgs() {
                 ];
                 return <RmgFields key={key} fields={field} />;
             });
-            const displayChildren =
-                supportsChildren(s.type) && s.children ? dfsField(s.children, [...path, i], s.id) : [];
+            const displayChildren = s.children ? dfsField(s.children, [...path, i], s.id) : [];
             const displayTextChildrenButton =
                 supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
                     <Button
                         width="100%"
                         onClick={() =>
-                            handleSetValue(s.id, 'attrs', { ...s.attrs, _rmp_children_text: '"value"' }, [...path, i])
+                            handleSetValue(s.id, 'attrs', { ...s.attrs, _rmp_children_text: '1"value"' }, [...path, i])
                         }
                     >
                         {t('panel.svgs.addTextChildren')}
@@ -245,7 +317,7 @@ export function DetailsSvgs() {
                             <Button
                                 width="100%"
                                 onClick={() =>
-                                    handleSetValue(s.id, 'attrs', { ...s.attrs, new: '"value"' }, [...path, i])
+                                    handleSetValue(s.id, 'attrs', { ...s.attrs, new: '1"value"' }, [...path, i])
                                 }
                             >
                                 +

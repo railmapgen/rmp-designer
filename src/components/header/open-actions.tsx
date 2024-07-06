@@ -7,6 +7,7 @@ import { clearGlobalAlerts } from '../../redux/runtime/runtime-slice';
 import { setParam, setSvgs } from '../../redux/param/param-slice';
 import { defaultParam, Param } from '../../constants/constants';
 import { ImportFromSvg, loadSvgs } from './import-svg-modal';
+import { upgrade } from '../../util/save';
 
 export default function OpenActions() {
     const { t } = useTranslation();
@@ -25,7 +26,8 @@ export default function OpenActions() {
             'components' in param &&
             Array.isArray(param.components)
         ) {
-            dispatch(setParam(param as Param));
+            const p = await upgrade(paramStr);
+            dispatch(setParam(JSON.parse(p) as Param));
         } else {
             throw new Error('Invalid param');
         }

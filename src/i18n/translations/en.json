@@ -30,7 +30,13 @@
             "core": "Connectable",
             "attrKey": "Attributes key",
             "attrValue": "Attributes value",
-            "addTextChildren": "Add text content"
+            "addTextChildren": "Add text content",
+            "attrMode": {
+                "title": "Attributes mode",
+                "value": "Value",
+                "var": "Variable",
+                "advanced": "Advanced"
+            }
         },
         "components": {
             "title": "Variables",

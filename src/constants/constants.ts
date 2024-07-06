@@ -14,6 +14,7 @@ export interface SvgsElem {
 
 export interface Param {
     id: string;
+    version: number;
     type: 'MiscNode' | 'Station';
     svgs: SvgsElem[];
     components: Components[];
@@ -23,6 +24,7 @@ export interface Param {
 
 export const defaultParam: Param = {
     id: 'new',
+    version: 1,
     type: 'MiscNode',
     svgs: [],
     components: [],

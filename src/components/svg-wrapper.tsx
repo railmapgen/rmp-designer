@@ -7,8 +7,8 @@ import {
     backupRedo,
     backupRemove,
     backupUndo,
+    clearGlobalAlerts,
     clearSelected,
-    removeGlobalAlertArray,
     removeSelected,
     setActive,
     setMode,
@@ -49,15 +49,14 @@ export default function SvgWrapper() {
             const { x: svgX, y: svgY } = pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin);
             const type = mode.slice(5) as SvgsType;
             const attr = structuredClone(svgs[type].defaultAttrs);
-            const [keyX, keyY] = type === SvgsType.Circle ? ['cx', 'cy'] : ['x', 'y'];
 
             const svgElem: SvgsElem = {
                 id,
                 type,
                 label: nanoid(5),
                 attrs: {
-                    [keyX]: String(roundToNearestN(svgX, 1)),
-                    [keyY]: String(roundToNearestN(svgY, 1)),
+                    x: `1"${roundToNearestN(svgX, 1)}"`,
+                    y: `1"${roundToNearestN(svgY, 1)}"`,
                     ...attr,
                 },
             };
@@ -136,12 +135,12 @@ export default function SvgWrapper() {
                     const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
                     if (s.attrs.x || s.attrs.y || (!s.attrs.x && !s.attrs.y && !s.attrs.transform)) {
                         const newX =
-                            !Number.isNaN(Number(s.attrs.x)) || s.attrs.x === undefined
-                                ? String(roundToNearestN(Number(s.attrs.x ?? 0) + dx, 1))
+                            s.attrs.x === undefined || !Number.isNaN(Number(s.attrs.x.slice(2, -1)))
+                                ? `1"${roundToNearestN(Number(s.attrs.x ? s.attrs.x.slice(2, -1) : 0) + dx, 1)}"`
                                 : s.attrs.x;
                         const newY =
-                            !Number.isNaN(Number(s.attrs.y)) || s.attrs.y === undefined
-                                ? String(roundToNearestN(Number(s.attrs.y ?? 0) + dy, 1))
+                            s.attrs.y === undefined || !Number.isNaN(Number(s.attrs.y.slice(2, -1)))
+                                ? `1"${roundToNearestN(Number(s.attrs.y ? s.attrs.y.slice(2, -1) : 0) + dy, 1)}"`
                                 : s.attrs.y;
                         return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     } else if (s.attrs.transform) {
@@ -166,25 +165,24 @@ export default function SvgWrapper() {
         }
     });
     const handlePointerUp = useEvent((node: Id, path: Id[], e: React.PointerEvent<SVGElement>) => {
-        if (mode === 'free') {
-            if (active) {
-                // the node is pointed down before
-                // check the offset and if it's not 0, it must be a click not move
-                // const { x, y } = getMousePosition(e);
-                // if (offset.x - x === 0 && offset.y - y === 0) {
-                // no-op for click as the node is already added in pointer down
-                // } else {
-                // its a moving node operation
-                // }
-            } else {
-                // no-op for a new node is just placed, already added to selected in pointer down
-            }
-        }
+        // if (mode === 'free') {
+        // if (active) {
+        // the node is pointed down before
+        // check the offset and if it's not 0, it must be a click not move
+        // const { x, y } = getMousePosition(e);
+        // if (offset.x - x === 0 && offset.y - y === 0) {
+        // no-op for click as the node is already added in pointer down
+        // } else {
+        // its a moving node operation
+        // }
+        // } else {
+        // no-op for a new node is just placed, already added to selected in pointer down
+        // }
+        // }
         dispatch(setActive(undefined));
     });
 
     const handleBackgroundWheel = useEvent((e: React.WheelEvent<SVGSVGElement>) => {
-        e.preventDefault();
         e.stopPropagation();
         let newSvgViewBoxZoom = svgViewBoxZoom;
         if (e.deltaY > 0 && svgViewBoxZoom + 10 < 400) newSvgViewBoxZoom = svgViewBoxZoom + 10;
@@ -221,7 +219,7 @@ export default function SvgWrapper() {
                 };
                 dispatch(backupParam(param));
                 dispatch(setSvgs(dfsRemove(param.svgs)));
-                dispatch(removeGlobalAlertArray(selected));
+                dispatch(clearGlobalAlerts());
                 dispatch(clearSelected());
             }
         } else if (e.key.startsWith('Arrow')) {

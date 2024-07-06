@@ -46,15 +46,14 @@ export const loadSvgs = (svgString: string) => {
         const attributes: Record<string, string> = {};
         Array.from(element.attributes).forEach(attr => {
             if (attr.name === 'style') {
-                console.log(convertStyleStringToObject(attr.value));
-                attributes[attr.name] = JSON.stringify(convertStyleStringToObject(attr.value));
+                attributes[attr.name] = `3${JSON.stringify(convertStyleStringToObject(attr.value))}`;
             } else {
-                attributes[attr.name] = `"${attr.value}"`;
+                attributes[attr.name] = `1"${attr.value}"`;
             }
         });
 
         if (element.tagName !== 'g' && element.textContent) {
-            attributes['_rmp_children_text'] = `"${element.textContent}"`;
+            attributes['_rmp_children_text'] = `1"${element.textContent}"`;
         }
 
         const children: SvgsElem[] = [];

@@ -56,7 +56,7 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
             if (Object.prototype.hasOwnProperty.call(svgAttrs, key)) {
                 try {
                     modifiedAttrs[key] = calcFunc(
-                        svgAttrs[key],
+                        svgAttrs[key].slice(1),
                         ...varIds
                     )(
                         ...varValues.map((v, varI) =>

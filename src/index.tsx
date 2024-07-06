@@ -10,6 +10,7 @@ import { setParam } from './redux/param/param-slice';
 import { setAppState } from './redux/app/app-slice';
 import { Events } from './constants/constants';
 import i18n from './i18n/config';
+import { upgrade } from './util/save';
 
 let root: Root;
 
@@ -37,4 +38,7 @@ const appState = localStorage.getItem('rmp-designer__app');
 const param = localStorage.getItem('rmp-designer__param');
 
 appState !== null && store.dispatch(setAppState(JSON.parse(appState)));
-param !== null && store.dispatch(setParam(JSON.parse(param)));
+
+upgrade(param).then(param => {
+    store.dispatch(setParam(JSON.parse(param)));
+});

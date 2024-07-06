@@ -2,12 +2,12 @@ import React from 'react';
 import { Svgs } from '../../../constants/svgs';
 
 const defaultTextSvgAttrs: Record<string, string> = {
-    _rmp_children_text: '"text"',
-    opacity: '1',
-    fill: '"black"',
-    className: '"rmp-name__en"',
-    textAnchor: '"middle"',
-    fontSize: '12',
+    _rmp_children_text: '1"text"',
+    opacity: '1"1"',
+    fill: '1"black"',
+    className: '1"rmp-name__en"',
+    textAnchor: '1"middle"',
+    fontSize: '1"12"',
 };
 
 const textIcon = (
