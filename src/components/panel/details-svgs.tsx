@@ -128,7 +128,7 @@ export function DetailsSvgs() {
         }
         list.push({ id: 'undefined', value: 'undefined' });
         setVarList(list);
-    }, [param.components]);
+    }, [param.components, param.color]);
 
     const dfsField = (svgs: SvgsElem[], path: number[], father: Id) =>
         svgs.toReversed().map((s, index) => {
