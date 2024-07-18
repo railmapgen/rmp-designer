@@ -23,7 +23,7 @@ import {
     setComponentValue,
 } from '../../redux/param/param-slice';
 import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
-import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
+import { backupParam, clearGlobalAlerts, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import { nanoid } from '../../util/helper';
 import ColourUtil from './colour-util';
 
@@ -76,6 +76,7 @@ export function DetailsComponents() {
                 onChange: v => {
                     dispatch(backupParam(param));
                     dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } }));
+                    dispatch(clearGlobalAlerts());
                 },
             },
             {
@@ -96,6 +97,17 @@ export function DetailsComponents() {
                     dispatch(backupParam(param));
                     dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } }));
                 },
+                hidden: type === 'switch',
+            },
+            {
+                label: t('panel.components.defaultValue'),
+                type: 'switch',
+                isChecked: defaultValue,
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } }));
+                },
+                hidden: type !== 'switch',
             },
             {
                 label: '',

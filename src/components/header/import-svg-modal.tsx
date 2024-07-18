@@ -48,12 +48,12 @@ export const loadSvgs = (svgString: string) => {
             if (attr.name === 'style') {
                 attributes[attr.name] = `3${JSON.stringify(convertStyleStringToObject(attr.value))}`;
             } else {
-                attributes[attr.name] = `1"${attr.value}"`;
+                attributes[attr.name] = `1"${attr.value.trim()}"`;
             }
         });
 
         if (element.tagName !== 'g' && element.textContent) {
-            attributes['_rmp_children_text'] = `1"${element.textContent}"`;
+            attributes['_rmp_children_text'] = `1"${element.textContent.trim()}"`;
         }
 
         const children: SvgsElem[] = [];

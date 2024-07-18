@@ -80,7 +80,7 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
         <RmgSidePanel isOpen={isOpen} header="Dummy header" alwaysOverlay>
             <RmgSidePanelHeader onClose={onClose}>{t('panel.details.header')}</RmgSidePanelHeader>
             <RmgSidePanelBody>
-                <RmgFields fields={field} />
+                <RmgFields fields={field} minW={300} />
                 {param.color ? (
                     <RmgLabel label={t('color')}>
                         <IconButton

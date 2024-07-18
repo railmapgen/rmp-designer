@@ -1,4 +1,4 @@
-import { Button, Flex, SystemStyleObject, useColorModeValue, VStack } from '@chakra-ui/react';
+import { Button, Flex, SystemStyleObject, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
@@ -56,7 +56,7 @@ export const ToolsPanel = () => {
                 {isTextShown ? t('panel.tools.showLess') : undefined}
             </Button>
 
-            <VStack overflow="auto">
+            <Flex direction="column" overflow="auto">
                 {Object.values(SvgsType).map(type => (
                     <Button
                         key={type}
@@ -69,7 +69,7 @@ export const ToolsPanel = () => {
                         {isTextShown ? t(svgs[type].displayName) : undefined}
                     </Button>
                 ))}
-            </VStack>
+            </Flex>
         </Flex>
     );
 };

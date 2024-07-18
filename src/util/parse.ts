@@ -42,5 +42,5 @@ export const updateTransformString = (transform: string, dx: number, dy: number)
     translateX = roundToNearestN(translateX + dx, 1);
     translateY = roundToNearestN(translateY + dy, 1);
 
-    return `"translate(${translateX}, ${translateY}) rotate(${rotate}) scale(${scaleX}${scaleX !== scaleY ? `, ${scaleY}` : ''}) skewX(${skewX}) skewY(${skewY})"`;
+    return `1"translate(${translateX}, ${translateY}) rotate(${rotate}) scale(${scaleX}${scaleX !== scaleY ? `, ${scaleY}` : ''}) skewX(${skewX}) skewY(${skewY})"`;
 };

@@ -19,7 +19,7 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
     const { svgsElem, components, prefix, handlePointerUp, handlePointerMove, handlePointerDown } = props;
     const { id, type, attrs } = svgsElem;
     const dispatch = useRootDispatch();
-    const { globalAlerts } = useRootSelector(state => state.runtime);
+    const { globalAlerts, selected } = useRootSelector(state => state.runtime);
 
     const onPointerDown = React.useCallback(
         (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, [...prefix, id], e),
@@ -104,7 +104,12 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
             ? { ...(newAttrs.style as object), cursor: 'move' }
             : { cursor: 'move' };
     return (
-        <g id={`g_${id}`} key={`g_${id}`} transform={`translate(${newAttrs.x ?? 0}, ${newAttrs.y ?? 0})`}>
+        <g
+            id={`g_${id}`}
+            key={`g_${id}`}
+            transform={`translate(${newAttrs.x ?? 0}, ${newAttrs.y ?? 0})`}
+            opacity={!selected.has(id) && selected.size !== 0 ? 0.5 : 1}
+        >
             {React.createElement(
                 type,
                 {
