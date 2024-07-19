@@ -332,16 +332,18 @@ export function DetailsSvgs() {
 
     return (
         <>
-            <Box width="100%">
+            <Flex width="100%" height="100%" direction="column" overflow="auto">
                 <Flex p={2}>
                     <Heading fontSize="x-large" p={2}>
                         {t('panel.svgs.title')}
                     </Heading>
                 </Flex>
-                <Accordion width="100%" allowMultiple>
-                    {...dfsField(param.svgs, [], 'id_@root')}
-                </Accordion>
-            </Box>
+                <Box width="100%" height="100%" overflow="scroll">
+                    <Accordion width="100%" allowMultiple>
+                        {...dfsField(param.svgs, [], 'id_@root')}
+                    </Accordion>
+                </Box>
+            </Flex>
             <MoveChildrenModal
                 isOpen={isMoveChildrenOpen}
                 onClose={() => setIsMoveChildrenOpen(false)}

@@ -48,27 +48,29 @@ export default function AppRoot() {
                             <SvgWrapper />
                             <RmpDetails isOpen={isDetailsOpen} onClose={() => setDetailsOpen(false)} />
                         </Flex>
-                        <Flex p={2} direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
-                            <HStack width="100%">
-                                <Settings />
-                                <Button onClick={() => setOpenExport(true)} isDisabled={errorList.length > 0}>
-                                    Export
-                                </Button>
-                                {errorList.length > 0 && (
-                                    <Button onClick={() => setOpenErrorDisplay(true)}>
-                                        <MdErrorOutline />
-                                        {errorList.length}
+                        <Flex height={(size.height ?? 720) - 40 - svgHeight} direction="column" overflow="hidden">
+                            <Flex p={2} direction="row" overflow="hidden" sx={{ position: 'relative' }}>
+                                <HStack width="100%">
+                                    <Settings />
+                                    <Button onClick={() => setOpenExport(true)} isDisabled={errorList.length > 0}>
+                                        Export
                                     </Button>
-                                )}
-                                <Spacer />
-                                <Button hidden={isDetailsOpen} onClick={() => setDetailsOpen(true)}>
-                                    {t('panel.details.header')}
-                                </Button>
-                            </HStack>
-                        </Flex>
-                        <Flex direction="row" height="100%" overflow="hidden" sx={{ position: 'relative' }}>
-                            <DetailsSvgs />
-                            <DetailsComponents />
+                                    {errorList.length > 0 && (
+                                        <Button onClick={() => setOpenErrorDisplay(true)}>
+                                            <MdErrorOutline />
+                                            {errorList.length}
+                                        </Button>
+                                    )}
+                                    <Spacer />
+                                    <Button hidden={isDetailsOpen} onClick={() => setDetailsOpen(true)}>
+                                        {t('panel.details.header')}
+                                    </Button>
+                                </HStack>
+                            </Flex>
+                            <Flex direction="row" height="100%" overflow="auto" sx={{ position: 'relative' }}>
+                                <DetailsSvgs />
+                                <DetailsComponents />
+                            </Flex>
                         </Flex>
                         <Export isOpen={openExport} onClose={() => setOpenExport(false)} param={param} />
                         <ErrorDisplay
