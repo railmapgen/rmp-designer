@@ -9,6 +9,7 @@ import {
     Flex,
     Heading,
     IconButton,
+    Text,
 } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField, RmgLabel } from '@railmapgen/rmg-components';
 import React from 'react';
@@ -168,35 +169,43 @@ export function DetailsComponents() {
                 <Button onClick={handleAddNewComponent}>+</Button>
             </Flex>
             <Box width="100%" height="100%" overflow="scroll">
-                <Accordion width="100%" allowMultiple>
-                    {...p}
-                    {param.color ? (
-                        <AccordionItem key="color">
-                            <AccordionButton p={2}>
-                                <Box as="span" flex="1" textAlign="left">
-                                    {t('color')}
-                                </Box>
-                                <AccordionIcon />
-                            </AccordionButton>
-                            <AccordionPanel>
-                                <RmgLabel label={t('panel.components.defaultColor')}>
-                                    <IconButton
-                                        aria-label={t('color')}
-                                        color={param.color.defaultValue[3]}
-                                        bg={param.color.defaultValue[2]}
-                                        size="md"
-                                        _hover={{ bg: ColourUtil.fade(param.color.defaultValue[2], 0.7) }}
-                                        icon={<MdCircle />}
-                                        onClick={() => {
-                                            setIsThemeRequested(true);
-                                            dispatch(openPaletteAppClip(param.color?.defaultValue));
-                                        }}
-                                    />
-                                </RmgLabel>
-                            </AccordionPanel>
-                        </AccordionItem>
-                    ) : undefined}
-                </Accordion>
+                {p.length > 0 || param.color ? (
+                    <Accordion width="100%" allowMultiple>
+                        {...p}
+                        {param.color ? (
+                            <AccordionItem key="color">
+                                <AccordionButton p={2}>
+                                    <Box as="span" flex="1" textAlign="left">
+                                        {t('color')}
+                                    </Box>
+                                    <AccordionIcon />
+                                </AccordionButton>
+                                <AccordionPanel>
+                                    <RmgLabel label={t('panel.components.defaultColor')}>
+                                        <IconButton
+                                            aria-label={t('color')}
+                                            color={param.color.defaultValue[3]}
+                                            bg={param.color.defaultValue[2]}
+                                            size="md"
+                                            _hover={{ bg: ColourUtil.fade(param.color.defaultValue[2], 0.7) }}
+                                            icon={<MdCircle />}
+                                            onClick={() => {
+                                                setIsThemeRequested(true);
+                                                dispatch(openPaletteAppClip(param.color?.defaultValue));
+                                            }}
+                                        />
+                                    </RmgLabel>
+                                </AccordionPanel>
+                            </AccordionItem>
+                        ) : undefined}
+                    </Accordion>
+                ) : (
+                    <Flex height="100%" width="100%" justifyContent="center" alignItems="center">
+                        <Text textAlign="center">
+                            {t('panel.components.tips1')} <Button size="sm">+</Button> {t('panel.components.tips2')}
+                        </Text>
+                    </Flex>
+                )}
             </Box>
         </Flex>
     );

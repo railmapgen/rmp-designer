@@ -36,12 +36,16 @@
                 "value": "Value",
                 "var": "Variable",
                 "advanced": "Advanced"
-            }
+            },
+            "tips1": "Click left side icon",
+            "tips2": "and then click the canvas to add a SVG component."
         },
         "components": {
             "title": "Variables",
             "defaultValue": "Default value",
-            "defaultColor": "Default color"
+            "defaultColor": "Default color",
+            "tips1": "Click",
+            "tips2": "to add a variable."
         },
         "common": {
             "type": "Type",

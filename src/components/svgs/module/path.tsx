@@ -2,7 +2,9 @@ import React from 'react';
 import { Svgs } from '../../../constants/svgs';
 
 const defaultPathSvgAttrs: Record<string, string> = {
-    d: '1"M10 10"',
+    d: '1"M 0 5 L 20 5"',
+    stroke: '1"#D6ABC1"',
+    strokeWidth: '1"5"',
 };
 
 const pathIcon = (

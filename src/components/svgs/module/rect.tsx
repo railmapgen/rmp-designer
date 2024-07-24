@@ -2,12 +2,12 @@ import React from 'react';
 import { Svgs } from '../../../constants/svgs';
 
 const defaultRectSvgAttrs: Record<string, string> = {
-    width: '1"10"',
+    width: '1"20"',
     height: '1"10"',
-    rx: '1"0"',
-    ry: '1"0"',
+    rx: '1"2"',
+    ry: '1"2"',
     opacity: '1"1"',
-    fill: '1"black"',
+    fill: '1"#D6ABC1"',
 };
 
 const rectIcon = (

@@ -36,12 +36,16 @@
                 "value": "값",
                 "var": "변수",
                 "advanced": "고급"
-            }
+            },
+            "tips1": "왼쪽 아이콘을 클릭하세요",
+            "tips2": "그리고 나서 캔버스를 클릭하여 SVG 구성 요소를 추가하세요."
         },
         "components": {
             "title": "변수",
             "defaultValue": "기본 값",
-            "defaultColor": "기본 색상"
+            "defaultColor": "기본 색상",
+            "tips1": "클릭하세요",
+            "tips2": "변수를 추가하려면."
         },
         "common": {
             "type": "유형",

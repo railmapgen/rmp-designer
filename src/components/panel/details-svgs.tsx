@@ -28,6 +28,8 @@ import { setCore, setSvgs } from '../../redux/param/param-slice';
 import { Id, SvgsElem } from '../../constants/constants';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { MoveChildrenModal } from './details-svgs-move-children';
+import svgs from '../svgs/module/svgs';
+import { SvgsType } from '../../constants/svgs';
 
 interface AttrVarList {
     id: string;
@@ -339,9 +341,31 @@ export function DetailsSvgs() {
                     </Heading>
                 </Flex>
                 <Box width="100%" height="100%" overflow="scroll">
-                    <Accordion width="100%" allowMultiple>
-                        {...dfsField(param.svgs, [], 'id_@root')}
-                    </Accordion>
+                    {param.svgs.length > 0 ? (
+                        <Accordion width="100%" allowMultiple>
+                            {...dfsField(param.svgs, [], 'id_@root')}
+                        </Accordion>
+                    ) : (
+                        <Flex height="100%" width="100%" justifyContent="center" alignItems="center">
+                            <Text textAlign="center">
+                                {t('panel.svgs.tips1')}
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    leftIcon={svgs[SvgsType.Rect].icon}
+                                    sx={{
+                                        justifyContent: 'flex-start',
+                                        p: 1,
+                                        m: 1,
+                                        h: 10,
+                                    }}
+                                >
+                                    Rectangle
+                                </Button>
+                                {t('panel.svgs.tips2')}
+                            </Text>
+                        </Flex>
+                    )}
                 </Box>
             </Flex>
             <MoveChildrenModal

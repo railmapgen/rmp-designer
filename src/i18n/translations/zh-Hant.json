@@ -36,12 +36,16 @@
                 "value": "值",
                 "var": "變量",
                 "advanced": "高級"
-            }
+            },
+            "tips1": "點擊左側的圖標",
+            "tips2": "再點擊畫布以添加一個 SVG 組件"
         },
         "components": {
             "title": "變量",
             "defaultValue": "默認值",
-            "defaultColor": "默認顏色"
+            "defaultColor": "默認顏色",
+            "tips1": "點擊",
+            "tips2": "以添加一個變量"
         },
         "common": {
             "type": "類型",

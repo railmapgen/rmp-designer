@@ -4,7 +4,7 @@ import { Svgs } from '../../../constants/svgs';
 const defaultCircleSvgAttrs: Record<string, string> = {
     r: '1"5"',
     opacity: '1"1"',
-    fill: '1"black"',
+    fill: '1"#D6ABC1"',
     stroke: '1"none"',
     strokeWidth: '1"0"',
 };

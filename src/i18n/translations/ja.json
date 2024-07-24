@@ -36,12 +36,16 @@
                 "value": "値",
                 "var": "変数",
                 "advanced": "高度"
-            }
+            },
+            "tips1": "左側のアイコンをクリックしてください",
+            "tips2": "そして、キャンバスをクリックしてSVGコンポーネントを追加してください。"
         },
         "components": {
             "title": "変数",
             "defaultValue": "デフォルト値",
-            "defaultColor": "デフォルト色"
+            "defaultColor": "デフォルト色",
+            "tips1": "クリックしてください",
+            "tips2": "変数を追加します。"
         },
         "common": {
             "type": "タイプ",
