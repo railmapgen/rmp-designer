@@ -40,7 +40,7 @@ export const defaultParam: Param = {
         scale: 1,
         rotate: 0,
     },
-    version: 1,
+    version: 2,
     type: 'MiscNode',
     svgs: [],
     components: [],
