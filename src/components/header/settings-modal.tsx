@@ -23,12 +23,12 @@ const SettingsModal = (props: { isOpen: boolean; onClose: () => void }) => {
 
     const field: RmgFieldsField[] = [
         {
-            label: t('canvas background'),
+            label: t('header.settings.canvasBackground.label'),
             type: 'select',
             options: {
-                auto: 'Auto',
-                white: 'White',
-                dark: 'Dark',
+                auto: t('header.settings.canvasBackground.auto'),
+                white: t('header.settings.canvasBackground.white'),
+                dark: t('header.settings.canvasBackground.dark'),
             },
             value: canvasColor,
             onChange: value => {

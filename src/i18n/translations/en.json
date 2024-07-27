@@ -16,6 +16,26 @@
             "pasteSVG": "Paste SVG",
             "uploadParam": "Upload project",
             "uploadSVG": "Upload SVG"
+        },
+        "export": {
+            "preview": "Preview",
+            "showLines": "Show RMP lines",
+            "showBadges": "Show RMP badges",
+            "offsetX": "Offset X",
+            "offsetY": "Offset Y",
+            "scale": "Scale",
+            "rotate": "Rotate",
+            "export": "Export",
+            "download": "Download"
+        },
+        "settings": {
+            "title": "Settings",
+            "canvasBackground": {
+                "label": "Canvas background color",
+                "auto": "Automatic",
+                "white": "Light",
+                "dark": "Dark"
+            }
         }
     },
     "panel": {
@@ -44,8 +64,10 @@
             "title": "Variables",
             "defaultValue": "Default value",
             "defaultColor": "Default color",
-            "tips1": "Click",
-            "tips2": "to add a variable."
+            "tipsA1": "Click the upper right corner",
+            "tipsA2": "to upload your SVG graphic",
+            "tipsB1": "Click",
+            "tipsB2": "to add a variable."
         },
         "common": {
             "type": "Type",

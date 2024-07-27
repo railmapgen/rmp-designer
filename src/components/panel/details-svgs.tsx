@@ -15,7 +15,7 @@ import {
 import { RmgAutoComplete, RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError } from 'react-icons/md';
+import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError, MdUpload } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import {
     addSelected,
@@ -346,9 +346,17 @@ export function DetailsSvgs() {
                             {...dfsField(param.svgs, [], 'id_@root')}
                         </Accordion>
                     ) : (
-                        <Flex height="100%" width="100%" justifyContent="center" alignItems="center">
+                        <Flex height="100%" width="100%" justifyContent="center" alignItems="center" direction="column">
                             <Text textAlign="center">
-                                {t('panel.svgs.tips1')}
+                                {t('panel.svgs.tipsA1')}
+                                <Button size="sm" variant="outline" m={1}>
+                                    <MdUpload />
+                                </Button>
+                                {t('panel.svgs.tipsA2')}
+                            </Text>
+                            <br />
+                            <Text textAlign="center">
+                                {t('panel.svgs.tipsB1')}
                                 <Button
                                     size="sm"
                                     variant="outline"
@@ -362,7 +370,7 @@ export function DetailsSvgs() {
                                 >
                                     Rectangle
                                 </Button>
-                                {t('panel.svgs.tips2')}
+                                {t('panel.svgs.tipsB2')}
                             </Text>
                         </Flex>
                     )}

@@ -11,6 +11,7 @@ import AboutModal from './about-modal';
 import { ZoomPopover } from './zoom-popover';
 import OpenActions from './open-actions';
 import SettingsModal from './settings-modal';
+import ExportActions from './export-actions';
 
 export default function WindowHeader() {
     const { t } = useTranslation();
@@ -58,6 +59,7 @@ export default function WindowHeader() {
                 />
                 <ZoomPopover />
                 <OpenActions />
+                <ExportActions />
                 <IconButton
                     size="sm"
                     variant="ghost"

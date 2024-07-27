@@ -12,8 +12,17 @@ export interface SvgsElem {
     children?: SvgsElem[];
 }
 
+export interface ParamTransform {
+    translateX: number;
+    translateY: number;
+    scale: number;
+    rotate: number;
+}
+
 export interface Param {
     id: string;
+    label: string;
+    transform: ParamTransform;
     version: number;
     type: 'MiscNode' | 'Station';
     svgs: SvgsElem[];
@@ -24,6 +33,13 @@ export interface Param {
 
 export const defaultParam: Param = {
     id: 'new',
+    label: 'New',
+    transform: {
+        translateX: 0,
+        translateY: 0,
+        scale: 1,
+        rotate: 0,
+    },
     version: 1,
     type: 'MiscNode',
     svgs: [],

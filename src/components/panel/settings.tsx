@@ -1,7 +1,7 @@
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setColor, setType } from '../../redux/param/param-slice';
+import { setColor, setLabel, setType } from '../../redux/param/param-slice';
 import { colorComponents } from '../../constants/components';
 
 export function Settings() {
@@ -10,6 +10,12 @@ export function Settings() {
     const { t } = useTranslation();
 
     const field: RmgFieldsField[] = [
+        {
+            label: t('panel.common.label'),
+            type: 'input',
+            value: param.label,
+            onChange: value => dispatch(setLabel(value)),
+        },
         {
             label: t('panel.common.type'),
             type: 'select',

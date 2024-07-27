@@ -13,8 +13,8 @@ import SvgWrapper from './svg-wrapper';
 import { RmpDetails } from './panel/details-rmp';
 import { DetailsSvgs } from './panel/details-svgs';
 import { Settings } from './panel/settings';
-import { Export } from './panel/export';
 import { DetailsComponents } from './panel/details-components';
+import { Preview } from './panel/preview';
 import { ErrorDisplay } from './panel/error-display';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 
@@ -32,9 +32,9 @@ export default function AppRoot() {
     const size = useWindowSize();
     const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
 
-    const [errorList, setErrorlist] = React.useState<Array<string[]>>([]);
+    const [errorList, setErrorList] = React.useState<Array<string[]>>([]);
     React.useEffect(() => {
-        setErrorlist(getErrorList(globalAlerts, param));
+        setErrorList(getErrorList(globalAlerts, param));
     }, [globalAlerts, param]);
 
     return (
@@ -53,7 +53,7 @@ export default function AppRoot() {
                                 <HStack width="100%">
                                     <Settings />
                                     <Button onClick={() => setOpenExport(true)} isDisabled={errorList.length > 0}>
-                                        Export
+                                        {t('header.export.export')}
                                     </Button>
                                     {errorList.length > 0 && (
                                         <Button onClick={() => setOpenErrorDisplay(true)}>
@@ -72,7 +72,7 @@ export default function AppRoot() {
                                 <DetailsComponents />
                             </Flex>
                         </Flex>
-                        <Export isOpen={openExport} onClose={() => setOpenExport(false)} param={param} />
+                        <Preview isOpen={openExport} onClose={() => setOpenExport(false)} />
                         <ErrorDisplay
                             isOpen={openErrorDisplay}
                             onClose={() => setOpenErrorDisplay(false)}

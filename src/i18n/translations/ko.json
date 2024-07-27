@@ -16,6 +16,26 @@
             "pasteSVG": "SVG 붙여넣기",
             "uploadParam": "프로젝트 업로드",
             "uploadSVG": "SVG 업로드"
+        },
+        "export": {
+            "preview": "미리보기",
+            "showLines": "RMP 라인 표시",
+            "showBadges": "RMP 배지 표시",
+            "offsetX": "오프셋 X",
+            "offsetY": "오프셋 Y",
+            "scale": "크기 조정",
+            "rotate": "회전",
+            "export": "내보내기",
+            "download": "다운로드"
+        },
+        "settings": {
+            "title": "설정",
+            "canvasBackground": {
+                "label": "캔버스 배경색",
+                "auto": "자동",
+                "white": "밝은",
+                "dark": "어두운"
+            }
         }
     },
     "panel": {
@@ -37,8 +57,10 @@
                 "var": "변수",
                 "advanced": "고급"
             },
-            "tips1": "왼쪽 아이콘을 클릭하세요",
-            "tips2": "그리고 나서 캔버스를 클릭하여 SVG 구성 요소를 추가하세요."
+            "tipsA1": "오른쪽 상단을 클릭하세요",
+            "tipsA2": "SVG 그래픽을 업로드하려면",
+            "tipsB1": "왼쪽 아이콘을 클릭하세요",
+            "tipsB2": "그런 다음 캔버스를 클릭하여 SVG 구성 요소를 추가하세요"
         },
         "components": {
             "title": "변수",

@@ -16,6 +16,26 @@
             "pasteSVG": "粘贴 SVG",
             "uploadParam": "上传项目",
             "uploadSVG": "上传 SVG"
+        },
+        "export": {
+            "preview": "预览",
+            "showLines": "显示 RMP 线段",
+            "showBadges": "显示 RMP 标识",
+            "offsetX": "偏移 X",
+            "offsetY": "偏移 Y",
+            "scale": "缩放",
+            "rotate": "旋转",
+            "export": "导出",
+            "download": "下载"
+        },
+        "settings": {
+            "title": "设置",
+            "canvasBackground": {
+                "label": "画布背景颜色",
+                "auto": "自动",
+                "white": "浅色",
+                "dark": "深色"
+            }
         }
     },
     "panel": {
@@ -37,8 +57,10 @@
                 "var": "变量",
                 "advanced": "高级"
             },
-            "tips1": "点击左侧的图标",
-            "tips2": "再点击画布以添加一个 SVG 组件"
+            "tipsA1": "点击右上角的",
+            "tipsA2": "以上传你的 SVG 图形",
+            "tipsB1": "点击左侧的图标",
+            "tipsB2": "再点击画布以添加一个 SVG 组件"
         },
         "components": {
             "title": "变量",

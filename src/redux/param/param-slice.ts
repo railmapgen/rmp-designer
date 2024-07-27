@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { defaultParam, Param, SvgsElem } from '../../constants/constants';
+import { defaultParam, Param, ParamTransform, SvgsElem } from '../../constants/constants';
 import { Components } from '../../constants/components';
 
 const paramSlice = createSlice({
@@ -8,6 +8,8 @@ const paramSlice = createSlice({
     reducers: {
         setParam: (state, action: PayloadAction<Param>) => {
             state.id = action.payload.id;
+            state.label = action.payload.label;
+            state.transform = action.payload.transform;
             state.type = action.payload.type;
             state.color = action.payload.color;
             state.svgs = action.payload.svgs;
@@ -16,6 +18,12 @@ const paramSlice = createSlice({
         },
         setId: (state, action: PayloadAction<string>) => {
             state.id = action.payload;
+        },
+        setLabel: (state, action: PayloadAction<string>) => {
+            state.label = action.payload;
+        },
+        setTransform: (state, action: PayloadAction<ParamTransform>) => {
+            state.transform = action.payload;
         },
         setType: (state, action: PayloadAction<'MiscNode' | 'Station'>) => {
             state.type = action.payload;
@@ -55,7 +63,8 @@ const paramSlice = createSlice({
 
 export const {
     setParam,
-    setId,
+    setLabel,
+    setTransform,
     setType,
     setColor,
     setSvgs,

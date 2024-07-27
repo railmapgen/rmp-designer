@@ -57,4 +57,9 @@ export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string 
         });
         return JSON.stringify({ ...p, version: 1, svgs: newSvgs } as Param);
     },
+    1: param => {
+        // Add label
+        const p = JSON.parse(param) as Param;
+        return JSON.stringify({ ...p, version: 2, label: p.id, transform: defaultParam.transform } as Param);
+    },
 };
