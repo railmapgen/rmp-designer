@@ -57,17 +57,17 @@
                 "var": "Variable",
                 "advanced": "Advanced"
             },
-            "tips1": "Click left side icon",
-            "tips2": "and then click the canvas to add a SVG component."
+            "tipsA1": "Click the upper right corner",
+            "tipsA2": "to upload your SVG graphic",
+            "tipsB1": "Click left side icon",
+            "tipsB2": "and then click the canvas to add a SVG component."
         },
         "components": {
             "title": "Variables",
             "defaultValue": "Default value",
             "defaultColor": "Default color",
-            "tipsA1": "Click the upper right corner",
-            "tipsA2": "to upload your SVG graphic",
-            "tipsB1": "Click",
-            "tipsB2": "to add a variable."
+            "tips1": "Click",
+            "tips2": "to add a variable."
         },
         "common": {
             "type": "Type",
