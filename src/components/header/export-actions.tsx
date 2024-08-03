@@ -3,25 +3,8 @@ import React, { useState } from 'react';
 import { MdDownload, MdOutput, MdSave } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootSelector } from '../../redux';
+import { downloadAs } from '../../util/helper';
 import { Preview } from '../panel/preview';
-
-const downloadAs = (filename: string, type: string, data: any) => {
-    const blob = new Blob([data], { type });
-    downloadBlobAs(filename, blob);
-};
-
-const downloadBlobAs = (filename: string, blob: Blob) => {
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-};
 
 export default function ExportActions() {
     const { t } = useTranslation();
@@ -31,7 +14,7 @@ export default function ExportActions() {
 
     return (
         <>
-            <Menu id="upload">
+            <Menu id="download">
                 <MenuButton as={IconButton} size="sm" variant="ghost" icon={<MdDownload />} />
                 <MenuList>
                     <MenuItem

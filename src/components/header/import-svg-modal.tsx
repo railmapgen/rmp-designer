@@ -11,10 +11,10 @@ import {
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { SvgsElem } from '../../constants/constants';
+import { defaultTransform, SvgsElem } from '../../constants/constants';
 import { nanoid } from '../../util/helper';
 import { useRootDispatch } from '../../redux';
-import { setSvgs } from '../../redux/param/param-slice';
+import { setLabel, setSvgs, setTransform } from '../../redux/param/param-slice';
 
 export const loadSvgs = (svgString: string) => {
     const parser = new DOMParser();
@@ -94,6 +94,8 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
 
     const handleImport = () => {
         dispatch(setSvgs(loadSvgs(svgString)));
+        dispatch(setLabel(`SVG ${nanoid(5)}`));
+        dispatch(setTransform(defaultTransform));
         onClose();
     };
 

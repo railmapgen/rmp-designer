@@ -1,4 +1,5 @@
 import {
+    Badge,
     Button,
     Modal,
     ModalBody,
@@ -35,6 +36,9 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
                 <ModalHeader>
                     <Text as="b" fontSize="xl">
                         {t('header.export.export')}
+                        <Badge ml="1" colorScheme="green">
+                            RMP
+                        </Badge>
                     </Text>
                     <ModalCloseButton />
                 </ModalHeader>

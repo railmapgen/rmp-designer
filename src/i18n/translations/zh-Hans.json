@@ -73,5 +73,17 @@
             "type": "类型",
             "label": "标签"
         }
+    },
+    "marketplace": {
+        "title": "市场",
+        "editorSelected": "✨ 编辑精选",
+        "all": "所有作品",
+        "details": "详情",
+        "filterName": "按名称过滤",
+        "sortBy": {
+            "label": "排序方式",
+            "alphabetical": "按字母顺序",
+            "updateTime": "更新时间"
+        }
     }
 }

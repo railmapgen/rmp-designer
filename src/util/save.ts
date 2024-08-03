@@ -1,5 +1,7 @@
 import { defaultParam, Param, SvgsElem } from '../constants/constants';
 
+export const SAVE_VERSION = 2;
+
 export const upgrade: (originalParam: string | null) => Promise<string> = async originalParam => {
     let changed = false;
 

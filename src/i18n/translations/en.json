@@ -73,5 +73,17 @@
             "type": "Type",
             "label": "Label"
         }
+    },
+    "marketplace": {
+        "title": "Marketplace",
+        "editorSelected": "✨ Editor Selected",
+        "all": "All Works",
+        "details": "Details",
+        "filterName": "Filter by name",
+        "sortBy": {
+            "label": "Sort by",
+            "alphabetical": "Alphabetically",
+            "updateTime": "Update time"
+        }
     }
 }

@@ -73,5 +73,17 @@
             "type": "類型",
             "label": "標籤"
         }
+    },
+    "marketplace": {
+        "title": "市場",
+        "editorSelected": "✨ 編輯精選",
+        "all": "所有作品",
+        "details": "詳細資訊",
+        "filterName": "按名稱過濾",
+        "sortBy": {
+            "label": "排序方式",
+            "alphabetical": "按字母順序",
+            "updateTime": "更新時間"
+        }
     }
 }

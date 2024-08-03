@@ -73,5 +73,17 @@
             "type": "유형",
             "label": "라벨"
         }
+    },
+    "marketplace": {
+        "title": "마켓플레이스",
+        "editorSelected": "✨ 편집자 선택",
+        "all": "모든 작품",
+        "details": "세부정보",
+        "filterName": "이름으로 필터링",
+        "sortBy": {
+            "label": "정렬 기준",
+            "alphabetical": "알파벳순",
+            "updateTime": "업데이트 시간"
+        }
     }
 }

@@ -1,15 +1,18 @@
 import { IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../redux';
 import { clearGlobalAlerts } from '../../redux/runtime/runtime-slice';
-import { setParam, setSvgs } from '../../redux/param/param-slice';
-import { defaultParam, Param } from '../../constants/constants';
-import { ImportFromSvg, loadSvgs } from './import-svg-modal';
+import { setLabel, setParam, setSvgs, setTransform } from '../../redux/param/param-slice';
+import { defaultParam, defaultTransform, Param } from '../../constants/constants';
 import { upgrade } from '../../util/save';
+import { nanoid } from '../../util/helper';
+import { ImportFromSvg, loadSvgs } from './import-svg-modal';
 
 export default function OpenActions() {
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
     const fileSvgInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -66,6 +69,8 @@ export default function OpenActions() {
             try {
                 const svgStr = await readFileAsText(file);
                 dispatch(setSvgs(loadSvgs(svgStr)));
+                dispatch(setLabel(`SVG ${nanoid(5)}`));
+                dispatch(setTransform(defaultTransform));
             } catch (err) {
                 console.error(
                     'OpenActions.handleUpload():: Unknown error occurred while parsing the uploaded file',
@@ -87,6 +92,7 @@ export default function OpenActions() {
                     icon={<MdOpenInNew />}
                     onClick={() => {
                         dispatch(setParam(defaultParam));
+                        dispatch(setTransform(defaultTransform));
                         dispatch(clearGlobalAlerts());
                     }}
                 >
@@ -104,7 +110,7 @@ export default function OpenActions() {
                 <MenuItem icon={<MdUpload />} onClick={() => fileInputRef?.current?.click()}>
                     {t('header.import.uploadParam')}
                 </MenuItem>
-                <MenuItem icon={<MdOutlineImage />} onClick={() => setOpenImportSvg(true)}>
+                <MenuItem hidden={true} icon={<MdOutlineImage />} onClick={() => setOpenImportSvg(true)}>
                     {t('header.import.pasteSVG')}
                 </MenuItem>
                 <input
@@ -118,6 +124,9 @@ export default function OpenActions() {
                 />
                 <MenuItem icon={<MdOpenInBrowser />} onClick={() => fileSvgInputRef?.current?.click()}>
                     {t('header.import.uploadSVG')}
+                </MenuItem>
+                <MenuItem icon={<MdOpenInNew />} onClick={() => navigate('/marketplace')}>
+                    {t('marketplace.title')}
                 </MenuItem>
             </MenuList>
             <ImportFromSvg isOpen={openImportSvg} onClose={() => setOpenImportSvg(false)} />

@@ -73,5 +73,17 @@
             "type": "タイプ",
             "label": "ラベル"
         }
+    },
+    "marketplace": {
+        "title": "マーケットプレイス",
+        "editorSelected": "✨ 編集者選定",
+        "all": "すべての作品",
+        "details": "詳細",
+        "filterName": "名前でフィルタリング",
+        "sortBy": {
+            "label": "並び替え",
+            "alphabetical": "アルファベット順",
+            "updateTime": "更新時間"
+        }
     }
 }

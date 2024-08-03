@@ -1,10 +1,21 @@
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import {
+    Badge,
+    Button,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    Text,
+} from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreateSvgs } from '../svgs/createSvgs';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
-import { setTransform } from '../../redux/param/param-slice';
+import { setLabel, setTransform } from '../../redux/param/param-slice';
 import { Export } from './export';
 
 export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
@@ -13,6 +24,56 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
     const param = useRootSelector(store => store.param);
     const dispatch = useRootDispatch();
 
+    const svgRef = React.useRef<SVGSVGElement>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+    const [showLines, setShowLines] = React.useState(false);
+    const [showBadges, setShowBadges] = React.useState(false);
+    const [isExportOpen, setExportOpen] = React.useState(false);
+
+    const exportToJpg = () => {
+        setShowLines(false);
+        setShowBadges(false);
+
+        const svg = svgRef.current;
+        const canvas = canvasRef.current;
+        if (!svg || !canvas) return;
+
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        const img = new Image();
+        img.onload = () => {
+            const scaleFactor = 4;
+            const width = img.width;
+            const height = img.height;
+            canvas.width = width * scaleFactor;
+            canvas.height = height * scaleFactor;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
+                // 缩放图像
+                ctx.scale(scaleFactor, scaleFactor);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const jpegUrl = canvas.toDataURL('image/jpeg', 0.8); // 最高质量
+
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = jpegUrl;
+                link.download = `RMP-Designer_${new Date().valueOf()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            URL.revokeObjectURL(url);
+        };
+        img.src = url;
+    };
+
     const linePaths = [
         'M -1000 0 L 1000 0',
         'M 0 -1000 L 0 1000',
@@ -20,11 +81,13 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
         'M 1000 -1000 L -1000 1000',
     ];
 
-    const [showLines, setShowLines] = React.useState(false);
-    const [showBadges, setShowBadges] = React.useState(false);
-    const [isExportOpen, setExportOpen] = React.useState(false);
-
     const fields: RmgFieldsField[] = [
+        {
+            label: t('panel.common.label'),
+            type: 'input',
+            value: param.label,
+            onChange: v => dispatch(setLabel(v)),
+        },
         {
             label: t('header.export.showLines'),
             type: 'switch',
@@ -68,17 +131,33 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
         onClose();
     };
 
+    React.useEffect(() => {
+        if (isOpen) {
+            setShowLines(false);
+            setShowBadges(false);
+        }
+    }, [isOpen]);
+
     return (
         <>
             <Modal isOpen={isOpen} onClose={onClose} size="3xl" scrollBehavior="inside">
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{t('header.export.preview')}</ModalHeader>
+                    <ModalHeader>
+                        <Text as="b" fontSize="xl">
+                            {t('header.export.preview')}
+                            <Badge ml="1" colorScheme="green">
+                                RMP
+                            </Badge>
+                        </Text>
+                        <ModalCloseButton />
+                    </ModalHeader>
 
                     <ModalBody>
                         <RmgFields fields={fields} />
                         <svg
                             id="rmp-style-gen-svg"
+                            ref={svgRef}
                             xmlns="http://www.w3.org/2000/svg"
                             xmlnsXlink="http://www.w3.org/1999/xlink"
                             colorInterpolationFilters="sRGB"
@@ -180,11 +259,15 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                                 })}
                             </g>
                         </svg>
+                        <canvas ref={canvasRef} style={{ display: 'none' }} />
                     </ModalBody>
 
                     <ModalFooter>
                         <Button colorScheme="blue" variant="outline" mr="1" onClick={onClose}>
                             {t('cancel')}
+                        </Button>
+                        <Button id="exportJPG" colorScheme="blue" variant="solid" mr="1" onClick={exportToJpg}>
+                            {t('header.export.exportJPG')}
                         </Button>
                         <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
                             {t('header.export.export')}

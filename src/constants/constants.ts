@@ -1,4 +1,5 @@
 import { ColourHex, MonoColour } from '@railmapgen/rmg-palette-resources';
+import { SAVE_VERSION } from '../util/save';
 import { SvgsType } from './svgs';
 import { Components } from './components';
 
@@ -19,6 +20,13 @@ export interface ParamTransform {
     rotate: number;
 }
 
+export const defaultTransform: ParamTransform = {
+    translateX: 0,
+    translateY: 0,
+    scale: 1,
+    rotate: 0,
+};
+
 export interface Param {
     id: string;
     label: string;
@@ -33,14 +41,9 @@ export interface Param {
 
 export const defaultParam: Param = {
     id: 'new',
-    label: 'New',
-    transform: {
-        translateX: 0,
-        translateY: 0,
-        scale: 1,
-        rotate: 0,
-    },
-    version: 2,
+    label: 'New SVG',
+    transform: defaultTransform,
+    version: SAVE_VERSION,
     type: 'MiscNode',
     svgs: [],
     components: [],
