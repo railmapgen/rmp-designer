@@ -1,6 +1,5 @@
 import { IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../redux';
@@ -12,7 +11,6 @@ import { nanoid } from '../../util/helper';
 import { ImportFromSvg, loadSvgs } from './import-svg-modal';
 
 export default function OpenActions() {
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
     const fileSvgInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -124,9 +122,6 @@ export default function OpenActions() {
                 />
                 <MenuItem icon={<MdOpenInBrowser />} onClick={() => fileSvgInputRef?.current?.click()}>
                     {t('header.import.uploadSVG')}
-                </MenuItem>
-                <MenuItem icon={<MdOpenInNew />} onClick={() => navigate('/marketplace')}>
-                    {t('marketplace.title')}
                 </MenuItem>
             </MenuList>
             <ImportFromSvg isOpen={openImportSvg} onClose={() => setOpenImportSvg(false)} />
