@@ -60,3 +60,10 @@ export type CanvasColor = 'white' | 'dark' | 'auto';
 export enum Events {
     APP_LOAD = 'APP_LOAD',
 }
+
+export interface Login {
+    name: string;
+    email: string;
+    token: string;
+    refreshToken: string;
+}

@@ -6,14 +6,20 @@ export const GITHUB_ISSUE_PREAMBLE = '**Paste or Upload below. They are meant fo
 export interface MetadataDetail {
     name: Translation;
     desc: Translation;
-    justification: string;
+    svgString: string;
+    type: 'MiscNode' | 'Station';
 }
 
 export interface Metadata {
     name: Translation;
     desc: Translation;
     contributor: string;
-    lastUpdateOn: number;
+    lastUpdateOn: string;
+    type: 'MiscNode' | 'Station';
+    status: 'public' | 'pending' | 'rejected';
+    paramStr: string;
+    svgString: string;
+    svgHash: string;
 }
 
 export const defaultMetadata: Metadata = {
@@ -24,9 +30,26 @@ export const defaultMetadata: Metadata = {
         en: '',
     },
     contributor: '',
-    lastUpdateOn: 0,
+    lastUpdateOn: '',
+    type: 'MiscNode',
+    status: 'public',
+    paramStr: '',
+    svgString: '',
+    svgHash: '',
 };
 
 export interface Marketplace {
-    [styleName: string]: Metadata;
+    [id: number]: Metadata;
+}
+
+export interface ResponseMetadata {
+    id: number;
+    data: string;
+    hash: string;
+    lastUpdateAt: string;
+    status: 'public' | 'pending' | 'rejected';
+    type: 'MiscNode' | 'Station';
+    userId: number;
+    svgString: string;
+    svgHash: string;
 }

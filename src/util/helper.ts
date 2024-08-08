@@ -1,3 +1,4 @@
+import pako from 'pako';
 import { customAlphabet } from 'nanoid';
 import { Param } from '../constants/constants';
 
@@ -61,4 +62,25 @@ const downloadBlobAs = (filename: string, blob: Blob) => {
 
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+};
+
+export const compressToBase64 = (input: string): string => {
+    const uint8Array = new TextEncoder().encode(input);
+    const compressed = pako.deflate(uint8Array);
+    return btoa(String.fromCharCode(...new Uint8Array(compressed.buffer)));
+};
+
+export const decompressFromBase64 = (base64: string): string => {
+    const binaryString = atob(base64);
+    const uint8Array = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+    const decompressed = pako.inflate(uint8Array);
+    return new TextDecoder().decode(decompressed);
+};
+
+export const createHash = async (data: string, algorithm = 'SHA-256') => {
+    const encoder = new TextEncoder();
+    const encodedData = encoder.encode(data);
+    const hashBuffer = await crypto.subtle.digest(algorithm, encodedData);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
 };

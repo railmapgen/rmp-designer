@@ -4,6 +4,7 @@ import WindowHeader from './header/window-header';
 import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import { useRootDispatch, useRootSelector } from '../redux';
 import { closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
+import { setLogin } from '../redux/app/app-slice';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import MarketplaceView from './marketplace/marketplace';
 import DesignerRoot from './designer-root';
@@ -14,6 +15,12 @@ export default function AppRoot() {
     const {
         paletteAppClip: { input },
     } = useRootSelector(state => state.runtime);
+
+    React.useEffect(() => {
+        const p = localStorage.getItem('rmg-home__account');
+        const login = p ? JSON.parse(p) : undefined;
+        dispatch(setLogin(login));
+    }, [localStorage.getItem('rmg-home__account')]);
 
     return (
         <HashRouter>

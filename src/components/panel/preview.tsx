@@ -11,15 +11,18 @@ import {
     Text,
 } from '@chakra-ui/react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CreateSvgs } from '../svgs/createSvgs';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import { MetadataDetail } from '../../constants/marketplace';
 import { setLabel, setTransform } from '../../redux/param/param-slice';
 import { Export } from './export';
 
 export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
     const { isOpen, onClose } = props;
+    const navigate = useNavigate();
     const { t } = useTranslation();
     const param = useRootSelector(store => store.param);
     const dispatch = useRootDispatch();
@@ -31,6 +34,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
     const [showBadges, setShowBadges] = React.useState(false);
     const [isExportOpen, setExportOpen] = React.useState(false);
 
+    /*
     const exportToJpg = () => {
         setShowLines(false);
         setShowBadges(false);
@@ -55,13 +59,11 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
 
-                // 缩放图像
                 ctx.scale(scaleFactor, scaleFactor);
                 ctx.drawImage(img, 0, 0, width, height);
 
                 const jpegUrl = canvas.toDataURL('image/jpeg', 0.8); // 最高质量
 
-                // 创建下载链接
                 const link = document.createElement('a');
                 link.href = jpegUrl;
                 link.download = `RMP-Designer_${new Date().valueOf()}.jpg`;
@@ -72,6 +74,31 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
             URL.revokeObjectURL(url);
         };
         img.src = url;
+    };
+    */
+
+    const saveSvgAsString = () => {
+        if (svgRef.current) {
+            const svgElement = svgRef.current;
+            const serializer = new XMLSerializer();
+            return serializer.serializeToString(svgElement);
+        }
+    };
+
+    const handleUploadMarketplace = () => {
+        const svgStr = saveSvgAsString();
+        if (svgStr) {
+            navigate('/new', {
+                state: {
+                    metadata: {
+                        name: { en: '' },
+                        desc: { en: '' },
+                        svgString: svgStr,
+                        type: param.type,
+                    } as MetadataDetail,
+                },
+            });
+        }
     };
 
     const linePaths = [
@@ -266,8 +293,8 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                         <Button colorScheme="blue" variant="outline" mr="1" onClick={onClose}>
                             {t('cancel')}
                         </Button>
-                        <Button id="exportJPG" colorScheme="blue" variant="solid" mr="1" onClick={exportToJpg}>
-                            {t('header.export.exportJPG')}
+                        <Button colorScheme="blue" variant="solid" mr="1" onClick={handleUploadMarketplace}>
+                            {t('header.export.UploadMarketplace')}
                         </Button>
                         <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
                             {t('header.export.export')}

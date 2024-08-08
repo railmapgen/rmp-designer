@@ -7,7 +7,7 @@ import AppRoot from './components/app-root';
 import store from './redux';
 import initStore from './redux/init';
 import { setParam } from './redux/param/param-slice';
-import { setAppState } from './redux/app/app-slice';
+import { setAppState, setLogin } from './redux/app/app-slice';
 import { Events } from './constants/constants';
 import i18n from './i18n/config';
 import { upgrade } from './util/save';
@@ -36,8 +36,10 @@ rmgRuntime.ready().then(() => {
 
 const appState = localStorage.getItem('rmp-designer__app');
 const param = localStorage.getItem('rmp-designer__param');
+const account = localStorage.getItem('rmg-home__account');
 
 appState !== null && store.dispatch(setAppState(JSON.parse(appState)));
+account !== null && store.dispatch(setLogin(JSON.parse(account)));
 
 upgrade(param).then(param => {
     store.dispatch(setParam(JSON.parse(param)));

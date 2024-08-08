@@ -1,25 +1,24 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Marketplace } from '../../constants/marketplace';
+import { createSlice } from '@reduxjs/toolkit';
 
 interface MarketplaceState {
-    styles: Marketplace;
+    refresh: number;
 }
 
 const initialState: MarketplaceState = {
-    styles: {},
+    refresh: 0,
 };
 
 const marketplaceSlice = createSlice({
-    name: 'app',
+    name: 'marketplace',
     initialState,
     reducers: {
-        setStyles: (state, action: PayloadAction<Marketplace>) => {
-            state.styles = action.payload;
+        setRefresh: state => {
+            state.refresh++;
         },
     },
 });
 
-export const { setStyles } = marketplaceSlice.actions;
+export const { setRefresh } = marketplaceSlice.actions;
 
 const marketplaceReducer = marketplaceSlice.reducer;
 export default marketplaceReducer;
