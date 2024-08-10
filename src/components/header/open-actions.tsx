@@ -9,6 +9,7 @@ import { defaultParam, defaultTransform, Param } from '../../constants/constants
 import { upgrade } from '../../util/save';
 import { nanoid } from '../../util/helper';
 import { ImportFromSvg, loadSvgs } from './import-svg-modal';
+import RmpGalleryAppClip from './rmp-gallery-app-clip';
 
 export default function OpenActions() {
     const { t } = useTranslation();
@@ -16,6 +17,7 @@ export default function OpenActions() {
     const fileSvgInputRef = React.useRef<HTMLInputElement | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const [openImportSvg, setOpenImportSvg] = React.useState(false);
+    const [isOpenGallery, setIsOpenGallery] = React.useState(false);
 
     const loadParam = async (paramStr: string) => {
         const param = JSON.parse(paramStr);
@@ -123,8 +125,12 @@ export default function OpenActions() {
                 <MenuItem icon={<MdOpenInBrowser />} onClick={() => fileSvgInputRef?.current?.click()}>
                     {t('header.import.uploadSVG')}
                 </MenuItem>
+                <MenuItem icon={<MdOpenInBrowser />} onClick={() => setIsOpenGallery(true)}>
+                    {t('header.import.openGallery')}
+                </MenuItem>
             </MenuList>
             <ImportFromSvg isOpen={openImportSvg} onClose={() => setOpenImportSvg(false)} />
+            <RmpGalleryAppClip isOpen={isOpenGallery} onClose={() => setIsOpenGallery(false)} />
         </Menu>
     );
 }

@@ -1,4 +1,4 @@
-import { Button, Flex, HStack, SystemStyleObject, useToast } from '@chakra-ui/react';
+import { Button, Flex, Heading, HStack, SystemStyleObject, useToast } from '@chakra-ui/react';
 import { RmgLabel, RmgPage } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useDispatch } from 'react-redux';
@@ -9,6 +9,10 @@ import { setRefresh } from '../../redux/marketplace/marketplace-slice';
 import { MetadataDetail } from '../../constants/marketplace';
 import { compressToBase64, createHash } from '../../util/helper';
 import MultiLangEntryCard from './multi-lang-entry-card';
+
+const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
+const RMP_GALLERY_CHANNEL_EVENT = 'NEW_DESIGNER';
+const CHN = new BroadcastChannel(RMP_GALLERY_CHANNEL_NAME);
 
 const pageStyles: SystemStyleObject = {
     px: 2,
@@ -37,10 +41,15 @@ export default function Ticket() {
     const { login } = useRootSelector(state => state.app);
     const { t } = useTranslation();
 
-    const handleBack = () => navigate('/marketplace');
+    const handleBack = () => navigate('/');
 
     const [metadata, setMetadata] = React.useState<MetadataDetail>(metadataParam);
-    React.useEffect(() => setMetadata(metadataParam), [metadataParam]);
+    const [editId, setEditId] = React.useState(-1);
+    React.useEffect(() => {
+        setMetadata(metadataParam);
+        setEditId(-1);
+    }, [metadataParam]);
+
     const name = metadata.name['en']?.replace(/[^A-Za-z0-9]/g, '').toLowerCase() ?? '';
 
     const [isLoading, setIsLoading] = React.useState(false);
@@ -48,27 +57,34 @@ export default function Ticket() {
     const handleSubmit = async () => {
         if (!login) return;
         setIsLoading(true);
-        const data = {
-            name: metadata.name,
-            desc: metadata.desc,
-            param: JSON.stringify(designerParam),
-        };
         const mainData = {
-            data: JSON.stringify(data),
-            hash: await createHash(JSON.stringify(data)),
+            data: JSON.stringify(designerParam),
+            hash: await createHash(JSON.stringify(designerParam)),
+            name: JSON.stringify(metadata.name),
+            desc: JSON.stringify(metadata.desc),
             type: designerParam.type,
-            svgString: compressToBase64(metadata.svgString),
-            svgHash: await createHash(metadata.svgString),
+            svg: compressToBase64(metadata.svgString),
         };
-        const rep = await fetch('http://localhost:3000/v1/designer/public', {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${login!.token}`,
-            },
-            body: JSON.stringify(mainData),
-        });
+        const rep =
+            editId === -1
+                ? await fetch('http://localhost:3000/v1/designer/public', {
+                      method: 'POST',
+                      headers: {
+                          accept: 'application/json',
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${login!.token}`,
+                      },
+                      body: JSON.stringify(mainData),
+                  })
+                : await fetch(`http://localhost:3000/v1/designer/public/${editId}`, {
+                      method: 'PATCH',
+                      headers: {
+                          accept: 'application/json',
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${login!.token}`,
+                      },
+                      body: JSON.stringify(mainData),
+                  });
         setIsLoading(false);
         if (rep.status !== 201) {
             toast({
@@ -89,9 +105,24 @@ export default function Ticket() {
         handleBack();
     };
 
+    React.useEffect(() => {
+        CHN.onmessage = e => {
+            const {
+                event,
+                data: { id, name, desc },
+            } = e.data;
+            if (event === RMP_GALLERY_CHANNEL_EVENT) {
+                setMetadata({ ...metadata, name, desc });
+                setEditId(id);
+            }
+        };
+        return () => CHN.close();
+    }, []);
+
     return (
         <RmgPage sx={pageStyles}>
             <Flex>
+                <Heading size="lg">{editId === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
                 <div dangerouslySetInnerHTML={{ __html: metadataParam.svgString }} />
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard

@@ -6,7 +6,6 @@ import { useRootDispatch, useRootSelector } from '../redux';
 import { closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
 import { setLogin } from '../redux/app/app-slice';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
-import MarketplaceView from './marketplace/marketplace';
 import DesignerRoot from './designer-root';
 import Ticket from './marketplace/ticket';
 
@@ -34,14 +33,6 @@ export default function AppRoot() {
                                 element={
                                     <RmgErrorBoundary allowReset>
                                         <DesignerRoot />
-                                    </RmgErrorBoundary>
-                                }
-                            />
-                            <Route
-                                path="/marketplace"
-                                element={
-                                    <RmgErrorBoundary>
-                                        <MarketplaceView />
                                     </RmgErrorBoundary>
                                 }
                             />
