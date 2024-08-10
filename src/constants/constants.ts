@@ -3,6 +3,8 @@ import { SAVE_VERSION } from '../util/save';
 import { SvgsType } from './svgs';
 import { Components } from './components';
 
+export const RMT_SERVER = 'https://railmapgen.org/v1';
+
 export type Id = `id_${string}`;
 
 export interface SvgsElem {

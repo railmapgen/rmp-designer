@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
 import { setRefresh } from '../../redux/marketplace/marketplace-slice';
+import { RMT_SERVER } from '../../constants/constants';
 import { MetadataDetail } from '../../constants/marketplace';
 import { compressToBase64, createHash } from '../../util/helper';
 import MultiLangEntryCard from './multi-lang-entry-card';
@@ -67,7 +68,7 @@ export default function Ticket() {
         };
         const rep =
             editId === -1
-                ? await fetch('http://localhost:3000/v1/designer/public', {
+                ? await fetch(RMT_SERVER + '/designer/public', {
                       method: 'POST',
                       headers: {
                           accept: 'application/json',
@@ -76,7 +77,7 @@ export default function Ticket() {
                       },
                       body: JSON.stringify(mainData),
                   })
-                : await fetch(`http://localhost:3000/v1/designer/public/${editId}`, {
+                : await fetch(`${RMT_SERVER}/designer/public/${editId}`, {
                       method: 'PATCH',
                       headers: {
                           accept: 'application/json',
