@@ -36,7 +36,6 @@ export default function Ticket() {
     const navigate = useNavigate();
     const toast = useToast();
     const dispatch = useDispatch();
-    const designerParam = useRootSelector(state => state.param);
     const { login } = useRootSelector(state => state.app);
     const { t } = useTranslation();
 
@@ -58,11 +57,11 @@ export default function Ticket() {
         if (!login) return;
         setIsLoading(true);
         const mainData = {
-            data: JSON.stringify(designerParam),
-            hash: await createHash(JSON.stringify(designerParam)),
+            data: metadata.param,
+            hash: await createHash(metadata.param),
             name: JSON.stringify(metadata.name),
             desc: JSON.stringify(metadata.desc),
-            type: designerParam.type,
+            type: metadata.type,
             svg: compressToBase64(metadata.svgString),
         };
         const rep =
@@ -109,14 +108,14 @@ export default function Ticket() {
         CHN.onmessage = e => {
             const { event, data } = e.data;
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
-                if (data.id) {
-                    if (metadata.svgString === '') {
-                        setMetadata({ ...metadata, svgString: data.svg });
+                if (data && data.id) {
+                    setEditId(Number(data.id));
+                    if (metadata.svgString === '' || metadata.param) {
+                        setMetadata({ ...metadata, svgString: data.svg, param: data.data, type: data.type });
                     }
                     if (metadata.name.en === '' && metadata.desc.en === '') {
-                        setMetadata({ ...metadata, name: data.name, desc: data.desc, type: data.type });
+                        setMetadata({ ...metadata, name: data.name, desc: data.desc });
                     }
-                    setEditId(Number(data.id));
                 }
             }
         };

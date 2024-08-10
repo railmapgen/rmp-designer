@@ -93,8 +93,9 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                     metadata: {
                         name: { en: '' },
                         desc: { en: '' },
-                        svgString: svgStr,
+                        param: JSON.stringify(param),
                         type: param.type,
+                        svgString: svgStr,
                     } as MetadataDetail,
                 },
             });

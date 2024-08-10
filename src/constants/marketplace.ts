@@ -3,6 +3,7 @@ import { Translation } from '@railmapgen/rmg-translate';
 export interface MetadataDetail {
     name: Translation;
     desc: Translation;
+    param: string;
     svgString: string;
     type: 'MiscNode' | 'Station';
 }
@@ -16,6 +17,7 @@ export const defaultMetadataDetail: MetadataDetail = {
     },
     type: 'MiscNode',
     svgString: '',
+    param: '',
 };
 
 export interface Metadata {
