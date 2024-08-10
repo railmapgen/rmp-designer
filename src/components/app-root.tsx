@@ -25,13 +25,13 @@ export default function AppRoot() {
         <HashRouter>
             <RmgThemeProvider>
                 <RmgWindow>
-                    <WindowHeader />
                     <RmgPage>
                         <Routes>
                             <Route
                                 path="/"
                                 element={
                                     <RmgErrorBoundary allowReset>
+                                        <WindowHeader />
                                         <DesignerRoot />
                                     </RmgErrorBoundary>
                                 }
