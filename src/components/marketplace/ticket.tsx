@@ -32,9 +32,7 @@ const pageStyles: SystemStyleObject = {
 };
 
 export default function Ticket() {
-    const {
-        state: { metadata: metadataParam },
-    } = useLocation();
+    const { state } = useLocation();
     const navigate = useNavigate();
     const toast = useToast();
     const dispatch = useDispatch();
@@ -44,11 +42,13 @@ export default function Ticket() {
 
     const handleBack = () => navigate('/');
 
-    const [metadata, setMetadata] = React.useState<MetadataDetail>(metadataParam ?? defaultMetadataDetail);
+    const [metadata, setMetadata] = React.useState<MetadataDetail>(defaultMetadataDetail);
     const [editId, setEditId] = React.useState(-1);
     React.useEffect(() => {
-        setMetadata(metadataParam);
-    }, [metadataParam]);
+        if (state && state.metadata) {
+            setMetadata(state.metadata);
+        }
+    }, [state]);
 
     const name = metadata.name['en']?.replace(/[^A-Za-z0-9]/g, '').toLowerCase() ?? '';
 
@@ -86,7 +86,7 @@ export default function Ticket() {
                       body: JSON.stringify(mainData),
                   });
         setIsLoading(false);
-        if (rep.status !== 201) {
+        if (rep.status !== 201 && rep.status !== 200) {
             toast({
                 title: `Failed: ${rep.status} ${rep.statusText}`,
                 status: 'error' as const,
@@ -110,6 +110,12 @@ export default function Ticket() {
             const { event, data } = e.data;
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
                 if (data.id) {
+                    if (metadata.svgString === '') {
+                        setMetadata({ ...metadata, svgString: data.svg });
+                    }
+                    if (metadata.name.en === '' && metadata.desc.en === '') {
+                        setMetadata({ ...metadata, name: data.name, desc: data.desc, type: data.type });
+                    }
                     setEditId(Number(data.id));
                 }
             }
@@ -143,7 +149,7 @@ export default function Ticket() {
         <RmgPage sx={pageStyles}>
             <Flex>
                 <Heading size="lg">{editId === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
-                <div dangerouslySetInnerHTML={{ __html: metadataParam.svgString }} />
+                <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard
                         inputType="input"
