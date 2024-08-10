@@ -7,6 +7,17 @@ export interface MetadataDetail {
     type: 'MiscNode' | 'Station';
 }
 
+export const defaultMetadataDetail: MetadataDetail = {
+    name: {
+        en: '',
+    },
+    desc: {
+        en: '',
+    },
+    type: 'MiscNode',
+    svgString: '',
+};
+
 export interface Metadata {
     name: Translation;
     desc: Translation;
@@ -18,22 +29,6 @@ export interface Metadata {
     svgString: string;
     svgHash: string;
 }
-
-export const defaultMetadata: Metadata = {
-    name: {
-        en: '',
-    },
-    desc: {
-        en: '',
-    },
-    contributor: '',
-    lastUpdateOn: '',
-    type: 'MiscNode',
-    status: 'public',
-    paramStr: '',
-    svgString: '',
-    svgHash: '',
-};
 
 export interface Marketplace {
     [id: number]: Metadata;

@@ -1,5 +1,5 @@
 import { Button, Flex, Heading, HStack, SystemStyleObject, useToast } from '@chakra-ui/react';
-import { RmgLabel, RmgPage } from '@railmapgen/rmg-components';
+import { RmgFields, RmgFieldsField, RmgLabel, RmgPage } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
 import { setRefresh } from '../../redux/marketplace/marketplace-slice';
 import { RMT_SERVER } from '../../constants/constants';
-import { MetadataDetail } from '../../constants/marketplace';
+import { defaultMetadataDetail, MetadataDetail } from '../../constants/marketplace';
 import { compressToBase64, createHash } from '../../util/helper';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
@@ -44,11 +44,10 @@ export default function Ticket() {
 
     const handleBack = () => navigate('/');
 
-    const [metadata, setMetadata] = React.useState<MetadataDetail>(metadataParam);
+    const [metadata, setMetadata] = React.useState<MetadataDetail>(metadataParam ?? defaultMetadataDetail);
     const [editId, setEditId] = React.useState(-1);
     React.useEffect(() => {
         setMetadata(metadataParam);
-        setEditId(-1);
     }, [metadataParam]);
 
     const name = metadata.name['en']?.replace(/[^A-Za-z0-9]/g, '').toLowerCase() ?? '';
@@ -108,17 +107,37 @@ export default function Ticket() {
 
     React.useEffect(() => {
         CHN.onmessage = e => {
-            const {
-                event,
-                data: { id, name, desc },
-            } = e.data;
+            const { event, data } = e.data;
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
-                setMetadata({ ...metadata, name, desc });
-                setEditId(id);
+                if (data.id) {
+                    setEditId(Number(data.id));
+                }
             }
         };
         return () => CHN.close();
     }, []);
+
+    const field: RmgFieldsField[] = [
+        {
+            type: 'input',
+            value: editId.toString(),
+            label: 'replacing work ID',
+            onChange: val => setEditId(Number(val)),
+            hidden: editId === -1,
+        },
+        {
+            type: 'custom',
+            label: '',
+            component: <Button onClick={() => setEditId(-1)}>As a new work</Button>,
+            hidden: editId === -1,
+        },
+        {
+            type: 'custom',
+            label: '',
+            component: <Button onClick={() => setEditId(1)}>Replace a existing work</Button>,
+            hidden: editId !== -1,
+        },
+    ];
 
     return (
         <RmgPage sx={pageStyles}>
@@ -165,6 +184,7 @@ export default function Ticket() {
                         }}
                     />
                 </RmgLabel>
+                <RmgFields fields={field} />
             </Flex>
 
             <Flex>
