@@ -44,6 +44,7 @@ export default function RmpGalleryAppClip(props: RmpGalleryAppClipProps) {
     React.useEffect(() => {
         CHN.onmessage = e => {
             const { event, data: paramStr } = e.data;
+            console.log(event);
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
                 handleOpenTemplate(paramStr);
                 onClose();

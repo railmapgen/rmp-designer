@@ -107,6 +107,7 @@ export default function Ticket() {
     React.useEffect(() => {
         CHN.onmessage = e => {
             const { event, data } = e.data;
+            console.log(event);
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
                 console.info(data);
                 if (data && data.id) {
