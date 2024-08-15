@@ -1,4 +1,4 @@
-import { IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from '@chakra-ui/react';
 import React from 'react';
 import { MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
@@ -8,12 +8,13 @@ import { setLabel, setParam, setSvgs, setTransform } from '../../redux/param/par
 import { defaultParam, defaultTransform, Param } from '../../constants/constants';
 import { upgrade } from '../../util/save';
 import { nanoid } from '../../util/helper';
-import { ImportFromSvg, loadSvgs } from './import-svg-modal';
+import { ImportFromSvg, isBase64Svg, loadSvgs } from './import-svg-modal';
 import RmpGalleryAppClip from './rmp-gallery-app-clip';
 
 export default function OpenActions() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
+    const toast = useToast();
     const fileSvgInputRef = React.useRef<HTMLInputElement | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const [openImportSvg, setOpenImportSvg] = React.useState(false);
@@ -68,6 +69,15 @@ export default function OpenActions() {
         } else {
             try {
                 const svgStr = await readFileAsText(file);
+                if (isBase64Svg(svgStr)) {
+                    toast({
+                        title: 'SVG format not available',
+                        status: 'error' as const,
+                        duration: 9000,
+                        isClosable: true,
+                    });
+                    return;
+                }
                 dispatch(setSvgs(loadSvgs(svgStr)));
                 dispatch(setLabel(`SVG ${nanoid(5)}`));
                 dispatch(setTransform(defaultTransform));

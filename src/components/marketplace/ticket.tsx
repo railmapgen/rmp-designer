@@ -108,6 +108,7 @@ export default function Ticket() {
         CHN.onmessage = e => {
             const { event, data } = e.data;
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
+                console.info(data);
                 if (data && data.id) {
                     setEditId(Number(data.id));
                     if (metadata.svgString === '' || metadata.param) {
