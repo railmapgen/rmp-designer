@@ -7,7 +7,7 @@ import { clearGlobalAlerts } from '../../redux/runtime/runtime-slice';
 import { setLabel, setParam, setSvgs, setTransform } from '../../redux/param/param-slice';
 import { defaultParam, defaultTransform, Param } from '../../constants/constants';
 import { upgrade } from '../../util/save';
-import { nanoid } from '../../util/helper';
+import { nanoid, readFileAsText } from '../../util/helper';
 import { ImportFromSvg, isBase64Svg, loadSvgs } from './import-svg-modal';
 import RmpGalleryAppClip from './rmp-gallery-app-clip';
 
@@ -144,11 +144,3 @@ export default function OpenActions() {
         </Menu>
     );
 }
-
-const readFileAsText = (file: File) => {
-    return new Promise((resolve: (text: string) => void) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.readAsText(file);
-    });
-};

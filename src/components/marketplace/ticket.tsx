@@ -1,14 +1,13 @@
 import { Button, Flex, Heading, HStack, SystemStyleObject, useToast } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField, RmgLabel, RmgPage } from '@railmapgen/rmg-components';
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
-import { setRefresh } from '../../redux/marketplace/marketplace-slice';
 import { RMT_SERVER } from '../../constants/constants';
 import { defaultMetadataDetail, MetadataDetail } from '../../constants/marketplace';
 import { compressToBase64, createHash } from '../../util/helper';
+import RmpGalleryAppClip from '../header/rmp-gallery-app-clip';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
 const pageStyles: SystemStyleObject = {
@@ -31,7 +30,6 @@ export default function Ticket() {
     const { state } = useLocation();
     const navigate = useNavigate();
     const toast = useToast();
-    const dispatch = useDispatch();
     const { login } = useRootSelector(state => state.app);
     const { t } = useTranslation();
 
@@ -58,6 +56,7 @@ export default function Ticket() {
     const name = metadata.name['en']?.replace(/[^A-Za-z0-9]/g, '').toLowerCase() ?? '';
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const [openGallery, setOpenGallery] = React.useState(false);
 
     const handleSubmit = async () => {
         if (!login) return;
@@ -106,7 +105,6 @@ export default function Ticket() {
             duration: 9000,
             isClosable: true,
         });
-        dispatch(setRefresh());
         handleBack();
     };
 
@@ -127,7 +125,16 @@ export default function Ticket() {
         {
             type: 'custom',
             label: '',
-            component: <Button onClick={() => setMetadata({ ...metadata, id: 1 })}>Replace a existing work</Button>,
+            component: (
+                <Button
+                    onClick={() => {
+                        setMetadata({ ...metadata, id: 1 });
+                        setOpenGallery(true);
+                    }}
+                >
+                    Replace a existing work
+                </Button>
+            ),
             hidden: metadata.id !== -1,
         },
     ];
@@ -136,7 +143,9 @@ export default function Ticket() {
         <RmgPage sx={pageStyles}>
             <Flex>
                 <Heading size="lg">{metadata.id === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
+                <Heading size="md">{t('basic information')}</Heading>
                 <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
+                <Button onClick={handleBack}>Change designer work</Button>
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard
                         inputType="input"
@@ -177,6 +186,7 @@ export default function Ticket() {
                         }}
                     />
                 </RmgLabel>
+                <Heading size="md">{t('new or replace')}</Heading>
                 <RmgFields fields={field} />
             </Flex>
 
@@ -201,6 +211,7 @@ export default function Ticket() {
                     </Button>
                 </HStack>
             </Flex>
+            <RmpGalleryAppClip isOpen={openGallery} onClose={() => setOpenGallery(false)} />
         </RmgPage>
     );
 }

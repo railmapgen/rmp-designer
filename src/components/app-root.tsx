@@ -41,7 +41,6 @@ export default function AppRoot() {
     React.useEffect(() => {
         const handleMessage = (e: MessageEvent) => {
             const { event, data } = e.data;
-            console.log(event, data);
             if (event === RMP_GALLERY_CHANNEL_OPEN_EVENT) {
                 handleOpenTemplate(data);
             } else if (event === RMP_GALLERY_CHANNEL_NEW_EVENT) {

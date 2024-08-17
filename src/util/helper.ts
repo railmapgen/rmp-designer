@@ -20,19 +20,6 @@ export const roundToNearestN = (x: number, n: number) => Math.round(x / n) * n;
 
 export const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
 
-export const mapRecord = <K extends string, V, R>(
-    record: Record<K, V>,
-    callback: (key: K, value: V) => R
-): Record<K, R> => {
-    return Object.entries(record).reduce(
-        (acc, [key, value]) => {
-            acc[key as K] = callback(key as K, value as V);
-            return acc;
-        },
-        {} as Record<K, R>
-    );
-};
-
 export const isMacClient = navigator.platform.startsWith('Mac');
 
 export const getErrorList = (globalAlerts: Map<string, string>, param: Param): Array<string[]> => {
@@ -70,17 +57,18 @@ export const compressToBase64 = (input: string): string => {
     return btoa(String.fromCharCode(...new Uint8Array(compressed.buffer)));
 };
 
-export const decompressFromBase64 = (base64: string): string => {
-    const binaryString = atob(base64);
-    const uint8Array = Uint8Array.from(binaryString, char => char.charCodeAt(0));
-    const decompressed = pako.inflate(uint8Array);
-    return new TextDecoder().decode(decompressed);
-};
-
 export const createHash = async (data: string, algorithm = 'SHA-256') => {
     const encoder = new TextEncoder();
     const encodedData = encoder.encode(data);
     const hashBuffer = await crypto.subtle.digest(algorithm, encodedData);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
+export const readFileAsText = (file: File) => {
+    return new Promise((resolve: (text: string) => void) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsText(file);
+    });
 };

@@ -4,7 +4,6 @@ import { enableMapSet } from 'immer';
 import appReducer from './app/app-slice';
 import runtimeReducer from './runtime/runtime-slice';
 import paramReducer from './param/param-slice';
-import marketplaceReducer from './marketplace/marketplace-slice';
 
 enableMapSet();
 
@@ -12,7 +11,6 @@ const rootReducer = combineReducers({
     app: appReducer,
     runtime: runtimeReducer,
     param: paramReducer,
-    marketplace: marketplaceReducer,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 
