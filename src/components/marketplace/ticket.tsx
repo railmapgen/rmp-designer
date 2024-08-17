@@ -11,10 +11,6 @@ import { defaultMetadataDetail, MetadataDetail } from '../../constants/marketpla
 import { compressToBase64, createHash } from '../../util/helper';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
-const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
-const RMP_GALLERY_CHANNEL_EVENT = 'NEW_DESIGNER';
-const CHN = new BroadcastChannel(RMP_GALLERY_CHANNEL_NAME);
-
 const pageStyles: SystemStyleObject = {
     px: 2,
     pt: 2,
@@ -42,10 +38,20 @@ export default function Ticket() {
     const handleBack = () => navigate('/');
 
     const [metadata, setMetadata] = React.useState<MetadataDetail>(defaultMetadataDetail);
-    const [editId, setEditId] = React.useState(-1);
     React.useEffect(() => {
         if (state && state.metadata) {
-            setMetadata(state.metadata);
+            const data = state.metadata as MetadataDetail;
+            if (data.from === 'designer') {
+                setMetadata(state.metadata);
+            } else {
+                setMetadata({ ...metadata, id: Number(data.id) });
+                if (metadata.svgString === '' || metadata.param === '') {
+                    setMetadata({ ...metadata, svgString: data.svgString, param: data.param, type: data.type });
+                }
+                if (metadata.name.en === '' && metadata.desc.en === '') {
+                    setMetadata({ ...metadata, name: data.name, desc: data.desc });
+                }
+            }
         }
     }, [state]);
 
@@ -65,7 +71,7 @@ export default function Ticket() {
             svg: compressToBase64(metadata.svgString),
         };
         const rep =
-            editId === -1
+            metadata.id === -1
                 ? await fetch(RMT_SERVER + '/designer/public', {
                       method: 'POST',
                       headers: {
@@ -75,7 +81,7 @@ export default function Ticket() {
                       },
                       body: JSON.stringify(mainData),
                   })
-                : await fetch(`${RMT_SERVER}/designer/public/${editId}`, {
+                : await fetch(`${RMT_SERVER}/designer/public/${metadata.id}`, {
                       method: 'PATCH',
                       headers: {
                           accept: 'application/json',
@@ -104,55 +110,32 @@ export default function Ticket() {
         handleBack();
     };
 
-    React.useEffect(() => {
-        const handleMessage = (e: MessageEvent) => {
-            const { event, data } = e.data;
-            console.log(event);
-            if (event === RMP_GALLERY_CHANNEL_EVENT) {
-                console.info(data);
-                if (data && data.id) {
-                    setEditId(Number(data.id));
-                    if (metadata.svgString === '' || metadata.param) {
-                        setMetadata({ ...metadata, svgString: data.svg, param: data.data, type: data.type });
-                    }
-                    if (metadata.name.en === '' && metadata.desc.en === '') {
-                        setMetadata({ ...metadata, name: data.name, desc: data.desc });
-                    }
-                }
-            }
-        };
-        CHN.addEventListener('message', handleMessage);
-        return () => {
-            CHN.removeEventListener('message', handleMessage);
-        };
-    }, []);
-
     const field: RmgFieldsField[] = [
         {
             type: 'input',
-            value: editId.toString(),
+            value: metadata.id.toString(),
             label: 'replacing work ID',
-            onChange: val => setEditId(Number(val)),
-            hidden: editId === -1,
+            onChange: val => setMetadata({ ...metadata, id: Number(val) }),
+            hidden: metadata.id === -1,
         },
         {
             type: 'custom',
             label: '',
-            component: <Button onClick={() => setEditId(-1)}>As a new work</Button>,
-            hidden: editId === -1,
+            component: <Button onClick={() => setMetadata({ ...metadata, id: -1 })}>As a new work</Button>,
+            hidden: metadata.id === -1,
         },
         {
             type: 'custom',
             label: '',
-            component: <Button onClick={() => setEditId(1)}>Replace a existing work</Button>,
-            hidden: editId !== -1,
+            component: <Button onClick={() => setMetadata({ ...metadata, id: 1 })}>Replace a existing work</Button>,
+            hidden: metadata.id !== -1,
         },
     ];
 
     return (
         <RmgPage sx={pageStyles}>
             <Flex>
-                <Heading size="lg">{editId === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
+                <Heading size="lg">{metadata.id === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
                 <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard

@@ -1,8 +1,9 @@
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { StrictMode } from 'react';
 import { Provider } from 'react-redux';
-import { createRoot, Root } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
+import { createRoot, Root } from 'react-dom/client';
 import AppRoot from './components/app-root';
 import store from './redux';
 import initStore from './redux/init';
@@ -20,7 +21,9 @@ const renderApp = () => {
         <StrictMode>
             <Provider store={store}>
                 <I18nextProvider i18n={i18n}>
-                    <AppRoot />
+                    <HashRouter>
+                        <AppRoot />
+                    </HashRouter>
                 </I18nextProvider>
             </Provider>
         </StrictMode>

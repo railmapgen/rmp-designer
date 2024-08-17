@@ -1,15 +1,26 @@
-import React from 'react';
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import WindowHeader from './header/window-header';
 import { RmgPage, RmgErrorBoundary, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
+import React from 'react';
+import { Route, Routes, useNavigate, useMatch } from 'react-router-dom';
 import { useRootDispatch, useRootSelector } from '../redux';
-import { closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
 import { setLogin } from '../redux/app/app-slice';
+import { setParam } from '../redux/param/param-slice';
+import { clearSelected, closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
+import { Param } from '../constants/constants';
+import { upgrade } from '../util/save';
+import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
 import Ticket from './marketplace/ticket';
+import { MetadataDetail } from '../constants/marketplace';
+
+const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
+const RMP_GALLERY_CHANNEL_OPEN_EVENT = 'OPEN_DESIGNER';
+const RMP_GALLERY_CHANNEL_NEW_EVENT = 'NEW_DESIGNER';
+const CHN = new BroadcastChannel(RMP_GALLERY_CHANNEL_NAME);
 
 export default function AppRoot() {
+    const navigate = useNavigate();
+    const isInNew = useMatch('/new');
     const dispatch = useRootDispatch();
     const {
         paletteAppClip: { input },
@@ -21,40 +32,73 @@ export default function AppRoot() {
         dispatch(setLogin(login));
     }, [localStorage.getItem('rmg-home__account')]);
 
-    return (
-        <HashRouter>
-            <RmgThemeProvider>
-                <RmgWindow>
-                    <RmgPage>
-                        <Routes>
-                            <Route
-                                path="/"
-                                element={
-                                    <RmgErrorBoundary allowReset>
-                                        <WindowHeader />
-                                        <DesignerRoot />
-                                    </RmgErrorBoundary>
-                                }
-                            />
-                            <Route
-                                path="/new"
-                                element={
-                                    <RmgErrorBoundary>
-                                        <Ticket />
-                                    </RmgErrorBoundary>
-                                }
-                            />
-                        </Routes>
+    const handleOpenTemplate = async (paramStr: string) => {
+        const param = JSON.parse(await upgrade(paramStr)) as Param;
+        dispatch(clearSelected());
+        dispatch(setParam(param));
+    };
 
-                        <RmgPaletteAppClip
-                            isOpen={!!input}
-                            onClose={() => dispatch(closePaletteAppClip())}
-                            defaultTheme={input}
-                            onSelect={nextTheme => dispatch(onPaletteAppClipEmit(nextTheme))}
+    React.useEffect(() => {
+        const handleMessage = (e: MessageEvent) => {
+            const { event, data } = e.data;
+            console.log(event, data);
+            if (event === RMP_GALLERY_CHANNEL_OPEN_EVENT) {
+                handleOpenTemplate(data);
+            } else if (event === RMP_GALLERY_CHANNEL_NEW_EVENT) {
+                const from = isInNew ? 'ticket' : 'designer';
+                navigate('/new', {
+                    state: {
+                        metadata: {
+                            name: data.name,
+                            desc: data.desc,
+                            param: data.data,
+                            type: data.type,
+                            svgString: data.svg,
+                            id: data.id,
+                            from,
+                        } as MetadataDetail,
+                    },
+                });
+            }
+        };
+        CHN.addEventListener('message', handleMessage);
+        return () => {
+            CHN.removeEventListener('message', handleMessage);
+        };
+    }, []);
+
+    return (
+        <RmgThemeProvider>
+            <RmgWindow>
+                <RmgPage>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <RmgErrorBoundary allowReset>
+                                    <WindowHeader />
+                                    <DesignerRoot />
+                                </RmgErrorBoundary>
+                            }
                         />
-                    </RmgPage>
-                </RmgWindow>
-            </RmgThemeProvider>
-        </HashRouter>
+                        <Route
+                            path="/new"
+                            element={
+                                <RmgErrorBoundary>
+                                    <Ticket />
+                                </RmgErrorBoundary>
+                            }
+                        />
+                    </Routes>
+
+                    <RmgPaletteAppClip
+                        isOpen={!!input}
+                        onClose={() => dispatch(closePaletteAppClip())}
+                        defaultTheme={input}
+                        onSelect={nextTheme => dispatch(onPaletteAppClipEmit(nextTheme))}
+                    />
+                </RmgPage>
+            </RmgWindow>
+        </RmgThemeProvider>
     );
 }
