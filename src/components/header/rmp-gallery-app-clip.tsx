@@ -42,7 +42,7 @@ export default function RmpGalleryAppClip(props: RmpGalleryAppClipProps) {
     };
 
     React.useEffect(() => {
-        CHN.onmessage = e => {
+        const handleMessage = (e: MessageEvent) => {
             const { event, data: paramStr } = e.data;
             console.log(event);
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
@@ -50,7 +50,10 @@ export default function RmpGalleryAppClip(props: RmpGalleryAppClipProps) {
                 onClose();
             }
         };
-        return () => CHN.close();
+        CHN.addEventListener('message', handleMessage);
+        return () => {
+            CHN.removeEventListener('message', handleMessage);
+        };
     }, []);
 
     return (

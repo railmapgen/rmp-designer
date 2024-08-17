@@ -105,7 +105,7 @@ export default function Ticket() {
     };
 
     React.useEffect(() => {
-        CHN.onmessage = e => {
+        const handleMessage = (e: MessageEvent) => {
             const { event, data } = e.data;
             console.log(event);
             if (event === RMP_GALLERY_CHANNEL_EVENT) {
@@ -121,7 +121,10 @@ export default function Ticket() {
                 }
             }
         };
-        return () => CHN.close();
+        CHN.addEventListener('message', handleMessage);
+        return () => {
+            CHN.removeEventListener('message', handleMessage);
+        };
     }, []);
 
     const field: RmgFieldsField[] = [
