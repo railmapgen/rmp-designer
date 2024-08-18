@@ -1,6 +1,6 @@
 import { IconButton, Menu, MenuButton, MenuItem, MenuList, useToast } from '@chakra-ui/react';
 import React from 'react';
-import { MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
+import { MdNoteAdd, MdOpenInBrowser, MdOpenInNew, MdOutlineImage, MdUpload } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../redux';
 import { clearGlobalAlerts } from '../../redux/runtime/runtime-slice';
@@ -99,7 +99,7 @@ export default function OpenActions() {
             <MenuButton as={IconButton} size="sm" variant="ghost" icon={<MdUpload />} />
             <MenuList>
                 <MenuItem
-                    icon={<MdOpenInNew />}
+                    icon={<MdNoteAdd />}
                     onClick={() => {
                         dispatch(setParam(defaultParam));
                         dispatch(setTransform(defaultTransform));
@@ -135,8 +135,8 @@ export default function OpenActions() {
                 <MenuItem icon={<MdOpenInBrowser />} onClick={() => fileSvgInputRef?.current?.click()}>
                     {t('header.import.uploadSVG')}
                 </MenuItem>
-                <MenuItem icon={<MdOpenInBrowser />} onClick={() => setIsOpenGallery(true)}>
-                    {t('header.import.openGallery')}
+                <MenuItem icon={<MdOpenInNew />} onClick={() => setIsOpenGallery(true)}>
+                    {t('header.import.gallery')}
                 </MenuItem>
             </MenuList>
             <ImportFromSvg isOpen={openImportSvg} onClose={() => setOpenImportSvg(false)} />

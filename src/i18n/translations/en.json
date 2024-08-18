@@ -15,7 +15,8 @@
             "new": "New",
             "pasteSVG": "Paste SVG",
             "uploadParam": "Upload project",
-            "uploadSVG": "Upload SVG"
+            "uploadSVG": "Upload SVG",
+            "gallery": "Import from gallery"
         },
         "export": {
             "preview": "Preview",
@@ -25,8 +26,9 @@
             "offsetY": "Offset Y",
             "scale": "Scale",
             "rotate": "Rotate",
-            "export": "Export",
-            "download": "Download"
+            "export": "Export to RMP",
+            "download": "Download",
+            "gallery": "Publish to gallery"
         },
         "settings": {
             "title": "Settings",
@@ -72,18 +74,6 @@
         "common": {
             "type": "Type",
             "label": "Label"
-        }
-    },
-    "marketplace": {
-        "title": "Marketplace",
-        "editorSelected": "✨ Editor Selected",
-        "all": "All Works",
-        "details": "Details",
-        "filterName": "Filter by name",
-        "sortBy": {
-            "label": "Sort by",
-            "alphabetical": "Alphabetically",
-            "updateTime": "Update time"
         }
     }
 }

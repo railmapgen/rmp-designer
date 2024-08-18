@@ -1,4 +1,4 @@
-import { Badge, Button, Flex, HStack, Spacer } from '@chakra-ui/react';
+import { Button, Flex, HStack, Spacer } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdErrorOutline } from 'react-icons/md';
@@ -43,12 +43,9 @@ const DesignerRoot = () => {
                     <HStack width="100%">
                         <Settings />
                         <Button onClick={() => setOpenExport(true)} isDisabled={errorList.length > 0}>
-                            {t('header.export.export')}
-                            <Badge ml="1" colorScheme="green">
-                                RMP
-                            </Badge>
+                            {t('header.export.export')} / {t('header.export.gallery')}
                         </Button>
-                        <Button onClick={() => setIsGalleryOpen(true)}>{t('marketplace.title')}</Button>
+                        <Button onClick={() => setIsGalleryOpen(true)}>{t('header.import.gallery')}</Button>
                         {errorList.length > 0 && (
                             <Button onClick={() => setOpenErrorDisplay(true)}>
                                 <MdErrorOutline />

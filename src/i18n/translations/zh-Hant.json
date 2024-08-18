@@ -15,7 +15,8 @@
             "new": "新建項目",
             "pasteSVG": "粘貼 SVG",
             "uploadParam": "上傳項目",
-            "uploadSVG": "上傳 SVG"
+            "uploadSVG": "上傳 SVG",
+            "gallery": "從畫廊導入"
         },
         "export": {
             "preview": "預覽",
@@ -25,8 +26,9 @@
             "offsetY": "偏移 Y",
             "scale": "縮放",
             "rotate": "旋轉",
-            "export": "導出",
-            "download": "下載"
+            "export": "匯出到 RMP",
+            "download": "下載",
+            "gallery": "發佈到畫廊"
         },
         "settings": {
             "title": "設定",
@@ -72,18 +74,6 @@
         "common": {
             "type": "類型",
             "label": "標籤"
-        }
-    },
-    "marketplace": {
-        "title": "市場",
-        "editorSelected": "✨ 編輯精選",
-        "all": "所有作品",
-        "details": "詳細資訊",
-        "filterName": "按名稱過濾",
-        "sortBy": {
-            "label": "排序方式",
-            "alphabetical": "按字母順序",
-            "updateTime": "更新時間"
         }
     }
 }

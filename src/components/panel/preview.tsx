@@ -1,5 +1,4 @@
 import {
-    Badge,
     Button,
     Modal,
     ModalBody,
@@ -176,9 +175,6 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                     <ModalHeader>
                         <Text as="b" fontSize="xl">
                             {t('header.export.preview')}
-                            <Badge ml="1" colorScheme="green">
-                                RMP
-                            </Badge>
                         </Text>
                         <ModalCloseButton />
                     </ModalHeader>
@@ -297,7 +293,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                             {t('cancel')}
                         </Button>
                         <Button colorScheme="blue" variant="solid" mr="1" onClick={handleUploadMarketplace}>
-                            {t('header.export.UploadMarketplace')}
+                            {t('header.export.gallery')}
                         </Button>
                         <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
                             {t('header.export.export')}

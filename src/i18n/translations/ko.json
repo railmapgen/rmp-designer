@@ -15,7 +15,8 @@
             "new": "새로 만들기",
             "pasteSVG": "SVG 붙여넣기",
             "uploadParam": "프로젝트 업로드",
-            "uploadSVG": "SVG 업로드"
+            "uploadSVG": "SVG 업로드",
+            "gallery": "갤러리에서 가져오기"
         },
         "export": {
             "preview": "미리보기",
@@ -25,8 +26,9 @@
             "offsetY": "오프셋 Y",
             "scale": "크기 조정",
             "rotate": "회전",
-            "export": "내보내기",
-            "download": "다운로드"
+            "export": "RMP로 내보내기",
+            "download": "다운로드",
+            "gallery": "갤러리에 게시"
         },
         "settings": {
             "title": "설정",
@@ -72,18 +74,6 @@
         "common": {
             "type": "유형",
             "label": "라벨"
-        }
-    },
-    "marketplace": {
-        "title": "마켓플레이스",
-        "editorSelected": "✨ 편집자 선택",
-        "all": "모든 작품",
-        "details": "세부정보",
-        "filterName": "이름으로 필터링",
-        "sortBy": {
-            "label": "정렬 기준",
-            "alphabetical": "알파벳순",
-            "updateTime": "업데이트 시간"
         }
     }
 }
