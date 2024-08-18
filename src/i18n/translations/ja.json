@@ -75,5 +75,24 @@
             "type": "タイプ",
             "label": "ラベル"
         }
+    },
+    "ticket": {
+        "title": "ギャラリーにアップロード",
+        "infoSection": "基本情報",
+        "operationSection": "新規または置換",
+        "cityName": "作品名（英語が必要）",
+        "description": "説明（任意、英語が必要）",
+        "change": "デザイナーで作品を変更",
+        "replace": "既存の作品を置換",
+        "new": "新しい作品として",
+        "back": "戻る",
+        "submit": "送信",
+        "submitTemplate": "作品を送信"
+    },
+    "multiLangEntry": {
+        "lang": "言語",
+        "name": "名前",
+        "add": "他の言語で名前を追加",
+        "remove": "この名前を削除"
     }
 }

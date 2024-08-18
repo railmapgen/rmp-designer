@@ -75,5 +75,24 @@
             "type": "유형",
             "label": "라벨"
         }
+    },
+    "ticket": {
+        "title": "갤러리에 업로드",
+        "infoSection": "기본 정보",
+        "operationSection": "새로 만들기 또는 교체",
+        "cityName": "작품 이름(영어 필수)",
+        "description": "설명(선택 사항, 영어 필수)",
+        "change": "디자이너에서 작품 변경",
+        "replace": "기존 작품 교체",
+        "new": "새로운 작품으로",
+        "back": "뒤로",
+        "submit": "제출",
+        "submitTemplate": "작품 제출"
+    },
+    "multiLangEntry": {
+        "lang": "언어",
+        "name": "이름",
+        "add": "다른 언어로 이름 추가",
+        "remove": "이 이름 제거"
     }
 }

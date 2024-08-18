@@ -75,5 +75,24 @@
             "type": "类型",
             "label": "标签"
         }
+    },
+    "ticket": {
+        "title": "上传至画廊",
+        "infoSection": "基本信息",
+        "operationSection": "新建或替换",
+        "cityName": "作品名称（需要英文）",
+        "description": "描述（可选，需英文）",
+        "change": "在设计器中更改作品",
+        "replace": "替换现有作品",
+        "new": "作为新作品",
+        "back": "返回",
+        "submit": "提交",
+        "submitTemplate": "提交作品"
+    },
+    "multiLangEntry": {
+        "lang": "语言",
+        "name": "名称",
+        "add": "添加其他语言的名称",
+        "remove": "移除此名称"
     }
 }

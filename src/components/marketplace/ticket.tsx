@@ -119,7 +119,7 @@ export default function Ticket() {
         {
             type: 'custom',
             label: '',
-            component: <Button onClick={() => setMetadata({ ...metadata, id: -1 })}>As a new work</Button>,
+            component: <Button onClick={() => setMetadata({ ...metadata, id: -1 })}>{t('ticket.new')}</Button>,
             hidden: metadata.id === -1,
         },
         {
@@ -132,7 +132,7 @@ export default function Ticket() {
                         setOpenGallery(true);
                     }}
                 >
-                    Replace a existing work
+                    {t('ticket.replace')}
                 </Button>
             ),
             hidden: metadata.id !== -1,
@@ -142,10 +142,10 @@ export default function Ticket() {
     return (
         <RmgPage sx={pageStyles}>
             <Flex>
-                <Heading size="lg">{metadata.id === -1 ? 'Uploading to gallery' : 'Updating your work'}</Heading>
-                <Heading size="md">{t('basic information')}</Heading>
+                <Heading size="lg">{t('ticket.title')}</Heading>
+                <Heading size="md">{t('ticket.infoSection')}</Heading>
                 <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
-                <Button onClick={handleBack}>Change designer work</Button>
+                <Button onClick={handleBack}>{t('ticket.change')}</Button>
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard
                         inputType="input"
@@ -186,7 +186,7 @@ export default function Ticket() {
                         }}
                     />
                 </RmgLabel>
-                <Heading size="md">{t('new or replace')}</Heading>
+                <Heading size="md">{t('ticket.operationSection')}</Heading>
                 <RmgFields fields={field} />
             </Flex>
 

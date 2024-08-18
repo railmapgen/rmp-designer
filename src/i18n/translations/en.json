@@ -75,5 +75,24 @@
             "type": "Type",
             "label": "Label"
         }
+    },
+    "ticket": {
+        "title": "Uploading to gallery",
+        "infoSection": "Basic information",
+        "operationSection": "New or replacement",
+        "cityName": "Work name (English required)",
+        "description": "Description (Optional, English required)",
+        "change": "Change work in designer",
+        "replace": "Replace a existing work",
+        "new": "As a new work",
+        "back": "Back",
+        "submit": "Submit",
+        "submitTemplate": "Submit work"
+    },
+    "multiLangEntry": {
+        "lang": "Language",
+        "name": "Name",
+        "add": "Add a name in another language",
+        "remove": "Remove this name"
     }
 }
