@@ -14,6 +14,7 @@ const pageStyles: SystemStyleObject = {
     px: 2,
     pt: 2,
     width: { base: '100%', md: 520 },
+    alignSelf: 'center',
 
     '& > div:first-of-type': {
         flexDirection: 'column',
@@ -142,8 +143,12 @@ export default function Ticket() {
     return (
         <RmgPage sx={pageStyles}>
             <Flex>
-                <Heading size="lg">{t('ticket.title')}</Heading>
-                <Heading size="md">{t('ticket.infoSection')}</Heading>
+                <Heading as="h5" size="lg">
+                    {t('ticket.title')}
+                </Heading>
+                <Heading as="h5" size="md">
+                    {t('ticket.infoSection')}
+                </Heading>
                 <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
                 <Button onClick={handleBack}>{t('ticket.change')}</Button>
                 <RmgLabel label={t('ticket.cityName')}>
@@ -186,18 +191,18 @@ export default function Ticket() {
                         }}
                     />
                 </RmgLabel>
-                <Heading size="md">{t('ticket.operationSection')}</Heading>
+
+                <Heading as="h5" size="md">
+                    {t('ticket.operationSection')}
+                </Heading>
                 <RmgFields fields={field} />
             </Flex>
 
             <Flex>
-                <Button size="sm" onClick={handleBack}>
-                    {t('ticket.back')}
-                </Button>
+                <Button onClick={handleBack}>{t('ticket.back')}</Button>
 
                 <HStack ml="auto">
                     <Button
-                        size="sm"
                         colorScheme="primary"
                         isDisabled={
                             metadata.svgString === '' ||

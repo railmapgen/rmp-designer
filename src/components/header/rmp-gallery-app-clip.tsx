@@ -27,7 +27,7 @@ export default function RmpGalleryAppClip(props: RmpGalleryAppClipProps) {
 
     return (
         <RmgAppClip isOpen={isOpen} onClose={onClose} size="full" sx={styles}>
-            <iframe src="/rmp-gallery/" loading="lazy" />
+            <iframe src="/rmp-gallery/?tabId=2" loading="lazy" />
             <CloseButton onClick={onClose} position="fixed" top="5px" right="15px" />
         </RmgAppClip>
     );
