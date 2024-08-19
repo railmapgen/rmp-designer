@@ -7,19 +7,23 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
+    useToast,
 } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { defaultTransform, SvgsElem } from '../../constants/constants';
-import { nanoid } from '../../util/helper';
 import { useRootDispatch } from '../../redux';
 import { setLabel, setSvgs, setTransform } from '../../redux/param/param-slice';
+import { nanoid } from '../../util/helper';
+
+export function isBase64Svg(svgString: string) {
+    const imageTagRegex = /<image*/;
+    const match = svgString.match(imageTagRegex);
+    return !!match;
+}
 
 export const loadSvgs = (svgString: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(svgString, 'image/svg+xml');
-
     function convertStyleStringToObject(style: any): Record<string, string> {
         if (typeof style === 'object') {
             return style;
@@ -70,6 +74,9 @@ export const loadSvgs = (svgString: string) => {
         };
     };
 
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgString, 'image/svg+xml');
+
     const svgRoot = doc.documentElement;
     const svgElements = dfs(svgRoot);
     console.log(svgElements);
@@ -81,6 +88,7 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
     const { isOpen, onClose } = props;
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
+    const toast = useToast();
 
     const [svgString, setSvgString] = React.useState('');
     const field: RmgFieldsField[] = [
@@ -93,6 +101,15 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
     ];
 
     const handleImport = () => {
+        if (isBase64Svg(svgString)) {
+            toast({
+                title: 'SVG format not available',
+                status: 'error' as const,
+                duration: 9000,
+                isClosable: true,
+            });
+            return;
+        }
         dispatch(setSvgs(loadSvgs(svgString)));
         dispatch(setLabel(`SVG ${nanoid(5)}`));
         dispatch(setTransform(defaultTransform));

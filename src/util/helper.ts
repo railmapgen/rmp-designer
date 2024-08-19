@@ -1,3 +1,4 @@
+import pako from 'pako';
 import { customAlphabet } from 'nanoid';
 import { Param } from '../constants/constants';
 
@@ -18,19 +19,6 @@ export const pointerPosToSVGCoord = (
 export const roundToNearestN = (x: number, n: number) => Math.round(x / n) * n;
 
 export const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
-
-export const mapRecord = <K extends string, V, R>(
-    record: Record<K, V>,
-    callback: (key: K, value: V) => R
-): Record<K, R> => {
-    return Object.entries(record).reduce(
-        (acc, [key, value]) => {
-            acc[key as K] = callback(key as K, value as V);
-            return acc;
-        },
-        {} as Record<K, R>
-    );
-};
 
 export const isMacClient = navigator.platform.startsWith('Mac');
 
@@ -61,4 +49,26 @@ const downloadBlobAs = (filename: string, blob: Blob) => {
 
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+};
+
+export const compressToBase64 = (input: string): string => {
+    const uint8Array = new TextEncoder().encode(input);
+    const compressed = pako.deflate(uint8Array);
+    return btoa(String.fromCharCode(...new Uint8Array(compressed.buffer)));
+};
+
+export const createHash = async (data: string, algorithm = 'SHA-256') => {
+    const encoder = new TextEncoder();
+    const encodedData = encoder.encode(data);
+    const hashBuffer = await crypto.subtle.digest(algorithm, encodedData);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
+export const readFileAsText = (file: File) => {
+    return new Promise((resolve: (text: string) => void) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsText(file);
+    });
 };

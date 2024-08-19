@@ -1,4 +1,4 @@
-import { Badge, IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
+import { IconButton, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { MdDownload, MdOutput, MdSave } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
@@ -30,10 +30,7 @@ export default function ExportActions() {
                         {t('header.export.download')}
                     </MenuItem>
                     <MenuItem icon={<MdOutput />} onClick={() => setOpenExport(true)}>
-                        {t('header.export.export')}
-                        <Badge ml="1" colorScheme="green">
-                            RMP
-                        </Badge>
+                        {t('header.export.export')} / {t('header.export.gallery')}
                     </MenuItem>
                 </MenuList>
             </Menu>

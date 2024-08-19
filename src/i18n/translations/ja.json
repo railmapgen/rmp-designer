@@ -15,7 +15,8 @@
             "new": "新規",
             "pasteSVG": "SVGを貼り付け",
             "uploadParam": "プロジェクトをアップロード",
-            "uploadSVG": "SVGをアップロード"
+            "uploadSVG": "SVGをアップロード",
+            "gallery": "ギャラリーからインポート"
         },
         "export": {
             "preview": "プレビュー",
@@ -25,8 +26,9 @@
             "offsetY": "オフセットY",
             "scale": "スケール",
             "rotate": "回転",
-            "export": "エクスポート",
-            "download": "ダウンロード"
+            "export": "RMP にエクスポート",
+            "download": "ダウンロード",
+            "gallery": "ギャラリーに公開"
         },
         "settings": {
             "title": "設定",
@@ -74,16 +76,23 @@
             "label": "ラベル"
         }
     },
-    "marketplace": {
-        "title": "マーケットプレイス",
-        "editorSelected": "✨ 編集者選定",
-        "all": "すべての作品",
-        "details": "詳細",
-        "filterName": "名前でフィルタリング",
-        "sortBy": {
-            "label": "並び替え",
-            "alphabetical": "アルファベット順",
-            "updateTime": "更新時間"
-        }
+    "ticket": {
+        "title": "ギャラリーにアップロード",
+        "infoSection": "基本情報",
+        "operationSection": "新規または置換",
+        "cityName": "作品名（英語が必要）",
+        "description": "説明（任意、英語が必要）",
+        "change": "デザイナーで作品を変更",
+        "replace": "既存の作品を置換",
+        "new": "新しい作品として",
+        "back": "戻る",
+        "submit": "送信",
+        "submitTemplate": "作品を送信"
+    },
+    "multiLangEntry": {
+        "lang": "言語",
+        "name": "名前",
+        "add": "他の言語で名前を追加",
+        "remove": "この名前を削除"
     }
 }

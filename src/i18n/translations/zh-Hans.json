@@ -15,7 +15,8 @@
             "new": "新建项目",
             "pasteSVG": "粘贴 SVG",
             "uploadParam": "上传项目",
-            "uploadSVG": "上传 SVG"
+            "uploadSVG": "上传 SVG",
+            "gallery": "从画廊导入"
         },
         "export": {
             "preview": "预览",
@@ -25,8 +26,9 @@
             "offsetY": "偏移 Y",
             "scale": "缩放",
             "rotate": "旋转",
-            "export": "导出",
-            "download": "下载"
+            "export": "导出到 RMP",
+            "download": "下载",
+            "gallery": "发布到画廊"
         },
         "settings": {
             "title": "设置",
@@ -74,16 +76,23 @@
             "label": "标签"
         }
     },
-    "marketplace": {
-        "title": "市场",
-        "editorSelected": "✨ 编辑精选",
-        "all": "所有作品",
-        "details": "详情",
-        "filterName": "按名称过滤",
-        "sortBy": {
-            "label": "排序方式",
-            "alphabetical": "按字母顺序",
-            "updateTime": "更新时间"
-        }
+    "ticket": {
+        "title": "上传至画廊",
+        "infoSection": "基本信息",
+        "operationSection": "新建或替换",
+        "cityName": "作品名称（需要英文）",
+        "description": "描述（可选，需英文）",
+        "change": "在设计器中更改作品",
+        "replace": "替换现有作品",
+        "new": "作为新作品",
+        "back": "返回",
+        "submit": "提交",
+        "submitTemplate": "提交作品"
+    },
+    "multiLangEntry": {
+        "lang": "语言",
+        "name": "名称",
+        "add": "添加其他语言的名称",
+        "remove": "移除此名称"
     }
 }

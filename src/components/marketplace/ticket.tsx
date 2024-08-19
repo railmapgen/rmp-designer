@@ -1,34 +1,20 @@
-import {
-    Button,
-    Code,
-    Divider,
-    Flex,
-    HStack,
-    Input,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    SystemStyleObject,
-    Text,
-} from '@chakra-ui/react';
-import { RmgDebouncedTextarea, RmgFields, RmgFieldsField, RmgLabel, RmgPage } from '@railmapgen/rmg-components';
+import { Button, Flex, Heading, HStack, SystemStyleObject, useToast } from '@chakra-ui/react';
+import { RmgFields, RmgFieldsField, RmgLabel, RmgPage } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
-import { GITHUB_ISSUE_HEADER, GITHUB_ISSUE_PREAMBLE, Metadata, MetadataDetail } from '../../constants/marketplace';
-import { makeGitHubIssueDetails, readFileAsText } from '../../util/marketplace';
-import { downloadAs } from '../../util/helper';
+import { RMT_SERVER } from '../../constants/constants';
+import { defaultMetadataDetail, MetadataDetail } from '../../constants/marketplace';
+import { compressToBase64, createHash } from '../../util/helper';
+import RmpGalleryAppClip from '../header/rmp-gallery-app-clip';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
 const pageStyles: SystemStyleObject = {
     px: 2,
     pt: 2,
     width: { base: '100%', md: 520 },
+    alignSelf: 'center',
 
     '& > div:first-of-type': {
         flexDirection: 'column',
@@ -42,98 +28,129 @@ const pageStyles: SystemStyleObject = {
 };
 
 export default function Ticket() {
-    const {
-        state: { metadata: metadataParam, id },
-    } = useLocation();
+    const { state } = useLocation();
     const navigate = useNavigate();
-    const { styles } = useRootSelector(state => state.marketplace);
+    const toast = useToast();
+    const { login } = useRootSelector(state => state.app);
     const { t } = useTranslation();
 
-    const handleBack = () => navigate('/marketplace');
+    const handleBack = () => navigate('/');
 
-    const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-    const [isSubmitModalOpen, setIsSubmitModalOpen] = React.useState(false);
+    const [metadata, setMetadata] = React.useState<MetadataDetail>(defaultMetadataDetail);
+    React.useEffect(() => {
+        if (state && state.metadata) {
+            const data = state.metadata as MetadataDetail;
+            if (data.from === 'designer') {
+                setMetadata(state.metadata);
+            } else {
+                setMetadata({ ...metadata, id: Number(data.id) });
+                if (metadata.svgString === '' || metadata.param === '') {
+                    setMetadata({ ...metadata, svgString: data.svgString, param: data.param, type: data.type });
+                }
+                if (metadata.name.en === '' && metadata.desc.en === '') {
+                    setMetadata({ ...metadata, name: data.name, desc: data.desc });
+                }
+            }
+        }
+    }, [state]);
 
-    const [metadata, setMetadata] = React.useState<MetadataDetail>(metadataParam);
-    const [param, setParam] = React.useState('');
-    const newOrUpdate = id in styles ? 'Update' : 'New';
-    const issueBody = [
-        GITHUB_ISSUE_HEADER,
-        GITHUB_ISSUE_PREAMBLE,
-        makeGitHubIssueDetails('metadata', JSON.stringify(metadata, null, 4), {}),
-        makeGitHubIssueDetails('styles', param, { compress: 'none', id }),
-    ].join('\n\n');
     const name = metadata.name['en']?.replace(/[^A-Za-z0-9]/g, '').toLowerCase() ?? '';
-    const manualSearchParams = new URLSearchParams({
-        labels: 'resources',
-        title: `Resources: ${newOrUpdate} work of ${name}`,
-    });
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        console.log('handleFileUpload():: received file', file);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [openGallery, setOpenGallery] = React.useState(false);
 
-        if (!file) {
+    const handleSubmit = async () => {
+        if (!login) return;
+        setIsLoading(true);
+        const mainData = {
+            data: metadata.param,
+            hash: await createHash(metadata.param),
+            name: JSON.stringify(metadata.name),
+            desc: JSON.stringify(metadata.desc),
+            type: metadata.type,
+            svg: compressToBase64(metadata.svgString),
+        };
+        const rep =
+            metadata.id === -1
+                ? await fetch(RMT_SERVER + '/designer/public', {
+                      method: 'POST',
+                      headers: {
+                          accept: 'application/json',
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${login!.token}`,
+                      },
+                      body: JSON.stringify(mainData),
+                  })
+                : await fetch(`${RMT_SERVER}/designer/public/${metadata.id}`, {
+                      method: 'PATCH',
+                      headers: {
+                          accept: 'application/json',
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${login!.token}`,
+                      },
+                      body: JSON.stringify(mainData),
+                  });
+        setIsLoading(false);
+        if (rep.status !== 201 && rep.status !== 200) {
+            toast({
+                title: `Failed: ${rep.status} ${rep.statusText}`,
+                status: 'error' as const,
+                duration: 9000,
+                isClosable: true,
+            });
             return;
         }
-
-        if (file.type !== 'application/json') {
-            alert('Invalid file type!');
-            event.target.value = '';
-            return;
-        }
-
-        try {
-            const paramStr = await readFileAsText(file);
-            setParam(paramStr);
-        } catch (err) {
-            alert('Invalid file!');
-            event.target.value = '';
-        }
-    };
-    const handleNew = async () => {
-        if (textareaRef?.current) {
-            textareaRef.current.select();
-            await navigator.clipboard.writeText(issueBody);
-        }
-        window.open('https://github.com/railmapgen/rmp-designer/issues/new?' + manualSearchParams.toString(), '_blank');
-    };
-    const handleDownload = () => {
-        downloadAs(`${name}.txt`, 'application/json', issueBody);
-        const fileParam = new URLSearchParams({
-            labels: 'resources',
-            title: `Resources: ${newOrUpdate} work of ${name}`,
-            body: [GITHUB_ISSUE_HEADER, GITHUB_ISSUE_PREAMBLE, ''].join('\n\n'),
+        toast({
+            title: 'Done!',
+            status: 'success' as const,
+            duration: 9000,
+            isClosable: true,
         });
-        window.open('https://github.com/railmapgen/rmp-designer/issues/new?' + fileParam.toString(), '_blank');
+        handleBack();
     };
 
-    const fileField: RmgFieldsField[] = [
-        {
-            type: 'custom',
-            label: t('ticket.file'),
-            component: <Input variant="flushed" size="xs" type="file" accept=".json" onChange={handleFileUpload} />,
-            minW: 250,
-        },
-    ];
-    const realWorldFields: RmgFieldsField[] = [
+    const field: RmgFieldsField[] = [
         {
             type: 'input',
-            label: t('ticket.justification'),
-            placeholder: t('ticket.justificationPlaceHolder'),
-            // Enforce a pure English update history.
-            validator: val => /^[a-zA-Z0-9. -]+$/.test(val),
-            value: metadata.justification,
-            onChange: value => setMetadata({ ...metadata, justification: value }),
-            minW: 250,
+            value: metadata.id.toString(),
+            label: 'replacing work ID',
+            onChange: val => setMetadata({ ...metadata, id: Number(val) }),
+            hidden: metadata.id === -1,
+        },
+        {
+            type: 'custom',
+            label: '',
+            component: <Button onClick={() => setMetadata({ ...metadata, id: -1 })}>{t('ticket.new')}</Button>,
+            hidden: metadata.id === -1,
+        },
+        {
+            type: 'custom',
+            label: '',
+            component: (
+                <Button
+                    onClick={() => {
+                        setMetadata({ ...metadata, id: 1 });
+                        setOpenGallery(true);
+                    }}
+                >
+                    {t('ticket.replace')}
+                </Button>
+            ),
+            hidden: metadata.id !== -1,
         },
     ];
 
     return (
         <RmgPage sx={pageStyles}>
             <Flex>
-                <RmgFields fields={fileField} />
-                <RmgFields fields={realWorldFields} />
+                <Heading as="h5" size="lg">
+                    {t('ticket.title')}
+                </Heading>
+                <Heading as="h5" size="md">
+                    {t('ticket.infoSection')}
+                </Heading>
+                <div dangerouslySetInnerHTML={{ __html: metadata.svgString }} />
+                <Button onClick={handleBack}>{t('ticket.change')}</Button>
                 <RmgLabel label={t('ticket.cityName')}>
                     <MultiLangEntryCard
                         inputType="input"
@@ -174,77 +191,32 @@ export default function Ticket() {
                         }}
                     />
                 </RmgLabel>
+
+                <Heading as="h5" size="md">
+                    {t('ticket.operationSection')}
+                </Heading>
+                <RmgFields fields={field} />
             </Flex>
 
             <Flex>
-                <Button size="sm" onClick={handleBack}>
-                    {t('ticket.back')}
-                </Button>
+                <Button onClick={handleBack}>{t('ticket.back')}</Button>
 
                 <HStack ml="auto">
                     <Button
-                        size="sm"
                         colorScheme="primary"
                         isDisabled={
-                            param === '' ||
-                            metadata.justification === '' ||
-                            !/^[a-zA-Z0-9. -]+$/.test(metadata.justification) ||
+                            metadata.svgString === '' ||
                             (Object.keys(metadata.desc).length > 0 && !('en' in metadata.desc)) ||
                             name === ''
                         }
-                        onClick={() => setIsSubmitModalOpen(true)}
-                        hidden
+                        onClick={handleSubmit}
+                        isLoading={isLoading}
                     >
                         {t('ticket.submit')}
                     </Button>
-                    <Button size="sm" colorScheme="primary" isDisabled>
-                        {t('Coming soon')}
-                    </Button>
                 </HStack>
             </Flex>
-
-            <Modal isOpen={isSubmitModalOpen} onClose={() => setIsSubmitModalOpen(false)}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>{t('ticket.submitTemplate')}</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        {issueBody.length < 100 * 100 ? (
-                            <>
-                                <Text>{t('ticket.instruction')}</Text>
-                                <Divider mt="2" mb="4" />
-                                <RmgDebouncedTextarea
-                                    ref={textareaRef}
-                                    isReadOnly
-                                    defaultValue={issueBody}
-                                    minH={300}
-                                    onClick={({ target }) => (target as HTMLTextAreaElement).select()}
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <Text>{t('ticket.instructionFile')}</Text>
-                                <Text>
-                                    {t('ticket.instructionFileHint1')}
-                                    <Code>{t('Uploading your files... (1/1)')}</Code>
-                                    {t('ticket.instructionFileHint2')}
-                                </Text>
-                            </>
-                        )}
-                    </ModalBody>
-                    <ModalFooter>
-                        {issueBody.length < 100 * 100 ? (
-                            <Button colorScheme="primary" onClick={handleNew}>
-                                {t('ticket.openIssue')}
-                            </Button>
-                        ) : (
-                            <Button colorScheme="primary" onClick={handleDownload}>
-                                {t('ticket.download')}
-                            </Button>
-                        )}
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
+            <RmpGalleryAppClip isOpen={openGallery} onClose={() => setOpenGallery(false)} />
         </RmgPage>
     );
 }
