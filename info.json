@@ -1,6 +1,6 @@
 {
-    "component": "rmp-designer",
-    "version": "9.9.9",
-    "environment": "DEV",
-    "instance": "localhost"
+  "component": "rmp-designer",
+  "version": "0.3.1",
+  "environment": "PRD",
+  "instance": "GitHub"
 }
