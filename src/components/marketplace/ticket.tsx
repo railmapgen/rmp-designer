@@ -92,8 +92,9 @@ export default function Ticket() {
                   });
         setIsLoading(false);
         if (rep.status !== 201 && rep.status !== 200) {
+            const text = await rep.json();
             toast({
-                title: `Failed: ${rep.status} ${rep.statusText}`,
+                title: `Failed: ${rep.status} ${rep.statusText} ${text['message']}`,
                 status: 'error' as const,
                 duration: 9000,
                 isClosable: true,
