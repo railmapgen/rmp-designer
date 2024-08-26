@@ -25,14 +25,22 @@ export default function OpenActions() {
         if (
             'id' in param &&
             'type' in param &&
+            'label' in param &&
             'svgs' in param &&
             Array.isArray(param.svgs) &&
             'components' in param &&
-            Array.isArray(param.components)
+            Array.isArray(param.components) &&
+            'transform' in param
         ) {
             const p = await upgrade(paramStr);
             dispatch(setParam(JSON.parse(p) as Param));
         } else {
+            toast({
+                title: 'Invalid param',
+                status: 'error' as const,
+                duration: 9000,
+                isClosable: true,
+            });
             throw new Error('Invalid param');
         }
         dispatch(clearGlobalAlerts());
