@@ -40,10 +40,10 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
             return {
                 label: label,
                 type: 'switch',
-                isChecked: (value ?? defaultValue) === 'true',
+                isChecked: value !== undefined ? !!value : defaultValue,
                 onChange: v => {
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, value: v ? 'true' : 'false' } }));
+                    dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
                 },
             };
         } else if (type === 'textarea') {
