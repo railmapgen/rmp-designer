@@ -72,7 +72,6 @@ export default function AppRoot() {
         const handleMaster = (e: MessageEvent) => {
             const { event } = e.data;
             if (event === RMP_MASTER_CHANNEL_REQUEST) {
-                console.log('caught');
                 const post = JSON.stringify({ ...param, id: nanoid(6) });
                 CHN_MASTER.postMessage({
                     event: RMP_MASTER_CHANNEL_POST,
