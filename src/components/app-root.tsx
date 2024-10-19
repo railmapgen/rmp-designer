@@ -6,17 +6,23 @@ import { setLogin } from '../redux/app/app-slice';
 import { setParam } from '../redux/param/param-slice';
 import { clearSelected, closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
 import { Param } from '../constants/constants';
+import { MetadataDetail } from '../constants/marketplace';
 import { upgrade } from '../util/save';
+import { nanoid } from '../util/helper';
 import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
 import Ticket from './marketplace/ticket';
-import { MetadataDetail } from '../constants/marketplace';
 
 const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
 const RMP_GALLERY_CHANNEL_OPEN_EVENT = 'OPEN_DESIGNER';
 const RMP_GALLERY_CHANNEL_NEW_EVENT = 'NEW_DESIGNER';
 const CHN = new BroadcastChannel(RMP_GALLERY_CHANNEL_NAME);
+
+const RMP_MASTER_CHANNEL_NAME = 'RMP_MASTER_CHANNEL';
+const RMP_MASTER_CHANNEL_REQUEST = 'MASTER_REQUEST';
+const RMP_MASTER_CHANNEL_POST = 'MASTER_POST';
+const CHN_MASTER = new BroadcastChannel(RMP_MASTER_CHANNEL_NAME);
 
 export default function AppRoot() {
     const navigate = useNavigate();
@@ -25,6 +31,7 @@ export default function AppRoot() {
     const {
         paletteAppClip: { input },
     } = useRootSelector(state => state.runtime);
+    const param = useRootSelector(state => state.param);
 
     React.useEffect(() => {
         const p = localStorage.getItem('rmg-home__account');
@@ -61,8 +68,21 @@ export default function AppRoot() {
             }
         };
         CHN.addEventListener('message', handleMessage);
+
+        const handleMaster = (e: MessageEvent) => {
+            const { event } = e.data;
+            if (event === RMP_MASTER_CHANNEL_REQUEST) {
+                const post = JSON.stringify({ ...param, id: nanoid(6) });
+                CHN.postMessage({
+                    event: RMP_MASTER_CHANNEL_POST,
+                    data: post,
+                });
+            }
+        };
+        CHN_MASTER.addEventListener('message', handleMaster);
         return () => {
             CHN.removeEventListener('message', handleMessage);
+            CHN_MASTER.removeEventListener('message', handleMaster);
         };
     }, []);
 
