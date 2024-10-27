@@ -30,7 +30,7 @@ export default function ExportActions() {
                         {t('header.export.download')}
                     </MenuItem>
                     <MenuItem icon={<MdOutput />} onClick={() => setOpenExport(true)}>
-                        {t('header.export.export')} / {t('header.export.gallery')}
+                        {t('header.export.gallery')}
                     </MenuItem>
                 </MenuList>
             </Menu>

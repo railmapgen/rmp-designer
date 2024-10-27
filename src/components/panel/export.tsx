@@ -23,13 +23,7 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
     const { isOpen, onClose, param, exportMode } = props;
     const { t } = useTranslation();
 
-    // const [code, setCode] = React.useState('');
     React.useEffect(() => {
-        // if (isOpen) {
-        //     // setCode(generateCode(param));
-        //     // console.log(JSON.stringify({ ...param, id: nanoid(10) }));
-        //     setCode(JSON.stringify({ ...param, id: nanoid(6) }));
-        // }
         setLoading(false);
     }, [isOpen]);
 
@@ -58,16 +52,34 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
                 </ModalHeader>
 
                 <ModalBody>
-                    <Text>Hi, the software has just been updated!</Text>
-                    <Text>Please open RMP and go to the master node for importing.</Text>
-                    {/*<Textarea value={code} readOnly fontFamily="monospace" fontSize="xs" minH="300" />*/}
+                    <Text hidden={exportMode}>Hi, the software has just been updated!</Text>
+                    <Text hidden={exportMode}>Please open RMP and go to the master node for importing.</Text>
+                    <br />
+                    <Text hidden={exportMode}>嗨，软件刚刚更新！</Text>
+                    <Text hidden={exportMode}>请打开 RMP，进入大师节点后再进行导入。</Text>
+                    <br />
+                    <Text hidden={exportMode}>嗨，軟體剛剛更新！</Text>
+                    <Text hidden={exportMode}>請打開 RMP，進入大師節點後再進行導入。</Text>
+                    <br />
+                    <Text hidden={exportMode}>こんにちは、ソフトウェアが更新されました！</Text>
+                    <Text hidden={exportMode}>RMP を開いて、マスターノードに移動してからインポートしてください。</Text>
+                    <br />
+                    <Text hidden={exportMode}>안녕하세요, 소프트웨어가 방금 업데이트되었습니다!</Text>
+                    <Text hidden={exportMode}>RMP 를 열고 마스터 노드로 이동한 후 가져오기를 진행하세요.</Text>
                 </ModalBody>
 
                 <ModalFooter>
                     <Button colorScheme="blue" variant="outline" mr="1" onClick={onClose}>
                         {t('close')}
                     </Button>
-                    <Button colorScheme="blue" variant="solid" mr="1" onClick={postMessage} isLoading={loading}>
+                    <Button
+                        colorScheme="blue"
+                        variant="solid"
+                        mr="1"
+                        onClick={postMessage}
+                        isLoading={loading}
+                        hidden={!exportMode}
+                    >
                         {t('header.export.export')}
                     </Button>
                 </ModalFooter>

@@ -292,6 +292,9 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                         <Button colorScheme="blue" variant="outline" mr="1" hidden={exportMode} onClick={onClose}>
                             {t('cancel')}
                         </Button>
+                        <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
+                            {t('header.export.export')}
+                        </Button>
                         <Button
                             colorScheme="blue"
                             variant="solid"
@@ -300,9 +303,6 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                             onClick={handleUploadMarketplace}
                         >
                             {t('header.export.gallery')}
-                        </Button>
-                        <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
-                            {t('header.export.export')}
                         </Button>
                     </ModalFooter>
                 </ModalContent>
