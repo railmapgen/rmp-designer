@@ -13,16 +13,12 @@ import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
 import Ticket from './marketplace/ticket';
+import ExportRoot from './export-root';
 
 const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
 const RMP_GALLERY_CHANNEL_OPEN_EVENT = 'OPEN_DESIGNER';
 const RMP_GALLERY_CHANNEL_NEW_EVENT = 'NEW_DESIGNER';
 const CHN = new BroadcastChannel(RMP_GALLERY_CHANNEL_NAME);
-
-const RMP_MASTER_CHANNEL_NAME = 'RMP_MASTER_CHANNEL';
-const RMP_MASTER_CHANNEL_REQUEST = 'MASTER_REQUEST';
-const RMP_MASTER_CHANNEL_POST = 'MASTER_POST';
-const CHN_MASTER = new BroadcastChannel(RMP_MASTER_CHANNEL_NAME);
 
 export default function AppRoot() {
     const navigate = useNavigate();
@@ -68,21 +64,8 @@ export default function AppRoot() {
             }
         };
         CHN.addEventListener('message', handleMessage);
-
-        const handleMaster = (e: MessageEvent) => {
-            const { event } = e.data;
-            if (event === RMP_MASTER_CHANNEL_REQUEST) {
-                const post = JSON.stringify({ ...param, id: nanoid(6) });
-                CHN_MASTER.postMessage({
-                    event: RMP_MASTER_CHANNEL_POST,
-                    data: post,
-                });
-            }
-        };
-        CHN_MASTER.addEventListener('message', handleMaster);
         return () => {
             CHN.removeEventListener('message', handleMessage);
-            CHN_MASTER.removeEventListener('message', handleMaster);
         };
     }, []);
 
@@ -105,6 +88,14 @@ export default function AppRoot() {
                             element={
                                 <RmgErrorBoundary>
                                     <Ticket />
+                                </RmgErrorBoundary>
+                            }
+                        />
+                        <Route
+                            path="/export"
+                            element={
+                                <RmgErrorBoundary>
+                                    <ExportRoot />
                                 </RmgErrorBoundary>
                             }
                         />

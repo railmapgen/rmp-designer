@@ -19,8 +19,8 @@ import { MetadataDetail } from '../../constants/marketplace';
 import { setLabel, setTransform } from '../../redux/param/param-slice';
 import { Export } from './export';
 
-export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
-    const { isOpen, onClose } = props;
+export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMode?: boolean }) => {
+    const { isOpen, onClose, exportMode } = props;
     const navigate = useNavigate();
     const { t } = useTranslation();
     const param = useRootSelector(store => store.param);
@@ -176,7 +176,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                         <Text as="b" fontSize="xl">
                             {t('header.export.preview')}
                         </Text>
-                        <ModalCloseButton />
+                        <ModalCloseButton hidden={exportMode} />
                     </ModalHeader>
 
                     <ModalBody>
@@ -289,10 +289,16 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme="blue" variant="outline" mr="1" onClick={onClose}>
+                        <Button colorScheme="blue" variant="outline" mr="1" hidden={exportMode} onClick={onClose}>
                             {t('cancel')}
                         </Button>
-                        <Button colorScheme="blue" variant="solid" mr="1" onClick={handleUploadMarketplace}>
+                        <Button
+                            colorScheme="blue"
+                            variant="solid"
+                            mr="1"
+                            hidden={exportMode}
+                            onClick={handleUploadMarketplace}
+                        >
                             {t('header.export.gallery')}
                         </Button>
                         <Button colorScheme="blue" variant="solid" mr="1" onClick={handleExport}>
@@ -301,7 +307,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void }) => {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-            <Export isOpen={isExportOpen} onClose={() => setExportOpen(false)} param={param} />
+            <Export isOpen={isExportOpen} onClose={() => setExportOpen(false)} param={param} exportMode={exportMode} />
         </>
     );
 };
