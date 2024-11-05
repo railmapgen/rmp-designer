@@ -8,7 +8,6 @@ import { clearSelected, closePaletteAppClip, onPaletteAppClipEmit } from '../red
 import { Param } from '../constants/constants';
 import { MetadataDetail } from '../constants/marketplace';
 import { upgrade } from '../util/save';
-import { nanoid } from '../util/helper';
 import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
@@ -27,7 +26,6 @@ export default function AppRoot() {
     const {
         paletteAppClip: { input },
     } = useRootSelector(state => state.runtime);
-    const param = useRootSelector(state => state.param);
 
     React.useEffect(() => {
         const p = localStorage.getItem('rmg-home__account');
