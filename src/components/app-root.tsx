@@ -6,12 +6,13 @@ import { setLogin } from '../redux/app/app-slice';
 import { setParam } from '../redux/param/param-slice';
 import { clearSelected, closePaletteAppClip, onPaletteAppClipEmit } from '../redux/runtime/runtime-slice';
 import { Param } from '../constants/constants';
+import { MetadataDetail } from '../constants/marketplace';
 import { upgrade } from '../util/save';
 import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
 import Ticket from './marketplace/ticket';
-import { MetadataDetail } from '../constants/marketplace';
+import ExportRoot from './export-root';
 
 const RMP_GALLERY_CHANNEL_NAME = 'RMP_GALLERY_CHANNEL';
 const RMP_GALLERY_CHANNEL_OPEN_EVENT = 'OPEN_DESIGNER';
@@ -85,6 +86,14 @@ export default function AppRoot() {
                             element={
                                 <RmgErrorBoundary>
                                     <Ticket />
+                                </RmgErrorBoundary>
+                            }
+                        />
+                        <Route
+                            path="/export"
+                            element={
+                                <RmgErrorBoundary>
+                                    <ExportRoot />
                                 </RmgErrorBoundary>
                             }
                         />
