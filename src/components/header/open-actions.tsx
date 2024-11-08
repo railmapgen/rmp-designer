@@ -21,7 +21,8 @@ export default function OpenActions() {
     const [isOpenGallery, setIsOpenGallery] = React.useState(false);
 
     const loadParam = async (paramStr: string) => {
-        const param = JSON.parse(paramStr);
+        const updated = await upgrade(paramStr);
+        const param = JSON.parse(updated);
         if (
             'id' in param &&
             'type' in param &&
