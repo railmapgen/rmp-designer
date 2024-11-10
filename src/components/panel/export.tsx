@@ -24,18 +24,16 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
 
     const [code, setCode] = React.useState('');
     React.useEffect(() => {
-        setLoading(false);
         setCode(JSON.stringify(param));
     }, [isOpen]);
 
-    const [loading, setLoading] = React.useState(false);
     const postMessage = () => {
-        setLoading(true);
         const post = JSON.stringify(param);
         CHN_MASTER.postMessage({
             event: RMP_MASTER_CHANNEL_POST,
             data: post,
         });
+        onClose();
     };
 
     return (
@@ -64,14 +62,7 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
                     <Button colorScheme="blue" variant="outline" mr="1" onClick={onClose}>
                         {t('close')}
                     </Button>
-                    <Button
-                        colorScheme="blue"
-                        variant="solid"
-                        mr="1"
-                        onClick={postMessage}
-                        isLoading={loading}
-                        hidden={!exportMode}
-                    >
+                    <Button colorScheme="blue" variant="solid" mr="1" onClick={postMessage} hidden={!exportMode}>
                         {t('header.export.export')}
                     </Button>
                 </ModalFooter>
