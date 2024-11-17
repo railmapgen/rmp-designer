@@ -30,6 +30,7 @@ import { supportsChildren } from '../../util/svgTagWithChildren';
 import { MoveChildrenModal } from './details-svgs-move-children';
 import svgs from '../svgs/module/svgs';
 import { SvgsType } from '../../constants/svgs';
+import { getValueSelect, getValueSelectValue } from './details-svgs-select';
 
 interface AttrVarList {
     id: string;
@@ -189,6 +190,9 @@ export function DetailsSvgs() {
             ];
             const attrsField = Object.entries(s.attrs).map(([key, value]) => {
                 const mode = value.startsWith('1') ? 'value' : value.startsWith('2') ? 'var' : 'advanced';
+                const valueSelect = getValueSelect(s.type, key);
+                const valueSelectVal = valueSelect ? getValueSelectValue(valueSelect, value.slice(2, -1)) : '';
+                const valueSelectOptions = valueSelect ? valueSelect.options : {};
                 const handleChangeMode = (mode: AttrVarMode, value: string) => {
                     if (mode === 'value') {
                         return `1"${value.slice(1)}"`;
@@ -234,7 +238,19 @@ export function DetailsSvgs() {
                                 ...path,
                                 i,
                             ]),
-                        hidden: mode === 'var',
+                        hidden: mode === 'var' || (mode === 'value' && !!valueSelect),
+                    },
+                    {
+                        label: t('panel.svgs.attrValue'),
+                        type: 'select',
+                        value: valueSelectVal,
+                        options: valueSelectOptions,
+                        onChange: v =>
+                            handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: handleChangeMode(mode, '_' + v) }, [
+                                ...path,
+                                i,
+                            ]),
+                        hidden: mode !== 'value' || !valueSelect,
                     },
                     {
                         label: t('panel.svgs.attrValue'),
