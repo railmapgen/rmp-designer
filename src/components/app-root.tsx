@@ -8,6 +8,7 @@ import { clearSelected, closePaletteAppClip, onPaletteAppClipEmit } from '../red
 import { Param } from '../constants/constants';
 import { MetadataDetail } from '../constants/marketplace';
 import { upgrade } from '../util/save';
+import { loadFontCss } from '../util/fonts';
 import WindowHeader from './header/window-header';
 import RmgPaletteAppClip from './panel/rmg-palette-app-clip';
 import DesignerRoot from './designer-root';
@@ -61,9 +62,17 @@ export default function AppRoot() {
                 });
             }
         };
+
+        if (document.readyState === 'complete') {
+            loadFontCss();
+        } else {
+            window.addEventListener('load', loadFontCss);
+        }
         CHN.addEventListener('message', handleMessage);
+
         return () => {
             CHN.removeEventListener('message', handleMessage);
+            window.removeEventListener('load', loadFontCss);
         };
     }, []);
 
