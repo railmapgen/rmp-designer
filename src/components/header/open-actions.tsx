@@ -69,6 +69,7 @@ export default function OpenActions() {
         event.target.value = '';
         dispatch(clearGlobalAlerts());
     };
+
     const handleUploadSvg = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         console.log('OpenActions.handleUpload():: received file', file);

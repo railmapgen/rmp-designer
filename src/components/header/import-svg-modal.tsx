@@ -23,21 +23,18 @@ export function isBase64Svg(svgString: string) {
     return !!match;
 }
 
-export const loadSvgs = (svgString: string) => {
+export const loadSvgs = (svgString: string): SvgsElem[] => {
     function convertStyleStringToObject(style: any): Record<string, string> {
         if (typeof style === 'object') {
             return style;
         } else if (typeof style === 'string') {
             const styleObj: Record<string, string> = {};
-            const styleArray = style.split(';');
-            styleArray.forEach(item => {
+            style.split(';').forEach(item => {
                 const [property, value] = item.split(':');
                 if (property && value) {
                     const trimmedProperty = property.trim();
                     const trimmedValue = value.trim();
-                    const camelCaseProperty = trimmedProperty.replace(/-([a-z])/g, (match, letter) =>
-                        letter.toUpperCase()
-                    );
+                    const camelCaseProperty = trimmedProperty.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
                     styleObj[camelCaseProperty] = trimmedValue;
                 }
             });
@@ -46,9 +43,30 @@ export const loadSvgs = (svgString: string) => {
         return {};
     }
 
-    const dfs = (element: Element): SvgsElem => {
+    function isGarbageAttr(attrName: string): boolean {
+        return (
+            attrName.startsWith('sodipodi:') ||
+            attrName.startsWith('inkscape:') ||
+            attrName.startsWith('xmlns:') ||
+            attrName.startsWith('xml:space')
+        );
+    }
+
+    function isGarbageNode(tagName: string): boolean {
+        return ['sodipodi:namedview', 'metadata', 'rdf:RDF', 'cc:Work', 'dc:format', 'dc:type', 'dc:title'].includes(
+            tagName
+        );
+    }
+
+    function dfs(element: Element): SvgsElem | null {
+        if (isGarbageNode(element.tagName)) {
+            return null;
+        }
+
         const attributes: Record<string, string> = {};
         Array.from(element.attributes).forEach(attr => {
+            if (isGarbageAttr(attr.name)) return;
+
             if (attr.name === 'style') {
                 attributes[attr.name] = `3${JSON.stringify(convertStyleStringToObject(attr.value))}`;
             } else {
@@ -56,13 +74,14 @@ export const loadSvgs = (svgString: string) => {
             }
         });
 
-        if (element.tagName !== 'g' && element.textContent) {
+        if (element.tagName !== 'g' && element.textContent?.trim()) {
             attributes['_rmp_children_text'] = `1"${element.textContent.trim()}"`;
         }
 
         const children: SvgsElem[] = [];
         Array.from(element.children).forEach(child => {
-            children.push(dfs(child));
+            const parsed = dfs(child);
+            if (parsed) children.push(parsed);
         });
 
         return {
@@ -70,18 +89,17 @@ export const loadSvgs = (svgString: string) => {
             type: element.tagName,
             label: nanoid(5),
             attrs: attributes,
-            children: children.length === 0 ? undefined : children,
+            children: children.length ? children : undefined,
         };
-    };
+    }
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(svgString, 'image/svg+xml');
 
     const svgRoot = doc.documentElement;
     const svgElements = dfs(svgRoot);
-    console.log(svgElements);
 
-    return svgElements.children ?? [];
+    return svgElements?.children ?? [];
 };
 
 export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) => {
