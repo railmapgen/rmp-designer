@@ -1,6 +1,7 @@
 import { defaultParam, Param, SvgsElem } from '../constants/constants';
+import { VariableFunction } from '../constants/variable-function';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export const upgrade: (originalParam: string | null) => Promise<string> = async originalParam => {
     let changed = false;
@@ -35,33 +36,60 @@ export const upgrade: (originalParam: string | null) => Promise<string> = async 
 };
 
 export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string } = {
-    0: param => {
-        const p = JSON.parse(param) as Param;
-        const newSvgs: SvgsElem[] = p.svgs.map(s => {
-            const modifiedAttrs: Record<string, string> = {};
-            for (const key in s.attrs) {
-                if (Object.prototype.hasOwnProperty.call(s.attrs, key)) {
-                    const regValue = /^"[^"]*"$/;
-                    const regNumber = /^[0-9-]+$/;
-                    const regVar = /^[A-Za-z0-9]+$/;
-                    if (regValue.test(s.attrs[key])) {
-                        modifiedAttrs[key] = `1${s.attrs[key]}`;
-                    } else if (regNumber.test(s.attrs[key])) {
-                        modifiedAttrs[key] = `1"${s.attrs[key]}"`;
-                    } else if (regVar.test(s.attrs[key])) {
-                        modifiedAttrs[key] = `2${s.attrs[key]}`;
-                    } else {
-                        modifiedAttrs[key] = `3${s.attrs[key]}`;
-                    }
-                }
-            }
-            return { ...s, attrs: modifiedAttrs };
-        });
-        return JSON.stringify({ ...p, version: 1, svgs: newSvgs } as Param);
-    },
+    // 0: param => {
+    //     const p = JSON.parse(param) as Param;
+    //     const newSvgs: SvgsElem[] = p.svgs.map(s => {
+    //         const modifiedAttrs: Record<string, string> = {};
+    //         for (const key in s.attrs) {
+    //             if (Object.prototype.hasOwnProperty.call(s.attrs, key)) {
+    //                 const regValue = /^"[^"]*"$/;
+    //                 const regNumber = /^[0-9-]+$/;
+    //                 const regVar = /^[A-Za-z0-9]+$/;
+    //                 if (regValue.test(s.attrs[key])) {
+    //                     modifiedAttrs[key] = `1${s.attrs[key]}`;
+    //                 } else if (regNumber.test(s.attrs[key])) {
+    //                     modifiedAttrs[key] = `1"${s.attrs[key]}"`;
+    //                 } else if (regVar.test(s.attrs[key])) {
+    //                     modifiedAttrs[key] = `2${s.attrs[key]}`;
+    //                 } else {
+    //                     modifiedAttrs[key] = `3${s.attrs[key]}`;
+    //                 }
+    //             }
+    //         }
+    //         return { ...s, attrs: modifiedAttrs };
+    //     });
+    //     return JSON.stringify({ ...p, version: 1, svgs: newSvgs } as Param);
+    // },
     1: param => {
         // Add label
         const p = JSON.parse(param) as Param;
         return JSON.stringify({ ...p, version: 2, label: p.id, transform: defaultParam.transform } as Param);
+    },
+    2: param => {
+        // Change Record<string, string> to Record<string, VariableFunction>
+        const p = JSON.parse(param) as Param;
+        const convert = (svgs: SvgsElem[]): SvgsElem[] => {
+            return svgs.map(s => {
+                const modifiedAttrs: Record<string, VariableFunction> = {};
+                for (const key in s.attrs) {
+                    if (Object.prototype.hasOwnProperty.call(s.attrs, key)) {
+                        const attr = s.attrs[key];
+                        if (typeof attr === 'string') {
+                            if ((attr as string).startsWith('1')) {
+                                modifiedAttrs[key] = { type: 'value', value: (attr as string).slice(2, -1) };
+                            } else if ((attr as string).startsWith('2')) {
+                                modifiedAttrs[key] = { type: 'variable', variable: (attr as string).slice(1) };
+                            } else {
+                                modifiedAttrs[key] = { type: 'value', value: (attr as string).slice(1) };
+                            }
+                        }
+                    }
+                }
+                return { ...s, attrs: modifiedAttrs, children: s.children ? convert(s.children) : undefined };
+            });
+        };
+
+        console.log(convert(p.svgs));
+        return JSON.stringify({ ...p, version: 3, svgs: convert(p.svgs) } as Param);
     },
 };

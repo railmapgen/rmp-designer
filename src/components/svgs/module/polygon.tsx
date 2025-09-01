@@ -1,9 +1,9 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultPolygonSvgAttrs: Record<string, string> = {
-    points: '1"8,6 16,6 20,13 16,20 8,20 4,13"',
-    fill: '1"#D6ABC1"',
+const defaultPolygonSvgAttrs: Record<string, VariableFunction> = {
+    points: { type: 'value', value: '8,6 16,6 20,13 16,20 8,20 4,13' },
+    fill: { type: 'value', value: '#D6ABC1' },
 };
 
 const polygonIcon = (

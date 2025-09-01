@@ -1,13 +1,13 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultTextSvgAttrs: Record<string, string> = {
-    _rmp_children_text: '1"text"',
-    opacity: '1"1"',
-    fill: '1"black"',
-    className: '1"rmp-name__en"',
-    textAnchor: '1"middle"',
-    fontSize: '1"12"',
+const defaultTextSvgAttrs: Record<string, VariableFunction> = {
+    _rmp_children_text: { type: 'value', value: 'Text' },
+    opacity: { type: 'value', value: '1' },
+    fill: { type: 'value', value: 'black' },
+    className: { type: 'value', value: 'rmp-name__en' },
+    textAnchor: { type: 'value', value: 'middle' },
+    fontSize: { type: 'value', value: '12' },
 };
 
 const textIcon = (

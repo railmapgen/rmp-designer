@@ -24,7 +24,7 @@ const DesignerRoot = () => {
     const [openErrorDisplay, setOpenErrorDisplay] = React.useState(false);
     const [isGalleryOpen, setIsGalleryOpen] = React.useState(false);
     const size = useWindowSize();
-    const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
+    const svgHeight = ((size.height ?? 720) - 40) / 2;
 
     const [errorList, setErrorList] = React.useState<Array<string[]>>([]);
     React.useEffect(() => {

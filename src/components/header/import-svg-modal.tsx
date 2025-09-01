@@ -13,6 +13,7 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { defaultTransform, SvgsElem } from '../../constants/constants';
+import { VariableFunction } from '../../constants/variable-function';
 import { useRootDispatch } from '../../redux';
 import { setLabel, setSvgs, setTransform } from '../../redux/param/param-slice';
 import { nanoid } from '../../util/helper';
@@ -24,25 +25,6 @@ export function isBase64Svg(svgString: string) {
 }
 
 export const loadSvgs = (svgString: string): SvgsElem[] => {
-    function convertStyleStringToObject(style: any): Record<string, string> {
-        if (typeof style === 'object') {
-            return style;
-        } else if (typeof style === 'string') {
-            const styleObj: Record<string, string> = {};
-            style.split(';').forEach(item => {
-                const [property, value] = item.split(':');
-                if (property && value) {
-                    const trimmedProperty = property.trim();
-                    const trimmedValue = value.trim();
-                    const camelCaseProperty = trimmedProperty.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-                    styleObj[camelCaseProperty] = trimmedValue;
-                }
-            });
-            return styleObj;
-        }
-        return {};
-    }
-
     function isGarbageAttr(attrName: string): boolean {
         return (
             attrName.startsWith('sodipodi:') ||
@@ -63,19 +45,14 @@ export const loadSvgs = (svgString: string): SvgsElem[] => {
             return null;
         }
 
-        const attributes: Record<string, string> = {};
+        const attributes: Record<string, VariableFunction> = {};
         Array.from(element.attributes).forEach(attr => {
             if (isGarbageAttr(attr.name)) return;
-
-            if (attr.name === 'style') {
-                attributes[attr.name] = `3${JSON.stringify(convertStyleStringToObject(attr.value))}`;
-            } else {
-                attributes[attr.name] = `1"${attr.value.trim()}"`;
-            }
+            attributes[attr.name] = { type: 'value', value: attr.value.trim() };
         });
 
         if (element.tagName !== 'g' && element.textContent?.trim()) {
-            attributes['_rmp_children_text'] = `1"${element.textContent.trim()}"`;
+            attributes['_rmp_children_text'] = { type: 'value', value: element.textContent.trim() };
         }
 
         const children: SvgsElem[] = [];

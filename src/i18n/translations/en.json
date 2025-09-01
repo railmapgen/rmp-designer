@@ -56,7 +56,7 @@
             "attrMode": {
                 "title": "Attributes mode",
                 "value": "Value",
-                "var": "Variable",
+                "variable": "Variable",
                 "advanced": "Advanced"
             },
             "tipsA1": "Click the upper right corner",
