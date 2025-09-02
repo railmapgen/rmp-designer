@@ -5,8 +5,8 @@ const defaultTextSvgAttrs: Record<string, VariableFunction> = {
     _rmp_children_text: { type: 'value', value: 'Text' },
     opacity: { type: 'value', value: '1' },
     fill: { type: 'value', value: 'black' },
-    className: { type: 'value', value: 'rmp-name__en' },
-    textAnchor: { type: 'value', value: 'middle' },
+    className: { type: 'option', option: 'rmp-name__en' },
+    textAnchor: { type: 'option', option: 'middle' },
     fontSize: { type: 'value', value: '12' },
 };
 

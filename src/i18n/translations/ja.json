@@ -56,8 +56,23 @@
             "attrMode": {
                 "title": "属性モード",
                 "value": "値",
-                "var": "変数",
-                "advanced": "高度"
+                "variable": "変数",
+                "advanced": "高度",
+                "option": "オプション"
+            },
+            "variableFunctions": {
+                "if": {
+                    "displayName": "もし",
+                    "labels": ["主語", "演算子", "目的語", "真の場合の結果", "偽の場合の結果"]
+                },
+                "max": {
+                    "displayName": "最大値",
+                    "labels": ["値 1", "値 2"]
+                },
+                "min": {
+                    "displayName": "最小値",
+                    "labels": ["値 1", "値 2"]
+                }
             },
             "tipsA1": "右上隅をクリック",
             "tipsA2": "して、SVGグラフィックをアップロードします",

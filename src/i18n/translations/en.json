@@ -57,7 +57,22 @@
                 "title": "Attributes mode",
                 "value": "Value",
                 "variable": "Variable",
-                "advanced": "Advanced"
+                "advanced": "Advanced",
+                "option": "Option"
+            },
+            "variableFunctions": {
+                "if": {
+                    "displayName": "If",
+                    "labels": ["Subject", "Operator", "Object", "Result if true", "Result if false"]
+                },
+                "max": {
+                    "displayName": "Maximum",
+                    "labels": ["Value 1", "Value 2"]
+                },
+                "min": {
+                    "displayName": "Minimum",
+                    "labels": ["Value 1", "Value 2"]
+                }
             },
             "tipsA1": "Click the upper right corner",
             "tipsA2": "to upload your SVG graphic",

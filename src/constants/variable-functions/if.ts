@@ -2,15 +2,12 @@ import { VariableFunctionAttributes, VariableFunctionConfigContent } from '../va
 
 export const IfConfigAttributes: VariableFunctionConfigContent = {
     type: 'if',
-    name: 'If (NAME)',
     contents: [
         {
-            label: 'Comparation Left',
             type: ['variable', 'function', 'value'],
         },
         {
             type: 'option',
-            label: 'Comparation Operator',
             options: {
                 '=': '=',
                 '!=': '!=',
@@ -21,15 +18,12 @@ export const IfConfigAttributes: VariableFunctionConfigContent = {
             },
         },
         {
-            label: 'Comparation Right',
             type: ['variable', 'function', 'value'],
         },
         {
-            label: 'Condition is true, then',
             type: ['variable', 'function', 'value'],
         },
         {
-            label: 'Condition is false, then',
             type: ['variable', 'function', 'value'],
         },
     ],

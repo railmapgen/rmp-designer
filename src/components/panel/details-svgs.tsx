@@ -115,7 +115,7 @@ export function DetailsSvgs() {
     const [moveChildrenElem, setMoveChildrenElem] = React.useState<SvgsElem>();
 
     const [activeVariableFunction, setActiveVariableFunction] = React.useState<
-        { vf: VariableFunction; onChange: (vf: VariableFunction) => void } | undefined
+        { vf: VariableFunction; onChange: (vf: VariableFunction) => void; attrName: string } | undefined
     >(undefined);
 
     const getSubComponentTitle = (value: VariableFunction | undefined) => {
@@ -199,7 +199,7 @@ export function DetailsSvgs() {
                         type: 'custom',
                         component: (
                             <Button
-                                size="sm"
+                                size="xs"
                                 variant="outline"
                                 width="100%"
                                 justifyContent="flex-start"
@@ -210,10 +210,11 @@ export function DetailsSvgs() {
                                             handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: vf }, [...path, i]);
                                             setActiveVariableFunction(prev => (prev ? { ...prev!, vf } : undefined));
                                         },
+                                        attrName: key,
                                     })
                                 }
                             >
-                                <Box as="span" isTruncated w="100%">
+                                <Box as="span" isTruncated w="100%" textAlign="left">
                                     {getSubComponentTitle(value)}
                                 </Box>
                             </Button>
@@ -360,6 +361,7 @@ export function DetailsSvgs() {
                 onClose={() => setActiveVariableFunction(undefined)}
                 vf={(activeVariableFunction ?? { vf: { type: 'value', value: 'undefined' } }).vf}
                 setVf={(activeVariableFunction ?? { onChange: _ => {} }).onChange}
+                attrName={activeVariableFunction?.attrName}
             />
         </>
     );

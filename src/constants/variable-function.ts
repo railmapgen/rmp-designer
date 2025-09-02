@@ -12,13 +12,11 @@ export enum VariableFunctionType {
 
 export interface VariableFunctionContent {
     type: VariableFunctionContentTypes[] | 'option';
-    label: string;
     options?: Record<string, string>;
 }
 
 export interface VariableFunctionConfigContent {
     type: string;
-    name: string;
     contents: VariableFunctionContent[];
     excuate: (contents: string[]) => string;
 }

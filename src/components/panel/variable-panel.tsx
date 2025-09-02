@@ -9,6 +9,7 @@ import {
     VariableFunctionType,
 } from '../../constants/variable-function';
 import { useRootSelector } from '../../redux';
+import { KeywordSelect } from '../../constants/keyword-select';
 
 interface AttrVarList {
     id: string;
@@ -26,14 +27,18 @@ const defaultVfVar: VariableFunction = {
     type: 'variable',
     value: 'undefined',
 };
+const defaultVfSelect: VariableFunction = {
+    type: 'option',
+};
 
 export const VariablePanel = (props: {
     isOpen: boolean;
     onClose: () => void;
     vf: VariableFunction;
     setVf: (value: VariableFunction) => void;
+    attrName?: string;
 }) => {
-    const { isOpen, onClose, vf, setVf } = props;
+    const { isOpen, onClose, vf, setVf, attrName } = props;
     const { t } = useTranslation();
     const param = useRootSelector(store => store.param);
 
@@ -53,7 +58,7 @@ export const VariablePanel = (props: {
     const [funcList, setFuncList] = React.useState<AttrVarList[]>([]);
     React.useEffect(() => {
         const list = Object.keys(VariableFunctionConfig).map(key => {
-            return { id: key, value: VariableFunctionConfig[key as VariableFunctionType].name };
+            return { id: key, value: t(`panel.svgs.variableFunctions.${key}.displayName`) };
         });
         setFuncList(list);
     }, []);
@@ -69,7 +74,7 @@ export const VariablePanel = (props: {
         return [
             {
                 type: 'input',
-                label: t('variable.value'),
+                label: t('panel.svgs.attrMode.value'),
                 value: value ?? '',
                 onChange,
             },
@@ -89,11 +94,24 @@ export const VariablePanel = (props: {
     const getField = (): RmgFieldsField[] => {
         if (vf.type === 'value') {
             return getValueField(vf.value, value => setVf({ ...vf, value }));
+        } else if (vf.type === 'option') {
+            return [
+                {
+                    type: 'select',
+                    label: t('panel.svgs.attrMode.option'),
+                    value: vf.option ?? '',
+                    options:
+                        attrName && attrName in KeywordSelect
+                            ? KeywordSelect[attrName as keyof typeof KeywordSelect]!.options
+                            : {},
+                    onChange: value => setVf({ ...vf, option: value.toString() }),
+                },
+            ];
         } else if (vf.type === 'variable') {
             return [
                 {
                     type: 'custom',
-                    label: t('variable.variable'),
+                    label: t('panel.svgs.attrMode.variable'),
                     component: (
                         <RmgAutoComplete
                             data={varList}
@@ -113,7 +131,7 @@ export const VariablePanel = (props: {
             const type = vf.function;
             returnList.push({
                 type: 'custom',
-                label: t('variable.function.type'),
+                label: t('panel.svgs.attrMode.advanced'),
                 component: (
                     <RmgAutoComplete
                         data={funcList}
@@ -153,7 +171,7 @@ export const VariablePanel = (props: {
                         if (c.type === 'option') {
                             return {
                                 type: 'select',
-                                label: c.label,
+                                label: t(`panel.svgs.variableFunctions.${type}.labels.${i}`),
                                 value: attrs.contents[i]!.value.option,
                                 options: c.options || {},
                                 onChange: (value: string) => {
@@ -168,10 +186,17 @@ export const VariablePanel = (props: {
                         } else {
                             return {
                                 type: 'custom',
-                                label: c.label,
+                                label: t(`panel.svgs.variableFunctions.${type}.labels.${i}`),
                                 component: (
                                     <>
-                                        <Button size="xs" variant="outline" onClick={() => setSubWindowStatus(true, i)}>
+                                        <Button
+                                            size="xs"
+                                            variant="outline"
+                                            justifyContent="flex-start"
+                                            textAlign="left"
+                                            isTruncated
+                                            onClick={() => setSubWindowStatus(true, i)}
+                                        >
                                             {getSubComponentTitle(attrs.contents[i]!.value)}
                                         </Button>
                                         <VariablePanel
@@ -203,13 +228,15 @@ export const VariablePanel = (props: {
     const basicFields: RmgFieldsField[] = [
         {
             type: 'select',
-            label: t('variable.type'),
+            label: t('panel.common.type'),
             value: vf.type,
             options: {
-                value: 'value',
-                variable: 'variable',
-                function: 'function',
+                value: t('panel.svgs.attrMode.value'),
+                variable: t('panel.svgs.attrMode.variable'),
+                function: t('panel.svgs.attrMode.advanced'),
+                option: t('panel.svgs.attrMode.option'),
             },
+            disabledOptions: attrName && attrName in KeywordSelect ? [] : ['option'],
             onChange: value => {
                 if (value === 'value') {
                     setVf(structuredClone(defaultVfValue));
@@ -217,6 +244,8 @@ export const VariablePanel = (props: {
                     setVf(structuredClone(defaultVfVar));
                 } else if (value === 'function') {
                     setVf(structuredClone(defaultVfFunc));
+                } else if (value === 'option') {
+                    setVf(structuredClone(defaultVfSelect));
                 }
             },
         },
@@ -226,9 +255,9 @@ export const VariablePanel = (props: {
         <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
             <ModalOverlay />
             <ModalContent>
-                <ModalBody minH="200px">
-                    <RmgFields fields={basicFields} />
-                    <RmgFields fields={getField()} />
+                <ModalBody minH="300px">
+                    <RmgFields fields={basicFields} minW="full" />
+                    <RmgFields fields={getField()} minW="133px" />
                 </ModalBody>
 
                 <ModalFooter>
