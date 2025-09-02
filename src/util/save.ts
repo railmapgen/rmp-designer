@@ -76,7 +76,13 @@ export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string 
                         const attr = s.attrs[key];
                         if (typeof attr === 'string') {
                             if ((attr as string).startsWith('1')) {
-                                modifiedAttrs[key] = { type: 'value', value: (attr as string).slice(2, -1) };
+                                if (key === 'style') {
+                                    const value = Object.entries(JSON.parse((attr as string).slice(2, -1)))
+                                        .filter(([_, value]) => value !== undefined && value !== null)
+                                        .map(([key, value]) => `${key}:${value}`)
+                                        .join('; ');
+                                    modifiedAttrs[key] = { type: 'value', value };
+                                } else modifiedAttrs[key] = { type: 'value', value: (attr as string).slice(2, -1) };
                             } else if ((attr as string).startsWith('2')) {
                                 modifiedAttrs[key] = { type: 'variable', variable: (attr as string).slice(1) };
                             } else {

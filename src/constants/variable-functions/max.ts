@@ -2,14 +2,11 @@ import { VariableFunctionAttributes, VariableFunctionConfigContent } from '../va
 
 export const MaxConfigAttributes: VariableFunctionConfigContent = {
     type: 'max',
-    name: 'Maximum value',
     contents: [
         {
-            label: 'Value 1',
             type: ['variable', 'function', 'value'],
         },
         {
-            label: 'Value 2',
             type: ['variable', 'function', 'value'],
         },
     ],

@@ -2,14 +2,11 @@ import { VariableFunctionAttributes, VariableFunctionConfigContent } from '../va
 
 export const MinConfigAttributes: VariableFunctionConfigContent = {
     type: 'min',
-    name: 'Minimum value',
     contents: [
         {
-            label: 'Value 1',
             type: ['variable', 'function', 'value'],
         },
         {
-            label: 'Value 2',
             type: ['variable', 'function', 'value'],
         },
     ],
