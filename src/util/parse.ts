@@ -1,6 +1,36 @@
+import { VariableFunction, VariableFunctionConfig } from '../constants/variable-function';
 import { roundToNearestN } from './helper';
 
 export const calcFunc = (str: string, ...rest: string[]) => new Function(...rest, `return ${str}`);
+
+export const calcVariableFunction = (
+    vf: VariableFunction,
+    varIds: string[],
+    varValues: string[]
+): string | undefined => {
+    if (vf.type === 'value') {
+        return vf.value ?? '';
+    } else if (vf.type === 'variable') {
+        const index = varIds.indexOf(vf.variable ?? '');
+        if (index !== -1) {
+            return varValues[index].toString() ?? '';
+        } else {
+            throw new Error(`Variable ${vf.variable} not found`);
+        }
+    } else if (vf.type === 'option') {
+        return vf.option ?? '';
+    } else if (vf.type === 'function') {
+        if (vf.function && vf[vf.function]) {
+            const funcContents = vf[vf.function]!.contents.map(
+                c => calcVariableFunction(c.value, varIds, varValues) ?? ''
+            );
+            return VariableFunctionConfig[vf.function].excuate(funcContents);
+        } else {
+            throw new Error(`Function ${vf.function} not found`);
+        }
+    }
+    throw new Error('Invalid VariableFunction');
+};
 
 export const updateTransformString = (transform: string, dx: number, dy: number): string => {
     let translateX = 0,

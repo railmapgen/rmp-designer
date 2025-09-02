@@ -56,8 +56,23 @@
             "attrMode": {
                 "title": "属性模式",
                 "value": "值",
-                "var": "变量",
-                "advanced": "高级"
+                "variable": "变量",
+                "advanced": "高级",
+                "option": "选项"
+            },
+            "variableFunctions": {
+                "if": {
+                    "displayName": "如果",
+                    "labels": ["主语", "运算符", "宾语", "为真时结果", "为假时结果"]
+                },
+                "max": {
+                    "displayName": "最大值",
+                    "labels": ["值 1", "值 2"]
+                },
+                "min": {
+                    "displayName": "最小值",
+                    "labels": ["值 1", "值 2"]
+                }
             },
             "tipsA1": "点击右上角的",
             "tipsA2": "以上传你的 SVG 图形",

@@ -21,9 +21,10 @@ import { Id, SvgsElem } from '../constants/constants';
 import { SvgsType } from '../constants/svgs';
 import { getMousePosition, isMacClient, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
 import { useWindowSize } from '../util/hook';
-import { CreateSvgs } from './svgs/createSvgs';
+import { CreateSvgs } from './svgs/create-svgs';
 import svgs from './svgs/module/svgs';
 import { updateTransformString } from '../util/parse';
+import { VariableFunction } from '../constants/variable-function';
 
 export default function SvgWrapper() {
     const dispatch = useRootDispatch();
@@ -55,8 +56,8 @@ export default function SvgWrapper() {
                 type,
                 label: nanoid(5),
                 attrs: {
-                    x: `1"${roundToNearestN(svgX, 1)}"`,
-                    y: `1"${roundToNearestN(svgY, 1)}"`,
+                    x: { type: 'value', value: String(roundToNearestN(svgX, 1)) },
+                    y: { type: 'value', value: String(roundToNearestN(svgY, 1)) },
                     ...attr,
                 },
             };
@@ -135,17 +136,23 @@ export default function SvgWrapper() {
                     const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
                     if (s.attrs.x || s.attrs.y || (!s.attrs.x && !s.attrs.y && !s.attrs.transform)) {
                         const newX =
-                            s.attrs.x === undefined || !Number.isNaN(Number(s.attrs.x.slice(2, -1)))
-                                ? `1"${roundToNearestN(Number(s.attrs.x ? s.attrs.x.slice(2, -1) : 0) + dx, 1)}"`
+                            s.attrs.x === undefined || !Number.isNaN(Number(s.attrs.x.value))
+                                ? ({
+                                      type: 'value',
+                                      value: String(roundToNearestN(Number(s.attrs.x ? s.attrs.x.value : 0) + dx, 1)),
+                                  } as VariableFunction)
                                 : s.attrs.x;
                         const newY =
-                            s.attrs.y === undefined || !Number.isNaN(Number(s.attrs.y.slice(2, -1)))
-                                ? `1"${roundToNearestN(Number(s.attrs.y ? s.attrs.y.slice(2, -1) : 0) + dy, 1)}"`
+                            s.attrs.y === undefined || !Number.isNaN(Number(s.attrs.y.value))
+                                ? ({
+                                      type: 'value',
+                                      value: String(roundToNearestN(Number(s.attrs.y ? s.attrs.y.value : 0) + dy, 1)),
+                                  } as VariableFunction)
                                 : s.attrs.y;
                         return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
                     } else if (s.attrs.transform) {
-                        const newTransform = updateTransformString(s.attrs.transform ?? '', dx, dy);
-                        return { ...s, attrs: { ...s.attrs, transform: newTransform } };
+                        const newTransform = updateTransformString(s.attrs.transform.value ?? '', dx, dy);
+                        return { ...s, attrs: { ...s.attrs, transform: { type: 'value', value: newTransform } } };
                     } else {
                         return s;
                     }

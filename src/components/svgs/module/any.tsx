@@ -1,7 +1,7 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultAnySvgAttrs: Record<string, string> = {};
+const defaultAnySvgAttrs: Record<string, VariableFunction> = {};
 
 const anyIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>

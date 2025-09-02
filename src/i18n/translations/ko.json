@@ -56,8 +56,23 @@
             "attrMode": {
                 "title": "속성 모드",
                 "value": "값",
-                "var": "변수",
-                "advanced": "고급"
+                "variable": "변수",
+                "advanced": "고급",
+                "option": "옵션"
+            },
+            "variableFunctions": {
+                "if": {
+                    "displayName": "만약",
+                    "labels": ["주어", "연산자", "목적어", "참일 때 결과", "거짓일 때 결과"]
+                },
+                "max": {
+                    "displayName": "최대값",
+                    "labels": ["값 1", "값 2"]
+                },
+                "min": {
+                    "displayName": "최소값",
+                    "labels": ["값 1", "값 2"]
+                }
             },
             "tipsA1": "오른쪽 상단을 클릭하세요",
             "tipsA2": "SVG 그래픽을 업로드하려면",
