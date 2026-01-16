@@ -1,12 +1,12 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultCircleSvgAttrs: Record<string, string> = {
-    r: '1"5"',
-    opacity: '1"1"',
-    fill: '1"#D6ABC1"',
-    stroke: '1"none"',
-    strokeWidth: '1"0"',
+const defaultCircleSvgAttrs: Record<string, VariableFunction> = {
+    r: { type: 'value', value: '5' },
+    opacity: { type: 'value', value: '1' },
+    fill: { type: 'value', value: '#D6ABC1' },
+    stroke: { type: 'value', value: 'none' },
+    strokeWidth: { type: 'value', value: '0' },
 };
 
 const circleIcon = (

@@ -1,10 +1,11 @@
 import React from 'react';
 import { Id, SvgsElem } from '../../constants/constants';
-import { calcFunc } from '../../util/parse';
+import { calcVariableFunction } from '../../util/parse';
 import { Components } from '../../constants/components';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { addGlobalAlert } from '../../redux/runtime/runtime-slice';
 import { useRootDispatch, useRootSelector } from '../../redux';
+import { VariableFunction } from '../../constants/variable-function';
 
 export interface CreateSvgsProps {
     svgsElem: SvgsElem;
@@ -20,6 +21,7 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
     const { id, type, attrs } = svgsElem;
     const dispatch = useRootDispatch();
     const { globalAlerts, selected } = useRootSelector(state => state.runtime);
+    const { color } = useRootSelector(state => state.param);
 
     const onPointerDown = React.useCallback(
         (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, [...prefix, id], e),
@@ -44,10 +46,9 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
     }, [error]);
 
     const modifyAttributes = (
-        svgAttrs: Record<string, string>,
+        svgAttrs: Record<string, VariableFunction>,
         varIds: string[],
-        varValues: string[],
-        varType: string[]
+        varValues: string[]
     ): Record<string, string> => {
         const modifiedAttrs: Partial<Record<string, string>> = {};
         if (error || hasGlobalAlert) return modifiedAttrs as Record<string, string>;
@@ -55,14 +56,7 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
         for (const key in svgAttrs) {
             if (Object.prototype.hasOwnProperty.call(svgAttrs, key)) {
                 try {
-                    modifiedAttrs[key] = calcFunc(
-                        svgAttrs[key].slice(1),
-                        ...varIds
-                    )(
-                        ...varValues.map((v, varI) =>
-                            varType[varI] === 'number' && !Number.isNaN(Number(v)) ? Number(v) : v
-                        )
-                    );
+                    modifiedAttrs[key] = calcVariableFunction(svgAttrs[key], varIds, varValues);
                 } catch (e) {
                     if (e instanceof Error) {
                         setError(e.message);
@@ -74,12 +68,19 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
         return modifiedAttrs as Record<string, string>;
     };
 
+    const colorVarLabel = color ? ['color[2]', 'color[3]'] : [];
+    const colorVarValue = color
+        ? color.value
+            ? [color.value[2], color.value[3]]
+            : [color.defaultValue[2], color.defaultValue[3]]
+        : [];
+
     const newAttrs = modifyAttributes(
         attrs,
-        components.map(s => s.label),
-        components.map(s => (s.value ? s.value : s.defaultValue)),
-        components.map(s => s.type)
+        [...components.map(s => s.label), ...colorVarLabel],
+        [...components.map(s => (s.value ? s.value : s.defaultValue)), ...colorVarValue]
     );
+
     const Children =
         supportsChildren(type) && svgsElem.children
             ? svgsElem.children.map((s, i) => (
@@ -96,13 +97,20 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
             : '_rmp_children_text' in newAttrs
               ? [newAttrs._rmp_children_text]
               : [];
-    if ('style' in newAttrs && typeof newAttrs.style !== 'object') {
-        setError('"style" must be an object!');
+
+    function parseStyleString(styleStr: string): Record<string, string> {
+        const styleObj: Record<string, string> = {};
+
+        styleStr.split(';').forEach(item => {
+            const [key, value] = item.split(':').map(s => s.trim());
+            if (key && value) {
+                styleObj[key] = value;
+            }
+        });
+
+        return { ...styleObj, cursor: 'move' };
     }
-    const newStyle =
-        'style' in newAttrs && typeof newAttrs.style === 'object'
-            ? { ...(newAttrs.style as object), cursor: 'move' }
-            : { cursor: 'move' };
+    const newStyle = 'style' in newAttrs ? parseStyleString(newAttrs.style) : { cursor: 'move' };
     return (
         <g
             id={`g_${id}`}

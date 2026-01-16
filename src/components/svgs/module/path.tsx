@@ -1,10 +1,10 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultPathSvgAttrs: Record<string, string> = {
-    d: '1"M 0 5 L 20 5"',
-    stroke: '1"#D6ABC1"',
-    strokeWidth: '1"5"',
+const defaultPathSvgAttrs: Record<string, VariableFunction> = {
+    d: { type: 'value', value: 'M 0 5 L 20 5' },
+    stroke: { type: 'value', value: '#D6ABC1' },
+    strokeWidth: { type: 'value', value: '5' },
 };
 
 const pathIcon = (

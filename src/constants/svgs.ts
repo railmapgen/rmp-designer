@@ -1,4 +1,5 @@
 import { ComponentsType } from './components';
+import { VariableFunction } from './variable-function';
 
 export enum SvgsType {
     Rect = 'rect',
@@ -18,6 +19,6 @@ export interface Variable {
 
 export interface Svgs {
     icon: JSX.Element;
-    defaultAttrs: Record<string, string>;
+    defaultAttrs: Record<string, VariableFunction>;
     displayName: string;
 }

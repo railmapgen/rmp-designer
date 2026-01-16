@@ -2,6 +2,7 @@ import { ColourHex, MonoColour } from '@railmapgen/rmg-palette-resources';
 import { SAVE_VERSION } from '../util/save';
 import { SvgsType } from './svgs';
 import { Components } from './components';
+import { VariableFunction } from './variable-function';
 
 export const RMT_SERVER = 'https://railmapgen.org/v1';
 
@@ -11,7 +12,7 @@ export interface SvgsElem {
     id: Id;
     type: string;
     label: string;
-    attrs: Record<string, string>;
+    attrs: Record<string, VariableFunction>;
     children?: SvgsElem[];
 }
 

@@ -1,13 +1,13 @@
-import React from 'react';
 import { Svgs } from '../../../constants/svgs';
+import { VariableFunction } from '../../../constants/variable-function';
 
-const defaultRectSvgAttrs: Record<string, string> = {
-    width: '1"20"',
-    height: '1"10"',
-    rx: '1"2"',
-    ry: '1"2"',
-    opacity: '1"1"',
-    fill: '1"#D6ABC1"',
+const defaultRectSvgAttrs: Record<string, VariableFunction> = {
+    width: { type: 'value', value: '20' },
+    height: { type: 'value', value: '10' },
+    rx: { type: 'value', value: '2' },
+    ry: { type: 'value', value: '2' },
+    opacity: { type: 'value', value: '1' },
+    fill: { type: 'value', value: '#D6ABC1' },
 };
 
 const rectIcon = (
