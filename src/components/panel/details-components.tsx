@@ -9,6 +9,7 @@ import {
     Flex,
     Heading,
     Text,
+    Textarea,
 } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
@@ -16,20 +17,76 @@ import { MdArrowDownward, MdArrowUpward, MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { addComponent, deleteComponent, setComponents, setComponentValue } from '../../redux/param/param-slice';
-import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
+import {
+    ComponentsType,
+    ComponentsTypeOptions,
+    getComponentOptionValues,
+    normalizeComponentOptionValue,
+    normalizeComponentOptions,
+} from '../../constants/components';
 import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import { nanoid } from '../../util/helper';
 import { defaultColorTheme, normalizeTheme } from '../../constants/constants';
 import ThemeButton from './theme-button';
 
-const normalizeDefaultValue = (type: ComponentsType, value: unknown) => {
+const normalizeDefaultValue = (type: ComponentsType, value: unknown, options?: string[]) => {
     if (type === 'switch') return Boolean(value);
     if (type === 'number') return Number.isNaN(Number(value)) ? 0 : Number(value);
     if (type === 'color') return normalizeTheme(value, defaultColorTheme);
+    if (type === 'option') return normalizeComponentOptionValue(value, options ?? normalizeComponentOptions([], value));
     return value === undefined || value === null ? '' : String(value);
 };
 
 const createComponentLabel = (id: string) => `param_${id}`;
+
+const parseOptionText = (text: string): string[] =>
+    Array.from(
+        new Set(
+            text
+                .split(/\r?\n/)
+                .map(option => option.trim())
+                .filter(option => option.length > 0)
+        )
+    );
+
+const optionValuesToSelectOptions = (options: string[]): Record<string, string> =>
+    Object.fromEntries(options.map(option => [option, option]));
+
+const createComponentTypeOptions = (t: (key: string) => string): Record<ComponentsType, string> =>
+    Object.fromEntries(
+        Object.keys(ComponentsTypeOptions).map(type => [type, t(`panel.components.types.${type}`)])
+    ) as Record<ComponentsType, string>;
+
+interface OptionValuesEditorProps {
+    defaultValue: unknown;
+    options: string[];
+    onChange: (options: string[]) => void;
+}
+
+const OptionValuesEditor = (props: OptionValuesEditorProps) => {
+    const { defaultValue, options, onChange } = props;
+    const optionText = options.join('\n');
+    const [text, setText] = React.useState(optionText);
+
+    React.useEffect(() => {
+        setText(optionText);
+    }, [optionText]);
+
+    return (
+        <Textarea
+            value={text}
+            resize="vertical"
+            onChange={event => {
+                const nextText = event.target.value;
+                setText(nextText);
+                onChange(parseOptionText(nextText));
+            }}
+            onBlur={() => {
+                setText(normalizeComponentOptions(parseOptionText(text), defaultValue).join('\n'));
+            }}
+        />
+    );
+};
 
 export function DetailsComponents() {
     const dispatch = useRootDispatch();
@@ -40,6 +97,7 @@ export function DetailsComponents() {
     const { t } = useTranslation();
     const requestedColorIndexRef = React.useRef<number>();
     const paramRef = React.useRef(param);
+    const componentTypeOptions = React.useMemo(() => createComponentTypeOptions(t), [t]);
 
     React.useEffect(() => {
         paramRef.current = param;
@@ -99,6 +157,8 @@ export function DetailsComponents() {
 
     const p = param.components.map((c, index) => {
         const { id, label, type, defaultValue, name, constraints } = c;
+        const optionValues = type === 'option' ? getComponentOptionValues(c) : [];
+        const optionSelectOptions = optionValuesToSelectOptions(optionValues);
         const field: RmgFieldsField[] = [
             {
                 label: t('panel.components.name'),
@@ -112,10 +172,12 @@ export function DetailsComponents() {
             {
                 label: t('panel.common.type'),
                 type: 'select',
-                options: ComponentsTypeOptions,
+                options: componentTypeOptions,
                 value: type,
                 onChange: v => {
                     const nextType = v as ComponentsType;
+                    const nextOptionValues =
+                        nextType === 'option' ? normalizeComponentOptions(constraints?.options, defaultValue) : [];
                     dispatch(backupParam(param));
                     dispatch(
                         setComponentValue({
@@ -123,9 +185,17 @@ export function DetailsComponents() {
                             value: {
                                 ...c,
                                 type: nextType,
-                                defaultValue: normalizeDefaultValue(nextType, defaultValue),
-                                value: c.value === undefined ? undefined : normalizeDefaultValue(nextType, c.value),
-                                constraints: nextType === 'number' ? { step: 1, ...constraints } : constraints,
+                                defaultValue: normalizeDefaultValue(nextType, defaultValue, nextOptionValues),
+                                value:
+                                    c.value === undefined
+                                        ? undefined
+                                        : normalizeDefaultValue(nextType, c.value, nextOptionValues),
+                                constraints:
+                                    nextType === 'number'
+                                        ? { step: 1, ...constraints }
+                                        : nextType === 'option'
+                                          ? { ...constraints, options: nextOptionValues }
+                                          : constraints,
                             },
                         })
                     );
@@ -144,7 +214,23 @@ export function DetailsComponents() {
                         })
                     );
                 },
-                hidden: type === 'switch' || type === 'color',
+                hidden: type === 'switch' || type === 'color' || type === 'option',
+            },
+            {
+                label: t('panel.components.defaultValue'),
+                type: 'select',
+                options: optionSelectOptions,
+                value: normalizeComponentOptionValue(defaultValue, optionValues),
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: { ...c, defaultValue: normalizeComponentOptionValue(v, optionValues) },
+                        })
+                    );
+                },
+                hidden: type !== 'option',
             },
             {
                 label: t('panel.components.defaultValue'),
@@ -169,6 +255,36 @@ export function DetailsComponents() {
                     />
                 ),
                 hidden: type !== 'color',
+            },
+            {
+                label: t('panel.components.options'),
+                type: 'custom',
+                component: (
+                    <OptionValuesEditor
+                        defaultValue={defaultValue}
+                        options={optionValues}
+                        onChange={nextRawOptions => {
+                            const nextOptions = normalizeComponentOptions(nextRawOptions, defaultValue);
+                            dispatch(backupParam(param));
+                            dispatch(
+                                setComponentValue({
+                                    index: index,
+                                    value: {
+                                        ...c,
+                                        defaultValue: normalizeComponentOptionValue(defaultValue, nextOptions),
+                                        value:
+                                            c.value === undefined
+                                                ? undefined
+                                                : normalizeComponentOptionValue(c.value, nextOptions),
+                                        constraints: { ...constraints, options: nextOptions },
+                                    },
+                                })
+                            );
+                        }}
+                    />
+                ),
+                helper: t('panel.components.optionsHelper'),
+                hidden: type !== 'option',
             },
             {
                 label: 'Minimum',

@@ -1,5 +1,10 @@
 import { defaultParam, normalizeTheme, Param, SvgsElem } from '../constants/constants';
-import { colorComponents, Components } from '../constants/components';
+import {
+    colorComponents,
+    Components,
+    getComponentOptionValues,
+    normalizeComponentOptionValue,
+} from '../constants/components';
 import { AttrBinding } from '../constants/attr-binding';
 import {
     compileAttrRecord,
@@ -121,12 +126,15 @@ export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string 
 const migrateComponent = (component: Components): Components => {
     const name = component.name ?? component.label;
     const label = component.label || slugifyComponentLabel(name, component.id);
+    const optionValues = component.type === 'option' ? getComponentOptionValues(component) : [];
     const defaultValue =
         component.type === 'switch'
             ? Boolean(component.defaultValue)
             : component.type === 'color'
               ? normalizeTheme(component.defaultValue)
-              : component.defaultValue;
+              : component.type === 'option'
+                ? normalizeComponentOptionValue(component.defaultValue, optionValues)
+                : component.defaultValue;
     const value =
         component.value === undefined
             ? undefined
@@ -134,14 +142,21 @@ const migrateComponent = (component: Components): Components => {
               ? Boolean(component.value)
               : component.type === 'color'
                 ? normalizeTheme(component.value)
-                : component.value;
+                : component.type === 'option'
+                  ? normalizeComponentOptionValue(component.value, optionValues)
+                  : component.value;
     const constraints =
         component.type === 'number'
             ? {
                   step: 1,
                   ...component.constraints,
               }
-            : component.constraints;
+            : component.type === 'option'
+              ? {
+                    ...component.constraints,
+                    options: optionValues,
+                }
+              : component.constraints;
     return {
         ...component,
         label,

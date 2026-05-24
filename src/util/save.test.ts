@@ -112,4 +112,36 @@ describe('Unit tests for param upgrade function', () => {
         expect(exported.svgs[0].attrBindings.fill).toEqual({ kind: 'literal', value: '#ffffff' });
         expect(exported.svgs[0].attrBindings.width.expression).toEqual('{widthValue} + 1');
     });
+
+    it('v4 export normalizes option variables', () => {
+        const exported = JSON.parse(
+            stringifyParam({
+                id: 'new',
+                label: 'new',
+                transform: { translateX: 0, translateY: 0, scale: 1, rotate: 0 },
+                version: 4,
+                type: 'MiscNode',
+                components: [
+                    {
+                        id: 'component_variant',
+                        label: 'variant',
+                        type: 'option',
+                        defaultValue: 'missing',
+                        value: 'invalid',
+                        constraints: { options: ['local', 'express', 'local', ''] },
+                    },
+                ],
+                svgs: [],
+            } as any)
+        );
+
+        expect(exported.components[0]).toMatchObject({
+            id: 'component_variant',
+            label: 'variant',
+            type: 'option',
+            defaultValue: 'local',
+            value: 'local',
+            constraints: { options: ['local', 'express'] },
+        });
+    });
 });

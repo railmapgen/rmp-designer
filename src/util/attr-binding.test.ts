@@ -28,6 +28,15 @@ const components: Components[] = [
         type: 'color',
         defaultValue: ['beijing', 'bj1', '#c23a30', 'white'] as any,
     },
+    {
+        id: 'component_variant',
+        label: 'variant',
+        name: 'Variant',
+        type: 'option',
+        defaultValue: 'local',
+        value: 'express',
+        constraints: { options: ['local', 'express'] },
+    },
 ];
 
 describe('attr binding evaluator', () => {
@@ -39,6 +48,9 @@ describe('attr binding evaluator', () => {
         expect(
             evaluateAttrBinding({ kind: 'variable', componentId: 'color', path: 'hex' }, { components }).value
         ).toEqual('#c23a30');
+        expect(
+            evaluateAttrBinding({ kind: 'variable', componentId: 'component_variant' }, { components }).value
+        ).toEqual('express');
         expect(evaluateAttrBinding({ kind: 'formula', expression: 'widthValue + 8' }, { components }).value).toEqual(
             20
         );
@@ -90,6 +102,9 @@ describe('attr binding compiler', () => {
         expect(
             compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'color', path: 'hex' }, components)
         ).toEqual('2color[2]');
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'component_variant' }, components)
+        ).toEqual('2variant');
         expect(compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'widthValue + 2' }, components)).toEqual(
             '3widthValue + 2'
         );

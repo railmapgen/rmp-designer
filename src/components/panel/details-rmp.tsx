@@ -13,6 +13,10 @@ import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-sli
 import { getComponentDisplayName } from '../../util/attr-binding';
 import { defaultColorTheme, normalizeTheme } from '../../constants/constants';
 import ThemeButton from './theme-button';
+import { getComponentOptionValues, normalizeComponentOptionValue } from '../../constants/components';
+
+const optionValuesToSelectOptions = (options: string[]): Record<string, string> =>
+    Object.fromEntries(options.map(option => [option, option]));
 
 export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
     const { isOpen, onClose } = props;
@@ -76,6 +80,18 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
                 label: label,
                 type: 'textarea',
                 value: value ?? defaultValue,
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
+                },
+            };
+        } else if (type === 'option') {
+            const options = getComponentOptionValues(c);
+            return {
+                label,
+                type: 'select',
+                options: optionValuesToSelectOptions(options),
+                value: normalizeComponentOptionValue(value ?? defaultValue, options),
                 onChange: v => {
                     dispatch(backupParam(param));
                     dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
