@@ -8,25 +8,28 @@ import {
     Button,
     Flex,
     Heading,
-    IconButton,
     Text,
 } from '@chakra-ui/react';
-import { RmgFields, RmgFieldsField, RmgLabel } from '@railmapgen/rmg-components';
+import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
-import { MdArrowDownward, MdArrowUpward, MdCircle, MdClose } from 'react-icons/md';
+import { MdArrowDownward, MdArrowUpward, MdClose } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import {
-    addComponent,
-    deleteComponent,
-    setColor,
-    setComponents,
-    setComponentValue,
-} from '../../redux/param/param-slice';
+import { addComponent, deleteComponent, setComponents, setComponentValue } from '../../redux/param/param-slice';
 import { ComponentsType, ComponentsTypeOptions } from '../../constants/components';
-import { backupParam, clearGlobalAlerts, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
+import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import { nanoid } from '../../util/helper';
-import ColourUtil from './colour-util';
+import { defaultColorTheme, normalizeTheme } from '../../constants/constants';
+import ThemeButton from './theme-button';
+
+const normalizeDefaultValue = (type: ComponentsType, value: unknown) => {
+    if (type === 'switch') return Boolean(value);
+    if (type === 'number') return Number.isNaN(Number(value)) ? 0 : Number(value);
+    if (type === 'color') return normalizeTheme(value, defaultColorTheme);
+    return value === undefined || value === null ? '' : String(value);
+};
+
+const createComponentLabel = (id: string) => `param_${id}`;
 
 export function DetailsComponents() {
     const dispatch = useRootDispatch();
@@ -35,13 +38,40 @@ export function DetailsComponents() {
         paletteAppClip: { output },
     } = useRootSelector(state => state.runtime);
     const { t } = useTranslation();
+    const requestedColorIndexRef = React.useRef<number>();
+    const paramRef = React.useRef(param);
+
+    React.useEffect(() => {
+        paramRef.current = param;
+    }, [param]);
+
+    React.useEffect(() => {
+        const requestedColorIndex = requestedColorIndexRef.current;
+        if (requestedColorIndex !== undefined && output) {
+            requestedColorIndexRef.current = undefined;
+            const currentParam = paramRef.current;
+            const component = currentParam.components[requestedColorIndex];
+            if (component?.type === 'color') {
+                dispatch(backupParam(currentParam));
+                dispatch(
+                    setComponentValue({
+                        index: requestedColorIndex,
+                        value: { ...component, defaultValue: output },
+                    })
+                );
+            }
+        }
+    }, [dispatch, output?.toString()]);
 
     const handleAddNewComponent = () => {
+        const id = nanoid();
+        const name = `Parameter ${param.components.length + 1}`;
         dispatch(backupParam(param));
         dispatch(
             addComponent({
-                id: nanoid(),
-                label: nanoid(),
+                id,
+                label: createComponentLabel(id),
+                name,
                 type: 'text',
                 defaultValue: 'text',
             })
@@ -68,16 +98,15 @@ export function DetailsComponents() {
     };
 
     const p = param.components.map((c, index) => {
-        const { id, label, type, defaultValue } = c;
+        const { id, label, type, defaultValue, name, constraints } = c;
         const field: RmgFieldsField[] = [
             {
-                label: t('panel.common.label'),
+                label: t('panel.components.name'),
                 type: 'input',
-                value: label,
+                value: name ?? label,
                 onChange: v => {
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, label: v.replaceAll(' ', '') } }));
-                    dispatch(clearGlobalAlerts());
+                    dispatch(setComponentValue({ index: index, value: { ...c, name: v } }));
                 },
             },
             {
@@ -86,8 +115,20 @@ export function DetailsComponents() {
                 options: ComponentsTypeOptions,
                 value: type,
                 onChange: v => {
+                    const nextType = v as ComponentsType;
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, type: v as ComponentsType } }));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: {
+                                ...c,
+                                type: nextType,
+                                defaultValue: normalizeDefaultValue(nextType, defaultValue),
+                                value: c.value === undefined ? undefined : normalizeDefaultValue(nextType, c.value),
+                                constraints: nextType === 'number' ? { step: 1, ...constraints } : constraints,
+                            },
+                        })
+                    );
                 },
             },
             {
@@ -96,9 +137,14 @@ export function DetailsComponents() {
                 value: defaultValue,
                 onChange: v => {
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } }));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: { ...c, defaultValue: normalizeDefaultValue(type, v) },
+                        })
+                    );
                 },
-                hidden: type === 'switch',
+                hidden: type === 'switch' || type === 'color',
             },
             {
                 label: t('panel.components.defaultValue'),
@@ -109,6 +155,83 @@ export function DetailsComponents() {
                     dispatch(setComponentValue({ index: index, value: { ...c, defaultValue: v } }));
                 },
                 hidden: type !== 'switch',
+            },
+            {
+                label: t('panel.components.defaultValue'),
+                type: 'custom',
+                component: (
+                    <ThemeButton
+                        theme={normalizeTheme(defaultValue, defaultColorTheme)}
+                        onClick={() => {
+                            requestedColorIndexRef.current = index;
+                            dispatch(openPaletteAppClip(normalizeTheme(defaultValue, defaultColorTheme)));
+                        }}
+                    />
+                ),
+                hidden: type !== 'color',
+            },
+            {
+                label: 'Minimum',
+                type: 'input',
+                value: constraints?.min?.toString() ?? '',
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: {
+                                ...c,
+                                constraints: {
+                                    ...constraints,
+                                    min: v === '' ? undefined : Number(v),
+                                },
+                            },
+                        })
+                    );
+                },
+                hidden: type !== 'number',
+            },
+            {
+                label: 'Maximum',
+                type: 'input',
+                value: constraints?.max?.toString() ?? '',
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: {
+                                ...c,
+                                constraints: {
+                                    ...constraints,
+                                    max: v === '' ? undefined : Number(v),
+                                },
+                            },
+                        })
+                    );
+                },
+                hidden: type !== 'number',
+            },
+            {
+                label: 'Step',
+                type: 'input',
+                value: constraints?.step?.toString() ?? '1',
+                onChange: v => {
+                    dispatch(backupParam(param));
+                    dispatch(
+                        setComponentValue({
+                            index: index,
+                            value: {
+                                ...c,
+                                constraints: {
+                                    ...constraints,
+                                    step: v === '' ? undefined : Number(v),
+                                },
+                            },
+                        })
+                    );
+                },
+                hidden: type !== 'number',
             },
             {
                 label: '',
@@ -140,7 +263,7 @@ export function DetailsComponents() {
             <AccordionItem key={id}>
                 <AccordionButton p={2}>
                     <Box as="span" flex="1" textAlign="left">
-                        {label}
+                        {name ?? label}
                     </Box>
                     <AccordionIcon />
                 </AccordionButton>
@@ -151,15 +274,6 @@ export function DetailsComponents() {
         );
     });
 
-    const [isThemeRequested, setIsThemeRequested] = React.useState(false);
-    React.useEffect(() => {
-        if (isThemeRequested && output) {
-            dispatch(backupParam(param));
-            dispatch(setColor({ ...param.color!, defaultValue: output }));
-            setIsThemeRequested(false);
-        }
-    }, [output?.toString()]);
-
     return (
         <Flex width="100%" height="100%" direction="column" overflow="auto">
             <Flex p={2}>
@@ -169,35 +283,9 @@ export function DetailsComponents() {
                 <Button onClick={handleAddNewComponent}>+</Button>
             </Flex>
             <Box width="100%" height="100%" overflow="scroll">
-                {p.length > 0 || param.color ? (
+                {p.length > 0 ? (
                     <Accordion width="100%" allowMultiple>
                         {...p}
-                        {param.color ? (
-                            <AccordionItem key="color">
-                                <AccordionButton p={2}>
-                                    <Box as="span" flex="1" textAlign="left">
-                                        {t('color')}
-                                    </Box>
-                                    <AccordionIcon />
-                                </AccordionButton>
-                                <AccordionPanel>
-                                    <RmgLabel label={t('panel.components.defaultColor')}>
-                                        <IconButton
-                                            aria-label={t('color')}
-                                            color={param.color.defaultValue[3]}
-                                            bg={param.color.defaultValue[2]}
-                                            size="md"
-                                            _hover={{ bg: ColourUtil.fade(param.color.defaultValue[2], 0.7) }}
-                                            icon={<MdCircle />}
-                                            onClick={() => {
-                                                setIsThemeRequested(true);
-                                                dispatch(openPaletteAppClip(param.color?.defaultValue));
-                                            }}
-                                        />
-                                    </RmgLabel>
-                                </AccordionPanel>
-                            </AccordionItem>
-                        ) : undefined}
                     </Accordion>
                 ) : (
                     <Flex height="100%" width="100%" justifyContent="center" alignItems="center">

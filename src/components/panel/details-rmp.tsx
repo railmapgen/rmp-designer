@@ -1,19 +1,18 @@
 import {
     RmgFields,
     RmgFieldsField,
-    RmgLabel,
     RmgSidePanel,
     RmgSidePanelBody,
     RmgSidePanelHeader,
 } from '@railmapgen/rmg-components';
-import { IconButton } from '@chakra-ui/react';
 import React from 'react';
-import { MdCircle } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setColor, setComponentValue } from '../../redux/param/param-slice';
+import { setComponentValue } from '../../redux/param/param-slice';
 import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
-import ColourUtil from './colour-util';
+import { getComponentDisplayName } from '../../util/attr-binding';
+import { defaultColorTheme, normalizeTheme } from '../../constants/constants';
+import ThemeButton from './theme-button';
 
 export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
     const { isOpen, onClose } = props;
@@ -23,9 +22,34 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
         paletteAppClip: { output },
     } = useRootSelector(state => state.runtime);
     const { t } = useTranslation();
+    const requestedColorIndexRef = React.useRef<number>();
+    const paramRef = React.useRef(param);
+
+    React.useEffect(() => {
+        paramRef.current = param;
+    }, [param]);
+
+    React.useEffect(() => {
+        const requestedColorIndex = requestedColorIndexRef.current;
+        if (requestedColorIndex !== undefined && output) {
+            requestedColorIndexRef.current = undefined;
+            const currentParam = paramRef.current;
+            const component = currentParam.components[requestedColorIndex];
+            if (component?.type === 'color') {
+                dispatch(backupParam(currentParam));
+                dispatch(
+                    setComponentValue({
+                        index: requestedColorIndex,
+                        value: { ...component, value: output },
+                    })
+                );
+            }
+        }
+    }, [dispatch, output?.toString()]);
 
     const field: RmgFieldsField[] = param.components.map((c, index) => {
-        const { label, type, defaultValue, value } = c;
+        const { type, defaultValue, value } = c;
+        const label = getComponentDisplayName(c);
         if (type === 'number' || type === 'text') {
             return {
                 label: label,
@@ -33,7 +57,8 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
                 value: value ?? defaultValue,
                 onChange: v => {
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
+                    const nextValue = type === 'number' && v !== '' ? Number(v) : v;
+                    dispatch(setComponentValue({ index: index, value: { ...c, value: nextValue } }));
                 },
             };
         } else if (type === 'switch') {
@@ -56,6 +81,21 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
                     dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
                 },
             };
+        } else if (type === 'color') {
+            const theme = normalizeTheme(value ?? defaultValue, defaultColorTheme);
+            return {
+                label,
+                type: 'custom',
+                component: (
+                    <ThemeButton
+                        theme={theme}
+                        onClick={() => {
+                            requestedColorIndexRef.current = index;
+                            dispatch(openPaletteAppClip(theme));
+                        }}
+                    />
+                ),
+            };
         } else {
             return {
                 type: 'input',
@@ -65,38 +105,11 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
         }
     });
 
-    const [isThemeRequested, setIsThemeRequested] = React.useState(false);
-    React.useEffect(() => {
-        if (isThemeRequested && output) {
-            dispatch(backupParam(param));
-            dispatch(setColor({ ...param.color!, value: output }));
-            setIsThemeRequested(false);
-        }
-    }, [output?.toString()]);
-
-    const color = param.color?.value ?? param.color?.defaultValue;
-
     return (
         <RmgSidePanel isOpen={isOpen} header="Dummy header" alwaysOverlay>
             <RmgSidePanelHeader onClose={onClose}>{t('panel.details.header')}</RmgSidePanelHeader>
             <RmgSidePanelBody>
                 <RmgFields fields={field} minW={300} />
-                {param.color ? (
-                    <RmgLabel label={t('color')}>
-                        <IconButton
-                            aria-label={t('color')}
-                            color={color[3]}
-                            bg={color[2]}
-                            size="md"
-                            _hover={{ bg: ColourUtil.fade(color[2], 0.7) }}
-                            icon={<MdCircle />}
-                            onClick={() => {
-                                setIsThemeRequested(true);
-                                dispatch(openPaletteAppClip(color));
-                            }}
-                        />
-                    </RmgLabel>
-                ) : undefined}
             </RmgSidePanelBody>
         </RmgSidePanel>
     );
