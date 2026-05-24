@@ -53,6 +53,11 @@
             "attrKey": "属性键",
             "attrValue": "属性值",
             "addTextChildren": "添加文本内容",
+            "complexMode": {
+                "title": "复杂 SVG 已进入不可编辑模式",
+                "summary": "这个 SVG 包含 {{count}} 个元素，超过 {{limit}} 个元素的逐节点编辑上限。",
+                "detail": "画布预览和导出仍会保留完整 SVG。为了避免卡顿，组件树和单节点拖拽已关闭；如需编辑，请先在 SVG 软件中简化图形或拆分成更小的 SVG 后再导入。"
+            },
             "attrMode": {
                 "title": "属性模式",
                 "value": "值",
@@ -61,8 +66,6 @@
             },
             "attrPanel": {
                 "placeholder": "例如：12、{宽度}、3 + {宽度}",
-                "collapse": "收起",
-                "insertValue": "插入参数 / 计算",
                 "common": "常用",
                 "quick": "快捷",
                 "empty": "空",
@@ -80,7 +83,22 @@
                 "deleteBlock": "移除块",
                 "editBlocks": "编辑",
                 "doneEditing": "完成",
-                "cancelEditing": "取消"
+                "cancelEditing": "取消",
+                "mainColor": "主色",
+                "textColor": "文字色",
+                "calculations": {
+                    "add": "+",
+                    "subtract": "-",
+                    "multiply": "×",
+                    "divide": "÷",
+                    "min": "最小值",
+                    "max": "最大值",
+                    "round": "四舍五入",
+                    "abs": "绝对值",
+                    "floor": "向下取整",
+                    "ceil": "向上取整",
+                    "if": "如果"
+                }
             },
             "attrGroups": {
                 "position": "位置",

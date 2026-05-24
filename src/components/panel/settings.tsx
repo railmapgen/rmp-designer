@@ -1,8 +1,7 @@
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setColor, setLabel, setType } from '../../redux/param/param-slice';
-import { colorComponents } from '../../constants/components';
+import { setLabel, setType } from '../../redux/param/param-slice';
 
 export function Settings() {
     const dispatch = useRootDispatch();
@@ -23,12 +22,6 @@ export function Settings() {
             value: param.type,
             onChange: value => dispatch(setType(value as 'MiscNode' | 'Station')),
             minW: 100,
-        },
-        {
-            label: t('color'),
-            type: 'switch',
-            isChecked: !!param.color,
-            onChange: value => dispatch(setColor(value ? colorComponents : undefined)),
         },
     ];
 

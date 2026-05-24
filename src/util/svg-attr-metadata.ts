@@ -23,51 +23,51 @@ export interface SvgAttrMetadata {
 export type GroupedAttrKeys = Record<AttrGroup, string[]>;
 
 const attrLabels: Record<string, string> = {
-    x: 'X 位置',
-    y: 'Y 位置',
-    x1: '起点 X',
-    y1: '起点 Y',
-    x2: '终点 X',
-    y2: '终点 Y',
-    cx: '中心 X',
-    cy: '中心 Y',
-    dx: '水平偏移',
-    dy: '垂直偏移',
-    r: '半径',
-    rx: '水平圆角/半径',
-    ry: '垂直圆角/半径',
-    width: '宽度',
-    height: '高度',
-    fill: '填充颜色',
-    stroke: '边框颜色',
-    'stroke-width': '边框粗细',
-    'stroke-dasharray': '虚线样式',
-    'stroke-linecap': '线端样式',
-    'stroke-linejoin': '转角样式',
-    opacity: '透明度',
-    transform: '移动/旋转/缩放',
-    d: '路径',
-    points: '点列表',
-    _rmp_children_text: '文本内容',
-    'font-size': '字号',
-    'font-family': '字体',
-    'font-weight': '字重',
-    'letter-spacing': '字间距',
-    'text-anchor': '水平对齐',
-    'dominant-baseline': '垂直对齐',
-    className: '文字样式',
-    viewBox: '视图范围',
-    color: '颜色',
-    style: '样式表',
-    filter: '滤镜',
-    mask: '遮罩',
-    'clip-path': '裁剪区域',
+    x: 'X position',
+    y: 'Y position',
+    x1: 'Start X',
+    y1: 'Start Y',
+    x2: 'End X',
+    y2: 'End Y',
+    cx: 'Center X',
+    cy: 'Center Y',
+    dx: 'Horizontal offset',
+    dy: 'Vertical offset',
+    r: 'Radius',
+    rx: 'Horizontal corner radius',
+    ry: 'Vertical corner radius',
+    width: 'Width',
+    height: 'Height',
+    fill: 'Fill color',
+    stroke: 'Stroke color',
+    'stroke-width': 'Stroke width',
+    'stroke-dasharray': 'Dash pattern',
+    'stroke-linecap': 'Line cap',
+    'stroke-linejoin': 'Line join',
+    opacity: 'Opacity',
+    transform: 'Move / rotate / scale',
+    d: 'Path',
+    points: 'Point list',
+    _rmp_children_text: 'Text content',
+    'font-size': 'Font size',
+    'font-family': 'Font family',
+    'font-weight': 'Font weight',
+    'letter-spacing': 'Letter spacing',
+    'text-anchor': 'Horizontal alignment',
+    'dominant-baseline': 'Vertical alignment',
+    className: 'Text style',
+    viewBox: 'View box',
+    color: 'Color',
+    style: 'Style sheet',
+    filter: 'Filter',
+    mask: 'Mask',
+    'clip-path': 'Clip path',
 };
 
 const fallbackAttrLabel = (attr: string): string =>
     attr
-        .replace(/^aria-/, '辅助信息 ')
-        .replace(/^data-/, '数据 ')
+        .replace(/^aria-/, 'ARIA ')
+        .replace(/^data-/, 'Data ')
         .split(/[-_:]/)
         .filter(Boolean)
         .map(part => part.charAt(0).toUpperCase() + part.slice(1))
@@ -130,7 +130,7 @@ export const getAttrControl = (type: string, attr: string): AttrControl => {
     if (attr === 'd') return { type: 'path' };
     if (attr === 'points') return { type: 'points' };
     if (attr === 'style') return { type: 'style' };
-    if (attr === '_rmp_children_text') return { type: 'textarea' };
+    if (attr === '_rmp_children_text') return { type: 'text-content' };
     if (colorAttrs.has(attr)) return { type: 'color' };
     if (numberAttrs.has(attr)) return { type: 'number', step: attr === 'opacity' ? 0.05 : 1 };
 
@@ -146,13 +146,13 @@ export const getAttrControl = (type: string, attr: string): AttrControl => {
 
 const fallbackDescription = (type: string, attr: string): string => {
     const control = getAttrControl(type, attr);
-    if (control.type === 'number') return '输入数字，也可以用参数或计算公式控制这个值。';
-    if (control.type === 'color') return '输入颜色，也可以绑定颜色参数。';
-    if (control.type === 'select') return '从常用选项中选择，或输入参数控制。';
-    if (control.type === 'path') return '控制 SVG 路径轮廓，通常来自上传 SVG。';
-    if (control.type === 'points') return '控制折线或多边形的点位，通常来自上传 SVG。';
-    if (control.type === 'style') return '保留上传 SVG 的样式内容。';
-    return '这是 SVG 的扩展属性，通常来自上传 SVG 或手动添加。';
+    if (control.type === 'number') return 'Enter a number, or use a parameter or formula.';
+    if (control.type === 'color') return 'Enter a color, or bind a color parameter.';
+    if (control.type === 'select') return 'Choose a common option, or use a parameter.';
+    if (control.type === 'path') return 'Controls the SVG path outline, usually imported from SVG.';
+    if (control.type === 'points') return 'Controls polyline or polygon points, usually imported from SVG.';
+    if (control.type === 'style') return 'Keeps style content imported from SVG.';
+    return 'An extended SVG attribute, usually imported from SVG or added manually.';
 };
 
 const mergeUiMeta = (type: string, attr: string): Partial<AttrUiMeta> => {

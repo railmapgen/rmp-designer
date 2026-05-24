@@ -10,45 +10,48 @@ export interface CreateSvgsProps {
     svgsElem: SvgsElem;
     components: Components[];
     prefix: Id[];
+    isEditable?: boolean;
     handlePointerDown: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
     handlePointerMove: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
     handlePointerUp: (id: Id, path: Id[], e: React.PointerEvent<SVGElement>) => void;
 }
 
-export const CreateSvgs = (props: CreateSvgsProps) => {
-    const { svgsElem, components, prefix, handlePointerUp, handlePointerMove, handlePointerDown } = props;
+const CreateSvgsComponent = (props: CreateSvgsProps) => {
+    const { svgsElem, components, prefix, isEditable = true, handlePointerUp, handlePointerMove, handlePointerDown } = props;
     const { id, type, attrs } = svgsElem;
     const dispatch = useRootDispatch();
-    const { globalAlerts, selected } = useRootSelector(state => state.runtime);
+    const hasGlobalAlert = useRootSelector(state => state.runtime.globalAlerts.has(id));
+    const isSelected = useRootSelector(state => state.runtime.selected.has(id));
+    const hasSelected = useRootSelector(state => state.runtime.selected.size > 0);
+    const currentPath = React.useMemo(() => [...prefix, id], [id, prefix]);
 
     const onPointerDown = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, [...prefix, id], e),
-        [id, handlePointerDown]
+        (e: React.PointerEvent<SVGElement>) => handlePointerDown(id, currentPath, e),
+        [currentPath, id, handlePointerDown]
     );
     const onPointerMove = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerMove(id, [...prefix, id], e),
-        [id, handlePointerMove]
+        (e: React.PointerEvent<SVGElement>) => handlePointerMove(id, currentPath, e),
+        [currentPath, id, handlePointerMove]
     );
     const onPointerUp = React.useCallback(
-        (e: React.PointerEvent<SVGElement>) => handlePointerUp(id, [...prefix, id], e),
-        [id, handlePointerUp]
+        (e: React.PointerEvent<SVGElement>) => handlePointerUp(id, currentPath, e),
+        [currentPath, id, handlePointerUp]
     );
-    const hasGlobalAlert = globalAlerts.has(id);
 
-    const [error, setError] = React.useState<string | undefined>(undefined);
+    const evaluatedAttrs = React.useMemo(() => {
+        if (hasGlobalAlert) return { attrs: {} };
+        return evaluateSvgAttrs(attrs, svgsElem.attrBindings, components);
+    }, [attrs, svgsElem.attrBindings, components, hasGlobalAlert]);
+    const newAttrs = evaluatedAttrs.attrs;
+    const styleError = 'style' in newAttrs && typeof newAttrs.style !== 'object' ? '"style" must be an object!' : undefined;
+    const error = evaluatedAttrs.error ?? styleError;
+
     React.useEffect(() => {
-        if (!hasGlobalAlert && error) {
+        if (error && !hasGlobalAlert) {
             dispatch(addGlobalAlert({ id: id, str: error }));
-            setError(undefined);
         }
-    }, [error]);
+    }, [dispatch, error, hasGlobalAlert, id]);
 
-    const newAttrs = React.useMemo(() => {
-        if (error || hasGlobalAlert) return {};
-        const result = evaluateSvgAttrs(attrs, svgsElem.attrBindings, components);
-        if (result.error) setError(result.error);
-        return result.attrs;
-    }, [JSON.stringify(attrs), JSON.stringify(svgsElem.attrBindings), JSON.stringify(components), error, hasGlobalAlert]);
     const Children =
         supportsChildren(type) && svgsElem.children
             ? svgsElem.children.map((s, i) => (
@@ -56,7 +59,8 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
                       key={i}
                       svgsElem={s}
                       components={components}
-                      prefix={[...prefix, id]}
+                      prefix={currentPath}
+                      isEditable={isEditable}
                       handlePointerDown={handlePointerDown}
                       handlePointerMove={handlePointerMove}
                       handlePointerUp={handlePointerUp}
@@ -65,19 +69,17 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
             : '_rmp_children_text' in newAttrs
               ? [newAttrs._rmp_children_text as React.ReactNode]
               : [];
-    if ('style' in newAttrs && typeof newAttrs.style !== 'object') {
-        setError('"style" must be an object!');
-    }
     const newStyle =
         'style' in newAttrs && typeof newAttrs.style === 'object'
-            ? { ...(newAttrs.style as object), cursor: 'move' }
-            : { cursor: 'move' };
+            ? { ...(newAttrs.style as object), cursor: isEditable ? 'move' : 'default' }
+            : { cursor: isEditable ? 'move' : 'default' };
     return (
         <g
             id={`g_${id}`}
             key={`g_${id}`}
             transform={`translate(${newAttrs.x ?? 0}, ${newAttrs.y ?? 0})`}
-            opacity={!selected.has(id) && selected.size !== 0 ? 0.5 : 1}
+            opacity={isEditable && !isSelected && hasSelected ? 0.5 : 1}
+            pointerEvents={isEditable ? undefined : 'none'}
         >
             {React.createElement(
                 type,
@@ -87,9 +89,9 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
                     key: id,
                     x: 0,
                     y: 0,
-                    onPointerDown,
-                    onPointerMove,
-                    onPointerUp,
+                    onPointerDown: isEditable ? onPointerDown : undefined,
+                    onPointerMove: isEditable ? onPointerMove : undefined,
+                    onPointerUp: isEditable ? onPointerUp : undefined,
                     style: newStyle,
                 },
                 ...Children
@@ -97,3 +99,5 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
         </g>
     );
 };
+
+export const CreateSvgs = React.memo(CreateSvgsComponent);

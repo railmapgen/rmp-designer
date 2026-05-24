@@ -24,8 +24,10 @@ import { useWindowSize } from '../util/hook';
 import { CreateSvgs } from './svgs/createSvgs';
 import svgs from './svgs/module/svgs';
 import { updateTransformString } from '../util/parse';
+import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../util/svg-node-count';
 
-export default function SvgWrapper() {
+export default function SvgWrapper(props: { height?: number }) {
+    const { height } = props;
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
     const { canvasColor } = useRootSelector(store => store.app);
@@ -34,9 +36,16 @@ export default function SvgWrapper() {
     );
     const size = useWindowSize();
     const svgWidth = (size.width ?? 720) - 40;
-    const svgHeight = (((size.height ?? 720) - 40) * 3) / 5;
+    const svgHeight = height ?? (((size.height ?? 720) - 40) * 3) / 5;
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const [svgViewBoxMinTmp, setSvgViewBoxMinTmp] = React.useState({ x: 0, y: 0 }); // temp copy of svgViewBoxMin
+    const components = React.useMemo(() => param.components, [param.components]);
+    const svgNodeCount = React.useMemo(() => countSvgNodes(param.svgs), [param.svgs]);
+    const svgTreeEditable = svgNodeCount <= MAX_EDITABLE_SVG_NODE_COUNT;
+    const rootPrefixes = React.useMemo(
+        () => new Map(param.svgs.map(s => [s.id, [s.id] as Id[]])),
+        [param.svgs]
+    );
     const canvasBackground =
         canvasColor === 'dark' ? 'var(--chakra-colors-gray-800)' : canvasColor === 'white' ? 'white' : '';
 
@@ -276,13 +285,13 @@ export default function SvgWrapper() {
             <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />
             <rect id="canvas-y" x={-1} y={-200000} width={2} height={400000} fill="black" />
             {param.svgs.map(s => {
-                const components = param.color ? [...param.components, param.color] : param.components;
                 return (
                     <CreateSvgs
                         key={s.id}
                         svgsElem={s}
                         components={components}
-                        prefix={[s.id]}
+                        prefix={rootPrefixes.get(s.id) ?? [s.id]}
+                        isEditable={svgTreeEditable}
                         handlePointerDown={handlePointerDown}
                         handlePointerMove={handlePointerMove}
                         handlePointerUp={handlePointerUp}

@@ -53,6 +53,11 @@
             "attrKey": "속성 키",
             "attrValue": "속성 값",
             "addTextChildren": "텍스트 콘텐츠 추가",
+            "complexMode": {
+                "title": "복잡한 SVG는 읽기 전용 모드입니다",
+                "summary": "이 SVG에는 {{count}}개의 요소가 있으며, 노드별 편집 한도인 {{limit}}개를 초과합니다.",
+                "detail": "캔버스 미리보기와 내보내기는 전체 SVG를 그대로 유지합니다. 편집 지연을 피하기 위해 구성 요소 트리와 단일 노드 드래그가 비활성화되었습니다. 편집이 필요하면 SVG 소프트웨어에서 단순화하거나 더 작은 SVG로 나눈 뒤 가져오세요."
+            },
             "attrMode": {
                 "title": "속성 모드",
                 "value": "값",
@@ -61,8 +66,6 @@
             },
             "attrPanel": {
                 "placeholder": "예: 12, {너비}, 3 + {너비}",
-                "collapse": "접기",
-                "insertValue": "매개변수 / 계산 삽입",
                 "common": "자주 사용",
                 "quick": "빠른 값",
                 "empty": "비어 있음",
@@ -80,7 +83,22 @@
                 "deleteBlock": "블록 제거",
                 "editBlocks": "편집",
                 "doneEditing": "완료",
-                "cancelEditing": "취소"
+                "cancelEditing": "취소",
+                "mainColor": "기본 색상",
+                "textColor": "글자 색상",
+                "calculations": {
+                    "add": "+",
+                    "subtract": "-",
+                    "multiply": "x",
+                    "divide": "/",
+                    "min": "최소",
+                    "max": "최대",
+                    "round": "반올림",
+                    "abs": "절댓값",
+                    "floor": "내림",
+                    "ceil": "올림",
+                    "if": "조건"
+                }
             },
             "attrGroups": {
                 "position": "위치",

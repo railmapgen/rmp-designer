@@ -13,6 +13,7 @@ import {
     Input,
     Text,
     Textarea,
+    useColorModeValue,
     VStack,
 } from '@chakra-ui/react';
 import { RmgAutoComplete, RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
@@ -51,7 +52,6 @@ import {
     getSvgAttrLabel,
     getSvgAttrMetadata,
 } from '../../util/svg-attr-metadata';
-import { getComponentsWithColor } from '../../util/save';
 import {
     ExpressionBlock,
     ExpressionBlockKind,
@@ -59,6 +59,7 @@ import {
     expressionTextToBlocks,
     getExpressionBlockKind,
 } from '../../util/expression-blocks';
+import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../../util/svg-node-count';
 
 interface VariableOption {
     id: string;
@@ -85,7 +86,7 @@ interface ExpressionBlockInputHandle {
 const blockIndexDragType = 'application/x-rmp-attr-block-index';
 const blockTextDragType = 'application/x-rmp-attr-block-text';
 
-const blockStyle: Record<ExpressionBlockKind, { bg: string; borderColor: string; color: string }> = {
+const blockStyleLight: Record<ExpressionBlockKind, { bg: string; borderColor: string; color: string }> = {
     literal: { bg: 'gray.50', borderColor: 'gray.200', color: 'gray.800' },
     variable: { bg: 'blue.50', borderColor: 'blue.200', color: 'blue.800' },
     operator: { bg: 'orange.50', borderColor: 'orange.200', color: 'orange.800' },
@@ -93,35 +94,44 @@ const blockStyle: Record<ExpressionBlockKind, { bg: string; borderColor: string;
     punctuation: { bg: 'yellow.50', borderColor: 'yellow.200', color: 'yellow.800' },
 };
 
+const blockStyleDark: Record<ExpressionBlockKind, { bg: string; borderColor: string; color: string }> = {
+    literal: { bg: 'gray.700', borderColor: 'gray.600', color: 'gray.50' },
+    variable: { bg: 'blue.900', borderColor: 'blue.600', color: 'blue.100' },
+    operator: { bg: 'orange.900', borderColor: 'orange.600', color: 'orange.100' },
+    function: { bg: 'purple.900', borderColor: 'purple.600', color: 'purple.100' },
+    punctuation: { bg: 'yellow.900', borderColor: 'yellow.600', color: 'yellow.100' },
+};
+
 const expressionButtons = [
-    { label: '+', text: ' + ' },
-    { label: '-', text: ' - ' },
-    { label: '×', text: ' * ' },
-    { label: '÷', text: ' / ' },
-    { label: '最小值', text: 'Math.min(, )', cursorOffset: 9 },
-    { label: '最大值', text: 'Math.max(, )', cursorOffset: 9 },
-    { label: '四舍五入', text: 'Math.round()', cursorOffset: 11 },
-    { label: '绝对值', text: 'Math.abs()', cursorOffset: 9 },
-    { label: '向下取整', text: 'Math.floor()', cursorOffset: 11 },
-    { label: '向上取整', text: 'Math.ceil()', cursorOffset: 10 },
-    { label: '如果', text: ' ?  : ', cursorOffset: 1 },
+    { labelKey: 'add', fallbackLabel: '+', text: ' + ' },
+    { labelKey: 'subtract', fallbackLabel: '-', text: ' - ' },
+    { labelKey: 'multiply', fallbackLabel: 'x', text: ' * ' },
+    { labelKey: 'divide', fallbackLabel: '/', text: ' / ' },
+    { labelKey: 'min', fallbackLabel: 'Minimum', text: 'Math.min(, )', cursorOffset: 9 },
+    { labelKey: 'max', fallbackLabel: 'Maximum', text: 'Math.max(, )', cursorOffset: 9 },
+    { labelKey: 'round', fallbackLabel: 'Round', text: 'Math.round()', cursorOffset: 11 },
+    { labelKey: 'abs', fallbackLabel: 'Absolute', text: 'Math.abs()', cursorOffset: 9 },
+    { labelKey: 'floor', fallbackLabel: 'Floor', text: 'Math.floor()', cursorOffset: 11 },
+    { labelKey: 'ceil', fallbackLabel: 'Ceil', text: 'Math.ceil()', cursorOffset: 10 },
+    { labelKey: 'if', fallbackLabel: 'If', text: ' ?  : ', cursorOffset: 1 },
 ];
 
-const createVariableOptions = (components: Components[]): VariableOption[] =>
+const createVariableOptions = (components: Components[], t: (key: string) => string): VariableOption[] =>
     components.flatMap(component => {
+        const displayName = getComponentDisplayName(component);
         if (component.type === 'color') {
             return [
                 {
                     id: `${component.id}:hex`,
-                    value: getComponentDisplayName(component),
-                    token: getComponentDisplayName(component),
+                    value: `${displayName} · ${t('panel.svgs.attrPanel.mainColor')}`,
+                    token: `${component.label}.hex`,
                     componentId: component.id,
                     path: 'hex',
                 },
                 {
                     id: `${component.id}:text`,
-                    value: `${getComponentDisplayName(component)}文字色`,
-                    token: `${getComponentDisplayName(component)}文字色`,
+                    value: `${displayName} · ${t('panel.svgs.attrPanel.textColor')}`,
+                    token: `${component.label}.text`,
                     componentId: component.id,
                     path: 'text',
                 },
@@ -130,8 +140,8 @@ const createVariableOptions = (components: Components[]): VariableOption[] =>
         return [
             {
                 id: component.id,
-                value: getComponentDisplayName(component),
-                token: getComponentDisplayName(component),
+                value: displayName,
+                token: component.label,
                 componentId: component.id,
             },
         ];
@@ -142,7 +152,29 @@ const stringifyValue = (value: unknown) =>
 
 const unique = (values: string[]) => Array.from(new Set(values.filter(Boolean)));
 
-const getBlockWidth = (block: ExpressionBlock) => `${Math.min(220, Math.max(28, block.text.length * 8 + 18))}px`;
+const getBlockWidth = (text: string) => `${Math.min(220, Math.max(28, text.length * 8 + 18))}px`;
+
+const getExpressionBlockDisplayText = (
+    block: ExpressionBlock,
+    components: Components[],
+    t: (key: string) => string
+): string => {
+    if (block.kind !== 'variable') return block.text;
+
+    const token = block.text.match(/^\{([^{}]+)\}$/)?.[1];
+    if (!token) return block.text;
+
+    const variable = resolveVariableToken(token, components);
+    if (!variable) return block.text;
+
+    const component = components.find(c => c.id === variable.componentId || c.label === variable.componentId);
+    if (!component) return block.text;
+
+    const displayName = getComponentDisplayName(component);
+    if (component.type !== 'color') return displayName;
+    if (variable.path === 'text') return `${displayName} · ${t('panel.svgs.attrPanel.textColor')}`;
+    return `${displayName} · ${t('panel.svgs.attrPanel.mainColor')}`;
+};
 
 const insertEditableExpressionText = (
     blocks: EditableExpressionBlock[],
@@ -178,9 +210,9 @@ const attrTextKey = (attrKey: string, field: 'title' | 'description' | 'effectHi
 const getBindingToken = (binding: { componentId: string; path?: string }, components: Components[]) => {
     const component = components.find(c => c.id === binding.componentId || c.label === binding.componentId);
     if (!component) return binding.componentId;
-    const displayName = getComponentDisplayName(component);
-    if (component.type === 'color' && binding.path === 'text') return `${displayName}文字色`;
-    return displayName;
+    if (component.type === 'color' && (!binding.path || binding.path === 'hex')) return `${component.label}.hex`;
+    if (component.type === 'color' && binding.path === 'text') return `${component.label}.text`;
+    return component.label;
 };
 
 const bindingToEditorText = (binding: AttrBinding, components: Components[]): string => {
@@ -196,6 +228,17 @@ const isFormulaText = (value: string) =>
     /\?/.test(value) ||
     /(?:\d|\}|\))\s*[+\-*/]\s*(?:\d|\{|\()/.test(value);
 
+const variableTokenPattern = /\{([^{}]+)\}/g;
+
+const normalizeEditorFormulaText = (value: string, components: Components[]) =>
+    value.replace(variableTokenPattern, (match, tokenText: string) => {
+        const variable = resolveVariableToken(tokenText, components);
+        if (!variable) return match;
+        const component = components.find(c => c.id === variable.componentId || c.label === variable.componentId);
+        if (!component) return match;
+        return `{${component.label}${variable.path ? `.${variable.path}` : ''}}`;
+    });
+
 const coerceLiteralValue = (elemType: string, attrKey: string, value: string): AttrLiteralValue => {
     const control = getAttrControl(elemType, attrKey);
     const trimmed = value.trim();
@@ -204,7 +247,7 @@ const coerceLiteralValue = (elemType: string, attrKey: string, value: string): A
         return Number(trimmed);
     }
     if (control.type === 'switch') {
-        return ['true', '1', 'yes', 'on', '是'].includes(trimmed.toLowerCase());
+        return ['true', '1', 'yes', 'on'].includes(trimmed.toLowerCase());
     }
     if (control.type === 'style' && trimmed) {
         try {
@@ -223,7 +266,7 @@ const editorTextToBinding = (elemType: string, attrKey: string, value: string, c
         const variable = resolveVariableToken(exactToken[1], components);
         if (variable) return { kind: 'variable', componentId: variable.componentId, path: variable.path };
     }
-    if (isFormulaText(value)) return { kind: 'formula', expression: value };
+    if (isFormulaText(value)) return { kind: 'formula', expression: normalizeEditorFormulaText(value, components) };
     return { kind: 'literal', value: coerceLiteralValue(elemType, attrKey, value) };
 };
 
@@ -255,28 +298,63 @@ const removeAttrBinding = (elem: SvgsElem, attrKey: string) => {
     return { attrs, attrBindings };
 };
 
+const updateSvgAtPath = (svgs: SvgsElem[], path: number[], updater: (elem: SvgsElem) => SvgsElem): SvgsElem[] => {
+    if (path.length === 0) return svgs;
+    const [currentIndex, ...restPath] = path;
+    return svgs.map((elem, index) => {
+        if (index !== currentIndex) return elem;
+        if (restPath.length === 0) return updater(elem);
+        return { ...elem, children: updateSvgAtPath(elem.children ?? [], restPath, updater) };
+    });
+};
+
+const ComplexSvgNotice = (props: { count: number; limit: number }) => {
+    const { count, limit } = props;
+    const { t } = useTranslation();
+    const bg = useColorModeValue('gray.50', 'gray.800');
+    const textColor = useColorModeValue('gray.700', 'gray.200');
+    const mutedTextColor = useColorModeValue('gray.600', 'gray.400');
+
+    return (
+        <Box mx={3} my={2} p={4} borderWidth="1px" borderRadius="md" bg={bg}>
+            <Heading fontSize="md" mb={2}>
+                {t('panel.svgs.complexMode.title')}
+            </Heading>
+            <Text fontSize="sm" color={textColor} mb={2}>
+                {t('panel.svgs.complexMode.summary', { count, limit })}
+            </Text>
+            <Text fontSize="sm" color={mutedTextColor}>
+                {t('panel.svgs.complexMode.detail')}
+            </Text>
+        </Box>
+    );
+};
+
 const AttrAddControl = (props: { elem: SvgsElem; existingKeys: string[]; onAdd: (attr: string) => void }) => {
     const { elem, existingKeys, onAdd } = props;
     const { t } = useTranslation();
-    const metadata = getSvgAttrMetadata(elem.type, existingKeys);
-    const existing = new Set(existingKeys);
-    const options: AttrOption[] = [
-        ...metadata.recommendedAttrs.map(attr => ({
-            id: attr,
-            value: t(attrTextKey(attr, 'title'), { defaultValue: getSvgAttrLabel(elem.type, attr) }),
-            recommended: true,
-        })),
-        ...metadata.advancedAttrs.map(attr => ({
-            id: attr,
-            value: t(attrTextKey(attr, 'title'), { defaultValue: getSvgAttrLabel(elem.type, attr) }),
-            recommended: false,
-        })),
-    ].filter(option => !existing.has(option.id));
+    const existingKeySignature = existingKeys.join('|');
+    const options: AttrOption[] = React.useMemo(() => {
+        const metadata = getSvgAttrMetadata(elem.type, existingKeys);
+        const existing = new Set(existingKeys);
+        return [
+            ...metadata.recommendedAttrs.map(attr => ({
+                id: attr,
+                value: t(attrTextKey(attr, 'title'), { defaultValue: getSvgAttrLabel(elem.type, attr) }),
+                recommended: true,
+            })),
+            ...metadata.advancedAttrs.map(attr => ({
+                id: attr,
+                value: t(attrTextKey(attr, 'title'), { defaultValue: getSvgAttrLabel(elem.type, attr) }),
+                recommended: false,
+            })),
+        ].filter(option => !existing.has(option.id));
+    }, [elem.type, existingKeySignature, t]);
     const [selected, setSelected] = React.useState<AttrOption | undefined>(options[0]);
 
     React.useEffect(() => {
         setSelected(options[0]);
-    }, [elem.id, existingKeys.join('|')]);
+    }, [elem.id, existingKeySignature, options]);
 
     if (options.length === 0) return null;
 
@@ -307,9 +385,11 @@ const AttrAddControl = (props: { elem: SvgsElem; existingKeys: string[]; onAdd: 
 const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
     value: string;
     placeholder: string;
+    components: Components[];
     onChange: (value: string) => void;
+    onEditModeChange?: (isEditing: boolean) => void;
 }>((props, ref) => {
-    const { value, placeholder, onChange } = props;
+    const { value, placeholder, components, onChange, onEditModeChange } = props;
     const { t } = useTranslation();
     const blockIdRef = React.useRef(0);
     const createId = React.useCallback(() => `attr-block-${blockIdRef.current++}`, []);
@@ -322,6 +402,11 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
     const [draft, setDraft] = React.useState('');
     const [isEditing, setIsEditing] = React.useState(false);
     const committedValueRef = React.useRef(value);
+    const containerBg = useColorModeValue('white', 'gray.800');
+    const containerBorder = useColorModeValue('gray.200', 'gray.600');
+    const placeholderColor = useColorModeValue('gray.400', 'gray.500');
+    const dragHandleColor = useColorModeValue('gray.500', 'gray.400');
+    const blockStyles = useColorModeValue(blockStyleLight, blockStyleDark);
 
     React.useEffect(() => {
         if (!isEditing && value !== committedValueRef.current) {
@@ -329,6 +414,11 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
             setBlocks(createEditableBlocks(value));
         }
     }, [createEditableBlocks, isEditing, value]);
+
+    const startEditing = () => {
+        setIsEditing(true);
+        onEditModeChange?.(true);
+    };
 
     const commitEditing = (nextBlocks = blocks, nextDraft = draft) => {
         const blocksWithDraft = nextDraft.trim()
@@ -340,6 +430,7 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
         setBlocks(cleanBlocks);
         setDraft('');
         setIsEditing(false);
+        onEditModeChange?.(false);
         if (nextValue !== value) onChange(nextValue);
     };
 
@@ -348,6 +439,7 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
         setBlocks(createEditableBlocks(value));
         setDraft('');
         setIsEditing(false);
+        onEditModeChange?.(false);
     };
 
     const commitDraftLocally = () => {
@@ -359,9 +451,10 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
     const insertTextLocally = React.useCallback(
         (text: string) => {
             setIsEditing(true);
+            onEditModeChange?.(true);
             setBlocks(currentBlocks => insertEditableExpressionText(currentBlocks, text, createId));
         },
-        [createId]
+        [createId, onEditModeChange]
     );
 
     React.useImperativeHandle(ref, () => ({ insertText: insertTextLocally }), [insertTextLocally]);
@@ -416,9 +509,9 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
             minH="40px"
             width="100%"
             borderWidth="1px"
-            borderColor="gray.200"
+            borderColor={containerBorder}
             borderRadius="md"
-            bg="white"
+            bg={containerBg}
             px={2}
             py={1}
             gap={1}
@@ -426,16 +519,17 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
             alignItems="center"
             onDragOver={isEditing ? event => event.preventDefault() : undefined}
             onDrop={isEditing ? handleDropAtEnd : undefined}
-            onDoubleClick={() => setIsEditing(true)}
+            onDoubleClick={startEditing}
             _focusWithin={{ borderColor: 'blue.400', boxShadow: '0 0 0 1px var(--chakra-colors-blue-400)' }}
         >
             {!isEditing && blocks.length === 0 && (
-                <Text color="gray.400" fontSize="sm" flex="1">
+                <Text color={placeholderColor} fontSize="sm" flex="1">
                     {placeholder}
                 </Text>
             )}
             {blocks.map((block, index) => {
-                const style = blockStyle[block.kind];
+                const style = blockStyles[block.kind];
+                const displayText = getExpressionBlockDisplayText(block, components, t);
                 return (
                     <HStack
                         key={block.id}
@@ -454,7 +548,7 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
                             <Box
                                 draggable
                                 cursor="grab"
-                                color="gray.500"
+                                color={dragHandleColor}
                                 fontSize="xs"
                                 fontWeight="bold"
                                 title={t('panel.svgs.attrPanel.dragBlock')}
@@ -467,12 +561,12 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
                                 ::
                             </Box>
                         )}
-                        {isEditing ? (
+                        {isEditing && block.kind !== 'variable' ? (
                             <Input
                                 variant="unstyled"
                                 size="xs"
                                 value={block.text}
-                                width={getBlockWidth(block)}
+                                width={getBlockWidth(displayText)}
                                 minW="28px"
                                 fontWeight={block.kind === 'operator' ? 'bold' : 'medium'}
                                 onChange={event => updateBlockText(index, event.target.value)}
@@ -489,7 +583,7 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
                             />
                         ) : (
                             <Text px={1} fontSize="sm" fontWeight={block.kind === 'operator' ? 'bold' : 'medium'}>
-                                {block.text}
+                                {displayText}
                             </Text>
                         )}
                         {isEditing && (
@@ -540,7 +634,7 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
                         </Button>
                     </>
                 ) : (
-                    <Button size="xs" variant="outline" onClick={() => setIsEditing(true)}>
+                    <Button size="xs" variant="outline" onClick={startEditing}>
                         {t('panel.svgs.attrPanel.editBlocks')}
                     </Button>
                 )}
@@ -565,9 +659,14 @@ const ExpressionValueControl = (props: {
     const blockInputRef = React.useRef<ExpressionBlockInputHandle | null>(null);
     const [isPanelOpen, setIsPanelOpen] = React.useState(false);
     const value = bindingToEditorText(binding, components);
-    const isLargeInput = ['textarea', 'path', 'points', 'style'].includes(control.type) || value.length > 60;
+    const isLargeInput =
+        ['textarea', 'path', 'points', 'style'].includes(control.type) ||
+        (control.type !== 'text-content' && value.length > 60);
     const supportsBlockInput = !isLargeInput;
     const quickOptions = control.type === 'select' && control.options ? Object.entries(control.options) : undefined;
+    const captionColor = useColorModeValue('gray.500', 'gray.400');
+    const panelBg = useColorModeValue('gray.50', 'gray.800');
+    const panelCaptionColor = useColorModeValue('gray.600', 'gray.300');
 
     const handleTextChange = (nextValue: string) => {
         onChange(editorTextToBinding(elemType, attrKey, nextValue, components));
@@ -600,7 +699,9 @@ const ExpressionValueControl = (props: {
                             ref={blockInputRef}
                             value={value}
                             placeholder={t('panel.svgs.attrPanel.placeholder')}
+                            components={components}
                             onChange={handleTextChange}
+                            onEditModeChange={setIsPanelOpen}
                         />
                     ) : (
                         <Textarea
@@ -622,14 +723,11 @@ const ExpressionValueControl = (props: {
                         onChange={event => handleTextChange(event.target.value)}
                     />
                 )}
-                <Button variant="outline" onClick={() => setIsPanelOpen(!isPanelOpen)}>
-                    {isPanelOpen ? t('panel.svgs.attrPanel.collapse') : t('panel.svgs.attrPanel.insertValue')}
-                </Button>
             </HStack>
 
             {quickOptions && (
                 <Flex wrap="wrap" gap={1} alignItems="center">
-                    <Text fontSize="xs" color="gray.500" mr={1}>
+                    <Text fontSize="xs" color={captionColor} mr={1}>
                         {t('panel.svgs.attrPanel.common')}
                     </Text>
                     {quickOptions.map(([key, label]) => (
@@ -642,7 +740,7 @@ const ExpressionValueControl = (props: {
 
             {!quickOptions && quickValues && quickValues.length > 0 && (
                 <Flex wrap="wrap" gap={1} alignItems="center">
-                    <Text fontSize="xs" color="gray.500" mr={1}>
+                    <Text fontSize="xs" color={captionColor} mr={1}>
                         {t('panel.svgs.attrPanel.quick')}
                     </Text>
                     {quickValues.map(option => {
@@ -662,11 +760,11 @@ const ExpressionValueControl = (props: {
             )}
 
             {isPanelOpen && (
-                <Box borderWidth="1px" borderRadius="md" bg="gray.50" p={2}>
+                <Box borderWidth="1px" borderRadius="md" bg={panelBg} p={2}>
                     <VStack align="stretch" spacing={2}>
                         {variableOptions.length > 0 && (
                             <Box>
-                                <Text fontSize="xs" color="gray.600" mb={1}>
+                                <Text fontSize="xs" color={panelCaptionColor} mb={1}>
                                     {t('panel.svgs.attrPanel.insertVariable')}
                                 </Text>
                                 <Flex wrap="wrap" gap={1}>
@@ -687,20 +785,22 @@ const ExpressionValueControl = (props: {
                         )}
 
                         <Box>
-                            <Text fontSize="xs" color="gray.600" mb={1}>
+                            <Text fontSize="xs" color={panelCaptionColor} mb={1}>
                                 {t('panel.svgs.attrPanel.insertCalculation')}
                             </Text>
                             <Flex wrap="wrap" gap={1}>
                                 {expressionButtons.map(button => (
                                     <Button
-                                        key={button.label}
+                                        key={button.labelKey}
                                         size="xs"
                                         variant="outline"
                                         draggable
                                         onDragStart={event => setPaletteDragText(event, button.text)}
                                         onClick={() => insertText(button.text, button.cursorOffset)}
                                     >
-                                        {button.label}
+                                        {t(`panel.svgs.attrPanel.calculations.${button.labelKey}`, {
+                                            defaultValue: button.fallbackLabel,
+                                        })}
                                     </Button>
                                 ))}
                             </Flex>
@@ -731,9 +831,9 @@ const roleLabel: Record<AttrVisualRole, string> = {
     width: 'W',
     height: 'H',
     radius: 'R',
-    fill: '色',
-    stroke: '边',
-    text: '文',
+    fill: 'F',
+    stroke: 'S',
+    text: 'T',
     opacity: '%',
     transform: '↗',
 };
@@ -773,8 +873,8 @@ const AttrBindingRow = (props: {
 }) => {
     const { elem, attrKey, binding, components, variableOptions, isVirtual, onChange, onRemove } = props;
     const { t } = useTranslation();
-    const result = evaluateAttrBinding(binding, { components });
-    const meta = getAttrUiMeta(elem.type, attrKey);
+    const result = React.useMemo(() => evaluateAttrBinding(binding, { components }), [binding, components]);
+    const meta = React.useMemo(() => getAttrUiMeta(elem.type, attrKey), [attrKey, elem.type]);
     const isMore = meta.group === 'more';
     const title = t(attrTextKey(attrKey, 'title'), { defaultValue: meta.title });
     const description = t(attrTextKey(attrKey, 'description'), { defaultValue: meta.description });
@@ -782,28 +882,32 @@ const AttrBindingRow = (props: {
         ? t(attrTextKey(attrKey, 'effectHint'), { defaultValue: meta.effectHint })
         : undefined;
     const unitHint = meta.unitHint ? t(attrTextKey(attrKey, 'unitHint'), { defaultValue: meta.unitHint }) : undefined;
+    const rowBg = useColorModeValue('white', 'gray.800');
+    const descriptionColor = useColorModeValue('gray.600', 'gray.300');
+    const mutedColor = useColorModeValue('gray.500', 'gray.400');
+    const subtleColor = useColorModeValue('gray.400', 'gray.500');
 
     return (
-        <Box borderWidth="1px" borderRadius="md" p={3} mb={2} bg="white" opacity={isVirtual ? 0.78 : 1}>
+        <Box borderWidth="1px" borderRadius="md" p={3} mb={2} bg={rowBg} opacity={isVirtual ? 0.78 : 1}>
             <HStack alignItems="start" spacing={3}>
                 <VisualRoleMarker role={meta.visualRole} />
                 <Box width="34%" minW="136px">
                     <Text fontWeight="semibold">{title}</Text>
-                    <Text fontSize="xs" color="gray.600">
+                    <Text fontSize="xs" color={descriptionColor}>
                         {description}
                     </Text>
                     {effectHint && (
-                        <Text fontSize="xs" color="gray.500" mt={1}>
+                        <Text fontSize="xs" color={mutedColor} mt={1}>
                             {effectHint}
                         </Text>
                     )}
                     {unitHint && (
-                        <Text fontSize="xs" color="gray.500" mt={1}>
+                        <Text fontSize="xs" color={mutedColor} mt={1}>
                             {t('panel.svgs.attrPanel.unit')}: {unitHint}
                         </Text>
                     )}
                     {isMore && (
-                        <Text fontSize="xs" color="gray.400" mt={1}>
+                        <Text fontSize="xs" color={subtleColor} mt={1}>
                             {t('panel.svgs.attrPanel.svgAttribute')}: {attrKey}
                         </Text>
                     )}
@@ -829,7 +933,7 @@ const AttrBindingRow = (props: {
                 </Button>
             </HStack>
             <Box pl="46px" mt={2}>
-                <Text fontSize="xs" color={result.error ? 'red.500' : 'gray.500'}>
+                <Text fontSize="xs" color={result.error ? 'red.500' : mutedColor}>
                     {result.error
                         ? `${t('panel.svgs.attrPanel.error')}: ${result.error}`
                         : `${t('panel.svgs.attrPanel.currentValue')}: ${stringifyValue(result.value)}`}
@@ -884,11 +988,18 @@ const VisualAttrPanel = (props: {
 }) => {
     const { elem, components, variableOptions, onChange, onRemove, onAdd } = props;
     const { t } = useTranslation();
-    const grouped = getGroupedAttrKeys(elem.type, elem.attrs, elem.attrBindings);
-    const visualGroups = ATTR_GROUP_ORDER.filter(group => group !== 'more' && grouped[group].length > 0);
-    const visualKeys = unique(visualGroups.flatMap(group => grouped[group]));
-    const moreKeys = grouped.more.filter(key => !visualKeys.includes(key));
-    const allVisibleKeys = unique([...visualKeys, ...moreKeys]);
+    const grouped = React.useMemo(
+        () => getGroupedAttrKeys(elem.type, elem.attrs, elem.attrBindings),
+        [elem.attrs, elem.attrBindings, elem.type]
+    );
+    const visualGroups = React.useMemo(
+        () => ATTR_GROUP_ORDER.filter(group => group !== 'more' && grouped[group].length > 0),
+        [grouped]
+    );
+    const visualKeys = React.useMemo(() => unique(visualGroups.flatMap(group => grouped[group])), [grouped, visualGroups]);
+    const moreKeys = React.useMemo(() => grouped.more.filter(key => !visualKeys.includes(key)), [grouped, visualKeys]);
+    const allVisibleKeys = React.useMemo(() => unique([...visualKeys, ...moreKeys]), [moreKeys, visualKeys]);
+    const mutedColor = useColorModeValue('gray.500', 'gray.400');
 
     return (
         <VStack align="stretch" spacing={0}>
@@ -907,37 +1018,42 @@ const VisualAttrPanel = (props: {
 
             <Accordion allowToggle mb={2}>
                 <AccordionItem borderWidth="1px" borderRadius="md">
-                    <AccordionButton>
-                        <Box flex="1" textAlign="left" fontWeight="semibold">
-                            {t('panel.svgs.attrGroups.more', { defaultValue: ATTR_GROUP_LABELS.more })}
-                        </Box>
-                        <Text fontSize="xs" color="gray.500" mr={2}>
-                            {t('panel.svgs.attrPanel.itemCount', { count: moreKeys.length })}
-                        </Text>
-                        <AccordionIcon />
-                    </AccordionButton>
-                    <AccordionPanel pb={3}>
-                        {moreKeys.length > 0 ? (
-                            moreKeys.map(key => (
-                                <AttrBindingRow
-                                    key={key}
-                                    elem={elem}
-                                    attrKey={key}
-                                    binding={getBindingForAttr(key, elem, components)}
-                                    components={components}
-                                    variableOptions={variableOptions}
-                                    isVirtual={!(key in elem.attrs) && !(key in (elem.attrBindings ?? {}))}
-                                    onChange={onChange}
-                                    onRemove={onRemove}
-                                />
-                            ))
-                        ) : (
-                            <Text fontSize="sm" color="gray.500" mb={2}>
-                                {t('panel.svgs.attrPanel.emptyMore')}
-                            </Text>
-                        )}
-                        <AttrAddControl elem={elem} existingKeys={allVisibleKeys} onAdd={onAdd} />
-                    </AccordionPanel>
+                    {({ isExpanded }) => (
+                        <>
+                            <AccordionButton>
+                                <Box flex="1" textAlign="left" fontWeight="semibold">
+                                    {t('panel.svgs.attrGroups.more', { defaultValue: ATTR_GROUP_LABELS.more })}
+                                </Box>
+                                <Text fontSize="xs" color={mutedColor} mr={2}>
+                                    {t('panel.svgs.attrPanel.itemCount', { count: moreKeys.length })}
+                                </Text>
+                                <AccordionIcon />
+                            </AccordionButton>
+                            <AccordionPanel pb={3}>
+                                {isExpanded &&
+                                    (moreKeys.length > 0 ? (
+                                        moreKeys.map(key => (
+                                            <AttrBindingRow
+                                                key={key}
+                                                elem={elem}
+                                                attrKey={key}
+                                                binding={getBindingForAttr(key, elem, components)}
+                                                components={components}
+                                                variableOptions={variableOptions}
+                                                isVirtual={!(key in elem.attrs) && !(key in (elem.attrBindings ?? {}))}
+                                                onChange={onChange}
+                                                onRemove={onRemove}
+                                            />
+                                        ))
+                                    ) : (
+                                        <Text fontSize="sm" color={mutedColor} mb={2}>
+                                            {t('panel.svgs.attrPanel.emptyMore')}
+                                        </Text>
+                                    ))}
+                                {isExpanded && <AttrAddControl elem={elem} existingKeys={allVisibleKeys} onAdd={onAdd} />}
+                            </AccordionPanel>
+                        </>
+                    )}
                 </AccordionItem>
             </Accordion>
         </VStack>
@@ -949,8 +1065,10 @@ export function DetailsSvgs() {
     const param = useRootSelector(store => store.param);
     const { globalAlerts, selected } = useRootSelector(store => store.runtime);
     const { t } = useTranslation();
-    const components = React.useMemo(() => getComponentsWithColor(param), [param.components, param.color]);
-    const variableOptions = React.useMemo(() => createVariableOptions(components), [components]);
+    const components = React.useMemo(() => param.components, [param.components]);
+    const variableOptions = React.useMemo(() => createVariableOptions(components, t), [components, t]);
+    const svgNodeCount = React.useMemo(() => countSvgNodes(param.svgs), [param.svgs]);
+    const isComplexSvg = svgNodeCount > MAX_EDITABLE_SVG_NODE_COUNT;
 
     const handleMove = (index: number, d: number, path: number[]) => {
         const dfsMove = (data: SvgsElem[], path: number[], p: number): SvgsElem[] => {
@@ -983,25 +1101,16 @@ export function DetailsSvgs() {
         value: string | Record<string, string> | Record<string, AttrBinding>,
         path: number[]
     ) => {
-        const dfsChangeValue = (
-            data: SvgsElem,
-            key: 'type' | 'label' | 'attrs' | 'attrBindings',
-            value: string | Record<string, string> | Record<string, AttrBinding>,
-            index: number
-        ): SvgsElem => {
-            if (index >= path.length) {
-                if (key === 'attrs') return { ...data, attrs: value as Record<string, string> };
-                if (key === 'attrBindings') return { ...data, attrBindings: value as Record<string, AttrBinding> };
-                return { ...data, [key]: value as string };
-            }
-            const newChildren = structuredClone(data.children!);
-            newChildren[path[index]] = dfsChangeValue(data.children![path[index]], key, value, index + 1);
-            return { ...data, children: newChildren };
-        };
-        const newSvgs = structuredClone(param.svgs);
-        newSvgs[path[0]] = dfsChangeValue(newSvgs[path[0]], key, value, 1);
         dispatch(backupParam(param));
-        dispatch(setSvgs(newSvgs));
+        dispatch(
+            setSvgs(
+                updateSvgAtPath(param.svgs, path, data => {
+                    if (key === 'attrs') return { ...data, attrs: value as Record<string, string> };
+                    if (key === 'attrBindings') return { ...data, attrBindings: value as Record<string, AttrBinding> };
+                    return { ...data, [key]: value as string };
+                })
+            )
+        );
         dispatch(removeGlobalAlert(id));
     };
 
@@ -1011,18 +1120,8 @@ export function DetailsSvgs() {
         attrBindings: Record<string, AttrBinding>,
         path: number[]
     ) => {
-        const dfsPatch = (data: SvgsElem, index: number): SvgsElem => {
-            if (index >= path.length) {
-                return { ...data, attrs, attrBindings };
-            }
-            const newChildren = structuredClone(data.children!);
-            newChildren[path[index]] = dfsPatch(data.children![path[index]], index + 1);
-            return { ...data, children: newChildren };
-        };
-        const newSvgs = structuredClone(param.svgs);
-        newSvgs[path[0]] = dfsPatch(newSvgs[path[0]], 1);
         dispatch(backupParam(param));
-        dispatch(setSvgs(newSvgs));
+        dispatch(setSvgs(updateSvgAtPath(param.svgs, path, data => ({ ...data, attrs, attrBindings }))));
         dispatch(removeGlobalAlert(elem.id));
     };
 
@@ -1103,24 +1202,6 @@ export function DetailsSvgs() {
                 },
             ];
 
-            const displayChildren = s.children ? dfsField(s.children, currentPath, s.id) : [];
-            const displayTextChildrenButton =
-                supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
-                    <Button
-                        width="100%"
-                        onClick={() => {
-                            const next = updateAttrBinding(
-                                s,
-                                '_rmp_children_text',
-                                getDefaultAttrBinding(s.type, '_rmp_children_text'),
-                                components
-                            );
-                            handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
-                        }}
-                    >
-                        {t('panel.svgs.addTextChildren')}
-                    </Button>
-                ) : null;
             const handleCheck = (e: React.ChangeEvent) => {
                 e.stopPropagation();
                 if (selected.has(s.id)) {
@@ -1134,42 +1215,98 @@ export function DetailsSvgs() {
             };
             return (
                 <AccordionItem key={s.id}>
-                    <AccordionButton p={2}>
-                        <Checkbox isChecked={selected.has(s.id) || selected.has(father)} onChange={handleCheck} />
-                        <Box mr={2} />
-                        <Box as="span" flex="1" textAlign="left">
-                            <Text as="span" fontWeight="bold">
-                                {s.label}
-                            </Text>{' '}
-                            <Text as="span">&lt;{s.type}&gt;</Text>
-                        </Box>
-                        {globalAlerts.has(s.id) ? <MdError color="#D9534F" title={globalAlerts.get(s.id)} /> : ''}
-                        <AccordionIcon />
-                    </AccordionButton>
-                    <AccordionPanel>
-                        <RmgFields fields={field} />
-                        <VisualAttrPanel
-                            elem={s}
-                            components={components}
-                            variableOptions={variableOptions}
-                            onChange={(attrKey, nextBinding) => {
-                                const next = updateAttrBinding(s, attrKey, nextBinding, components);
-                                handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
-                            }}
-                            onRemove={attrKey => {
-                                const next = removeAttrBinding(s, attrKey);
-                                handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
-                            }}
-                            onAdd={attr => {
-                                const next = updateAttrBinding(s, attr, getDefaultAttrBinding(s.type, attr), components);
-                                handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
-                            }}
-                        />
-                        <HStack width="100%" pb={2}>
-                            {displayTextChildrenButton}
-                        </HStack>
-                        {displayChildren}
-                    </AccordionPanel>
+                    {({ isExpanded }) => {
+                        const displayChildren = isExpanded && s.children ? dfsField(s.children, currentPath, s.id) : [];
+                        const displayTextChildrenButton =
+                            supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
+                                <Button
+                                    width="100%"
+                                    onClick={() => {
+                                        const next = updateAttrBinding(
+                                            s,
+                                            '_rmp_children_text',
+                                            getDefaultAttrBinding(s.type, '_rmp_children_text'),
+                                            components
+                                        );
+                                        handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
+                                    }}
+                                >
+                                    {t('panel.svgs.addTextChildren')}
+                                </Button>
+                            ) : null;
+
+                        return (
+                            <>
+                                <AccordionButton p={2}>
+                                    <Checkbox
+                                        isChecked={selected.has(s.id) || selected.has(father)}
+                                        onChange={handleCheck}
+                                    />
+                                    <Box mr={2} />
+                                    <Box as="span" flex="1" textAlign="left">
+                                        <Text as="span" fontWeight="bold">
+                                            {s.label}
+                                        </Text>{' '}
+                                        <Text as="span">&lt;{s.type}&gt;</Text>
+                                    </Box>
+                                    {globalAlerts.has(s.id) ? (
+                                        <MdError color="#D9534F" title={globalAlerts.get(s.id)} />
+                                    ) : (
+                                        ''
+                                    )}
+                                    <AccordionIcon />
+                                </AccordionButton>
+                                <AccordionPanel>
+                                    {isExpanded && (
+                                        <>
+                                            <RmgFields fields={field} />
+                                            <VisualAttrPanel
+                                                elem={s}
+                                                components={components}
+                                                variableOptions={variableOptions}
+                                                onChange={(attrKey, nextBinding) => {
+                                                    const next = updateAttrBinding(s, attrKey, nextBinding, components);
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                                onRemove={attrKey => {
+                                                    const next = removeAttrBinding(s, attrKey);
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                                onAdd={attr => {
+                                                    const next = updateAttrBinding(
+                                                        s,
+                                                        attr,
+                                                        getDefaultAttrBinding(s.type, attr),
+                                                        components
+                                                    );
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                            />
+                                            <HStack width="100%" pb={2}>
+                                                {displayTextChildrenButton}
+                                            </HStack>
+                                            {displayChildren}
+                                        </>
+                                    )}
+                                </AccordionPanel>
+                            </>
+                        );
+                    }}
                 </AccordionItem>
             );
         });
@@ -1184,9 +1321,13 @@ export function DetailsSvgs() {
                 </Flex>
                 <Box width="100%" height="100%" overflow="scroll">
                     {param.svgs.length > 0 ? (
-                        <Accordion width="100%" allowMultiple>
-                            {dfsField(param.svgs, [], 'id_@root')}
-                        </Accordion>
+                        isComplexSvg ? (
+                            <ComplexSvgNotice count={svgNodeCount} limit={MAX_EDITABLE_SVG_NODE_COUNT} />
+                        ) : (
+                            <Accordion width="100%" allowMultiple>
+                                {dfsField(param.svgs, [], 'id_@root')}
+                            </Accordion>
+                        )
                     ) : (
                         <Flex height="100%" width="100%" justifyContent="center" alignItems="center" direction="column">
                             <Text textAlign="center">

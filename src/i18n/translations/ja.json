@@ -53,6 +53,11 @@
             "attrKey": "属性キー",
             "attrValue": "属性値",
             "addTextChildren": "テキストコンテンツを追加",
+            "complexMode": {
+                "title": "複雑な SVG は読み取り専用モードです",
+                "summary": "この SVG には {{count}} 個の要素があり、ノード単位編集の上限 {{limit}} 個を超えています。",
+                "detail": "キャンバスのプレビューと書き出しでは完全な SVG を保持します。動作低下を避けるため、コンポーネントツリーと単一ノードのドラッグは無効です。編集が必要な場合は、SVG ソフトで簡略化するか小さな SVG に分割してからインポートしてください。"
+            },
             "attrMode": {
                 "title": "属性モード",
                 "value": "値",
@@ -61,8 +66,6 @@
             },
             "attrPanel": {
                 "placeholder": "例：12、{幅}、3 + {幅}",
-                "collapse": "折りたたむ",
-                "insertValue": "パラメーター / 計算を挿入",
                 "common": "よく使う",
                 "quick": "クイック",
                 "empty": "空",
@@ -80,7 +83,22 @@
                 "deleteBlock": "ブロックを削除",
                 "editBlocks": "編集",
                 "doneEditing": "完了",
-                "cancelEditing": "キャンセル"
+                "cancelEditing": "キャンセル",
+                "mainColor": "メイン色",
+                "textColor": "文字色",
+                "calculations": {
+                    "add": "+",
+                    "subtract": "-",
+                    "multiply": "×",
+                    "divide": "÷",
+                    "min": "最小",
+                    "max": "最大",
+                    "round": "四捨五入",
+                    "abs": "絶対値",
+                    "floor": "切り捨て",
+                    "ceil": "切り上げ",
+                    "if": "条件"
+                }
             },
             "attrGroups": {
                 "position": "位置",

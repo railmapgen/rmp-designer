@@ -11,8 +11,9 @@ const paramSlice = createSlice({
             state.id = action.payload.id;
             state.label = action.payload.label;
             state.transform = action.payload.transform;
+            state.version = action.payload.version;
             state.type = action.payload.type;
-            state.color = action.payload.color;
+            state.color = undefined;
             state.svgs = action.payload.svgs;
             state.components = action.payload.components;
             state.core = action.payload.core;
@@ -27,10 +28,6 @@ const paramSlice = createSlice({
         },
         setType: (state, action: PayloadAction<'MiscNode' | 'Station'>) => {
             state.type = action.payload;
-            state.id = nanoid(6);
-        },
-        setColor: (state, action: PayloadAction<Components | undefined>) => {
-            state.color = action.payload;
             state.id = nanoid(6);
         },
         setSvgs: (state, action: PayloadAction<SvgsElem[]>) => {
@@ -69,7 +66,6 @@ export const {
     setLabel,
     setTransform,
     setType,
-    setColor,
     setSvgs,
     addSvg,
     setComponents,

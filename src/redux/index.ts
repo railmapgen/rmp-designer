@@ -25,10 +25,58 @@ export const createStore = (preloadedState: Partial<RootState> = {}) =>
 const store = createStore();
 export type RootStore = typeof store;
 
+const persistDelayMs = 250;
+let previousParam = store.getState().param;
+let previousApp = store.getState().app;
+let pendingParam: RootState['param'] | undefined;
+let pendingApp: RootState['app'] | undefined;
+let persistTimer: number | undefined;
+
+const canPersistLocalState = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+const flushPersistedLocalState = () => {
+    if (!canPersistLocalState()) return;
+    if (persistTimer !== undefined) {
+        window.clearTimeout(persistTimer);
+        persistTimer = undefined;
+    }
+
+    if (pendingParam !== undefined) {
+        localStorage.setItem('rmp-designer__param', JSON.stringify(pendingParam));
+        pendingParam = undefined;
+    }
+    if (pendingApp !== undefined) {
+        localStorage.setItem('rmp-designer__app', JSON.stringify(pendingApp));
+        pendingApp = undefined;
+    }
+};
+
+const schedulePersistedLocalStateFlush = () => {
+    if (!canPersistLocalState() || persistTimer !== undefined) return;
+    persistTimer = window.setTimeout(flushPersistedLocalState, persistDelayMs);
+};
+
 store.subscribe(() => {
-    localStorage.setItem('rmp-designer__param', JSON.stringify(store.getState().param));
-    localStorage.setItem('rmp-designer__app', JSON.stringify(store.getState().app));
+    const state = store.getState();
+    let hasPendingPersistence = false;
+
+    if (state.param !== previousParam) {
+        previousParam = state.param;
+        pendingParam = state.param;
+        hasPendingPersistence = true;
+    }
+    if (state.app !== previousApp) {
+        previousApp = state.app;
+        pendingApp = state.app;
+        hasPendingPersistence = true;
+    }
+
+    if (hasPendingPersistence) schedulePersistedLocalStateFlush();
 });
+
+if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', flushPersistedLocalState);
+}
 
 export type RootDispatch = typeof store.dispatch;
 export const useRootDispatch = () => useDispatch<RootDispatch>();

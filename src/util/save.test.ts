@@ -1,4 +1,4 @@
-import { upgrade, UPGRADE_COLLECTION } from './save';
+import { stringifyParam, upgrade, UPGRADE_COLLECTION } from './save';
 
 describe('Unit tests for param upgrade function', () => {
     it('upgrade will return the default tutorial if originalParam is null', async () => {
@@ -48,5 +48,68 @@ describe('Unit tests for param upgrade function', () => {
             kind: 'legacy',
             expression: 'size + 1',
         });
+    });
+
+    it('3 -> 4 moves color into components', () => {
+        const oldParam =
+            '{"id":"new","label":"new","transform":{"translateX":0,"translateY":0,"scale":1,"rotate":0},"type":"MiscNode","svgs":[],"components":[],"color":{"id":"color","label":"color","type":"color","defaultValue":["beijing","bj1","#c23a30","white"]},"version":3}';
+        const upgraded = JSON.parse(UPGRADE_COLLECTION[3](oldParam));
+
+        expect(upgraded.version).toEqual(4);
+        expect(upgraded.color).toBeUndefined();
+        expect(upgraded.components).toHaveLength(1);
+        expect(upgraded.components[0]).toMatchObject({
+            id: 'color',
+            label: 'color',
+            name: 'Color',
+            type: 'color',
+            defaultValue: ['beijing', 'bj1', '#c23a30', '#fff'],
+        });
+    });
+
+    it('v4 export omits legacy attrs and root color', () => {
+        const exported = JSON.parse(
+            stringifyParam({
+                id: 'new',
+                label: 'new',
+                transform: { translateX: 0, translateY: 0, scale: 1, rotate: 0 },
+                version: 4,
+                type: 'MiscNode',
+                components: [
+                    {
+                        id: 'component_width',
+                        label: 'widthValue',
+                        name: 'Width Label',
+                        type: 'number',
+                        defaultValue: 10,
+                    },
+                ],
+                color: {
+                    id: 'color',
+                    label: 'color',
+                    type: 'color',
+                    defaultValue: ['other', 'other', '#000000', '#fff'],
+                },
+                svgs: [
+                    {
+                        id: 'id_rect',
+                        type: 'rect',
+                        label: 'rect',
+                        attrs: { fill: '1"#ffffff"' },
+                        attrBindings: {
+                            fill: { kind: 'literal', value: '#ffffff' },
+                            width: { kind: 'formula', expression: '{Width Label} + 1' },
+                        },
+                    },
+                ],
+            } as any)
+        );
+
+        expect(exported.version).toEqual(4);
+        expect(exported.color).toBeUndefined();
+        expect(exported.components).toHaveLength(2);
+        expect(exported.svgs[0].attrs).toBeUndefined();
+        expect(exported.svgs[0].attrBindings.fill).toEqual({ kind: 'literal', value: '#ffffff' });
+        expect(exported.svgs[0].attrBindings.width.expression).toEqual('{widthValue} + 1');
     });
 });

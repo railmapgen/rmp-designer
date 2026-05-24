@@ -1,21 +1,21 @@
-import { getAttrUiMeta, getGroupedAttrKeys } from './svg-attr-metadata';
+import { getAttrControl, getAttrUiMeta, getGroupedAttrKeys } from './svg-attr-metadata';
 
 describe('svg attr metadata', () => {
     it('returns visual metadata for known attrs', () => {
         const meta = getAttrUiMeta('rect', 'stroke-width');
 
-        expect(meta.title).toBe('边框粗细');
+        expect(meta.title).toBe('Stroke width');
         expect(meta.group).toBe('stroke');
-        expect(meta.description).toContain('外框线条');
+        expect(meta.description).toContain('outline');
         expect(meta.quickValues).toEqual([0, 1, 2, 4]);
     });
 
     it('falls back unknown attrs into the more group', () => {
         const meta = getAttrUiMeta('rect', 'data-custom');
 
-        expect(meta.title).toBe('数据 custom');
+        expect(meta.title).toBe('Data custom');
         expect(meta.group).toBe('more');
-        expect(meta.description).toContain('SVG 的扩展属性');
+        expect(meta.description).toContain('extended SVG attribute');
     });
 
     it('groups uploaded unknown attrs under more without dropping them', () => {
@@ -32,5 +32,11 @@ describe('svg attr metadata', () => {
         expect(grouped.position).toEqual(expect.arrayContaining(['x', 'y']));
         expect(grouped.size).toEqual(expect.arrayContaining(['width', 'height']));
         expect(grouped.more).toContain('data-custom');
+    });
+
+    it('uses the block editor control for visible text content', () => {
+        expect(getAttrControl('text', '_rmp_children_text').type).toBe('text-content');
+        expect(getAttrControl('tspan', '_rmp_children_text').type).toBe('text-content');
+        expect(getAttrControl('style', '_rmp_children_text').type).toBe('textarea');
     });
 });

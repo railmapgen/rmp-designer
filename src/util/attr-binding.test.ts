@@ -47,6 +47,13 @@ describe('attr binding evaluator', () => {
         expect(evaluateAttrBinding({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, { components }).value).toEqual(
             8
         );
+        expect(evaluateAttrBinding({ kind: 'formula', expression: 'Math.round({Width} / 5)' }, { components }).value).toEqual(
+            2
+        );
+        expect(evaluateAttrBinding({ kind: 'formula', expression: 'round({Width} / 5)' }, { components }).value).toEqual(
+            2
+        );
+        expect(evaluateAttrBinding({ kind: 'formula', expression: 'abs(-{Width})' }, { components }).value).toEqual(12);
         expect(
             evaluateAttrBinding(
                 {
@@ -93,6 +100,12 @@ describe('attr binding compiler', () => {
         expect(
             compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, components)
         ).toEqual('3Math.min(widthValue, 8)');
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'round({Width} / 5)' }, components)
+        ).toEqual('3Math.round(widthValue / 5)');
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Math.round({Width} / 5)' }, components)
+        ).toEqual('3Math.round(widthValue / 5)');
         expect(
             compileAttrBindingToLegacyAttr(
                 {

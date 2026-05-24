@@ -1,18 +1,32 @@
-import { defaultParam, Param, SvgsElem } from '../constants/constants';
-import { Components } from '../constants/components';
+import { defaultParam, normalizeTheme, Param, SvgsElem } from '../constants/constants';
+import { colorComponents, Components } from '../constants/components';
 import { AttrBinding } from '../constants/attr-binding';
-import { compileAttrRecord, legacyAttrToBinding, slugifyComponentLabel } from './attr-binding';
+import {
+    compileAttrRecord,
+    legacyAttrToBinding,
+    normalizeAttrBindingForExport,
+    slugifyComponentLabel,
+} from './attr-binding';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
-export const getComponentsWithColor = (param: Param): Components[] =>
-    param.color ? [...param.components, param.color] : param.components;
+type ExportSvgsElem = Omit<SvgsElem, 'attrs' | 'children'> & {
+    children?: ExportSvgsElem[];
+};
 
-export const prepareParamForExport = (param: Param): Param => {
-    const components = getComponentsWithColor(param);
+type ExportParam = Omit<Param, 'svgs' | 'color' | 'version'> & {
+    version: 4;
+    svgs: ExportSvgsElem[];
+};
+
+export const prepareParamForExport = (param: Param): ExportParam => {
+    const normalizedParam = normalizeParamForDesigner(param);
+    const components = normalizedParam.components;
+    const { color: _color, svgs: _svgs, version: _version, ...rest } = normalizedParam;
     return {
-        ...param,
-        svgs: compileSvgs(param.svgs, components),
+        ...rest,
+        version: SAVE_VERSION,
+        svgs: exportSvgs(normalizedParam.svgs, components),
     };
 };
 
@@ -48,8 +62,8 @@ export const upgrade: (originalParam: string | null) => Promise<string> = async 
         }
     }
 
-    // Version should be CURRENT_VERSION now.
-    return save;
+    const normalized = normalizeParamForDesigner(JSON.parse(save) as Param);
+    return JSON.stringify(normalized);
 };
 
 export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string } = {
@@ -95,13 +109,32 @@ export const UPGRADE_COLLECTION: { [version: number]: (param: string) => string 
             svgs: migrateSvgs(p.svgs, componentsWithColor),
         } as Param);
     },
+    3: param => {
+        const p = JSON.parse(param) as Param;
+        return JSON.stringify({
+            ...normalizeParamForDesigner(p),
+            version: 4,
+        } as Param);
+    },
 };
 
 const migrateComponent = (component: Components): Components => {
     const name = component.name ?? component.label;
     const label = component.label || slugifyComponentLabel(name, component.id);
-    const defaultValue = component.type === 'switch' ? Boolean(component.defaultValue) : component.defaultValue;
-    const value = component.type === 'switch' && component.value !== undefined ? Boolean(component.value) : component.value;
+    const defaultValue =
+        component.type === 'switch'
+            ? Boolean(component.defaultValue)
+            : component.type === 'color'
+              ? normalizeTheme(component.defaultValue)
+              : component.defaultValue;
+    const value =
+        component.value === undefined
+            ? undefined
+            : component.type === 'switch'
+              ? Boolean(component.value)
+              : component.type === 'color'
+                ? normalizeTheme(component.value)
+                : component.value;
     const constraints =
         component.type === 'number'
             ? {
@@ -121,16 +154,46 @@ const migrateComponent = (component: Components): Components => {
 
 const migrateComponents = (components: Components[]): Components[] => components.map(migrateComponent);
 
+const componentIdentity = (component: Components) => component.id || component.label;
+
+export const normalizeParamForDesigner = (param: Param): Param => {
+    const components = migrateComponents(param.components ?? []);
+    const color = param.color ? migrateComponent({ ...colorComponents, ...param.color, type: 'color' }) : undefined;
+    const hasColorComponent =
+        !!color && components.some(component => componentIdentity(component) === componentIdentity(color));
+    const nextComponents = color && !hasColorComponent ? [...components, color] : components;
+
+    return {
+        ...param,
+        version: SAVE_VERSION,
+        color: undefined,
+        components: nextComponents,
+        svgs: normalizeSvgsForDesigner(param.svgs ?? [], nextComponents),
+    };
+};
+
 const migrateSvgs = (svgs: SvgsElem[], components: Components[]): SvgsElem[] =>
     svgs.map(svg => {
         const attrBindings: Record<string, AttrBinding> = {};
-        Object.entries(svg.attrs).forEach(([key, value]) => {
+        Object.entries(svg.attrs ?? {}).forEach(([key, value]) => {
             attrBindings[key] = legacyAttrToBinding(value, components);
         });
         return {
             ...svg,
+            attrs: svg.attrs ?? {},
             attrBindings,
             children: svg.children ? migrateSvgs(svg.children, components) : undefined,
+        };
+    });
+
+const normalizeSvgsForDesigner = (svgs: SvgsElem[], components: Components[]): SvgsElem[] =>
+    svgs.map(svg => {
+        const attrs = svg.attrs ?? {};
+        return {
+            ...svg,
+            attrs,
+            attrBindings: svg.attrBindings ?? migrateSvgs([{ ...svg, attrs }], components)[0].attrBindings,
+            children: svg.children ? normalizeSvgsForDesigner(svg.children, components) : undefined,
         };
     });
 
@@ -140,3 +203,23 @@ const compileSvgs = (svgs: SvgsElem[], components: Components[]): SvgsElem[] =>
         attrs: compileAttrRecord(svg.attrs, svg.attrBindings, components),
         children: svg.children ? compileSvgs(svg.children, components) : undefined,
     }));
+
+const getExportAttrBindings = (svg: SvgsElem, components: Components[]): Record<string, AttrBinding> => {
+    const attrBindings: Record<string, AttrBinding> = { ...(svg.attrBindings ?? {}) };
+    Object.entries(svg.attrs ?? {}).forEach(([key, value]) => {
+        if (!attrBindings[key]) attrBindings[key] = legacyAttrToBinding(value, components);
+    });
+    return Object.fromEntries(
+        Object.entries(attrBindings).map(([key, binding]) => [key, normalizeAttrBindingForExport(binding, components)])
+    );
+};
+
+const exportSvgs = (svgs: SvgsElem[], components: Components[]): ExportSvgsElem[] =>
+    svgs.map(svg => {
+        const { attrs: _attrs, children, ...rest } = svg;
+        return {
+            ...rest,
+            attrBindings: getExportAttrBindings(svg, components),
+            children: children ? exportSvgs(children, components) : undefined,
+        };
+    });

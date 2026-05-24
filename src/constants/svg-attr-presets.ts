@@ -1,6 +1,16 @@
 import type { AttrBinding } from './attr-binding';
 
-export type AttrControlType = 'text' | 'textarea' | 'number' | 'color' | 'switch' | 'select' | 'points' | 'path' | 'style';
+export type AttrControlType =
+    | 'text'
+    | 'text-content'
+    | 'textarea'
+    | 'number'
+    | 'color'
+    | 'switch'
+    | 'select'
+    | 'points'
+    | 'path'
+    | 'style';
 export type AttrGroup =
     | 'position'
     | 'size'
@@ -59,6 +69,7 @@ const literal = (value: string | number | boolean | Record<string, unknown>): At
 
 const number = (step = 1, min?: number, max?: number): AttrControl => ({ type: 'number', step, min, max });
 const text: AttrControl = { type: 'text' };
+const textContent: AttrControl = { type: 'text-content' };
 const color: AttrControl = { type: 'color' };
 const path: AttrControl = { type: 'path' };
 const points: AttrControl = { type: 'points' };
@@ -80,15 +91,15 @@ export const ATTR_GROUP_ORDER: AttrGroup[] = [
 ];
 
 export const ATTR_GROUP_LABELS: Record<AttrGroup, string> = {
-    position: '位置',
-    size: '大小',
-    shape: '形状',
-    fill: '填充',
-    stroke: '边框',
-    text: '文字',
-    transform: '变换',
-    effects: '效果',
-    more: '更多 SVG 属性',
+    position: 'Position',
+    size: 'Size',
+    shape: 'Shape',
+    fill: 'Fill',
+    stroke: 'Stroke',
+    text: 'Text',
+    transform: 'Transform',
+    effects: 'Effects',
+    more: 'More SVG attributes',
 };
 
 const ui = (
@@ -104,186 +115,186 @@ const ui = (
 });
 
 const commonUi: Record<string, AttrUiMeta> = {
-    x: ui('position', 'X 位置', '控制图形左上角或文字起点的水平位置。', {
-        effectHint: '数字越大越靠右。',
+    x: ui('position', 'X position', 'Controls the horizontal position of a shape or text start point.', {
+        effectHint: 'Larger numbers move it to the right.',
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'x',
     }),
-    y: ui('position', 'Y 位置', '控制图形左上角或文字起点的垂直位置。', {
-        effectHint: '数字越大越靠下。',
+    y: ui('position', 'Y position', 'Controls the vertical position of a shape or text start point.', {
+        effectHint: 'Larger numbers move it down.',
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'y',
     }),
-    x1: ui('position', '起点 X', '控制线条起点的水平位置。', {
-        effectHint: '数字越大起点越靠右。',
+    x1: ui('position', 'Start X', 'Controls the horizontal position of the line start.', {
+        effectHint: 'Larger numbers move the start point to the right.',
         quickValues: [-40, 0, 20, 40],
         visualRole: 'x',
     }),
-    y1: ui('position', '起点 Y', '控制线条起点的垂直位置。', {
-        effectHint: '数字越大起点越靠下。',
+    y1: ui('position', 'Start Y', 'Controls the vertical position of the line start.', {
+        effectHint: 'Larger numbers move the start point down.',
         quickValues: [-40, 0, 20, 40],
         visualRole: 'y',
     }),
-    x2: ui('position', '终点 X', '控制线条终点的水平位置。', {
-        effectHint: '数字越大终点越靠右。',
+    x2: ui('position', 'End X', 'Controls the horizontal position of the line end.', {
+        effectHint: 'Larger numbers move the end point to the right.',
         quickValues: [-40, 0, 20, 40],
         visualRole: 'x',
     }),
-    y2: ui('position', '终点 Y', '控制线条终点的垂直位置。', {
-        effectHint: '数字越大终点越靠下。',
+    y2: ui('position', 'End Y', 'Controls the vertical position of the line end.', {
+        effectHint: 'Larger numbers move the end point down.',
         quickValues: [-40, 0, 20, 40],
         visualRole: 'y',
     }),
-    cx: ui('position', '中心 X', '控制圆形或椭圆中心点的水平位置。', {
-        effectHint: '数字越大中心越靠右。',
+    cx: ui('position', 'Center X', 'Controls the horizontal position of a circle or ellipse center.', {
+        effectHint: 'Larger numbers move the center to the right.',
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'x',
     }),
-    cy: ui('position', '中心 Y', '控制圆形或椭圆中心点的垂直位置。', {
-        effectHint: '数字越大中心越靠下。',
+    cy: ui('position', 'Center Y', 'Controls the vertical position of a circle or ellipse center.', {
+        effectHint: 'Larger numbers move the center down.',
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'y',
     }),
-    dx: ui('position', '水平偏移', '让文字或子元素在原位置基础上左右移动。', {
-        effectHint: '正数向右，负数向左。',
+    dx: ui('position', 'Horizontal offset', 'Moves text or child elements horizontally from their original position.', {
+        effectHint: 'Positive values move right; negative values move left.',
         quickValues: [-10, -5, 0, 5, 10],
         visualRole: 'x',
     }),
-    dy: ui('position', '垂直偏移', '让文字或子元素在原位置基础上上下移动。', {
-        effectHint: '正数向下，负数向上。',
+    dy: ui('position', 'Vertical offset', 'Moves text or child elements vertically from their original position.', {
+        effectHint: 'Positive values move down; negative values move up.',
         quickValues: [-10, -5, 0, 5, 10],
         visualRole: 'y',
     }),
-    width: ui('size', '宽度', '控制图形横向占用的大小。', {
-        effectHint: '数字越大越宽。',
+    width: ui('size', 'Width', 'Controls the horizontal size of the shape.', {
+        effectHint: 'Larger numbers make it wider.',
         quickValues: [8, 16, 24, 40, 80],
         visualRole: 'width',
     }),
-    height: ui('size', '高度', '控制图形纵向占用的大小。', {
-        effectHint: '数字越大越高。',
+    height: ui('size', 'Height', 'Controls the vertical size of the shape.', {
+        effectHint: 'Larger numbers make it taller.',
         quickValues: [8, 10, 16, 24, 40],
         visualRole: 'height',
     }),
-    r: ui('size', '半径', '控制圆形从中心到边缘的距离。', {
-        effectHint: '数字越大圆越大。',
+    r: ui('size', 'Radius', 'Controls the distance from the circle center to its edge.', {
+        effectHint: 'Larger numbers make the circle bigger.',
         quickValues: [4, 6, 8, 10, 12],
         visualRole: 'radius',
     }),
-    rx: ui('shape', '水平圆角/半径', '控制矩形横向圆角，或椭圆横向半径。', {
-        effectHint: '矩形里数字越大，左右圆角越明显。',
+    rx: ui('shape', 'Horizontal corner radius', 'Controls a rectangle horizontal corner radius, or an ellipse horizontal radius.', {
+        effectHint: 'For rectangles, larger numbers make side corners rounder.',
         quickValues: [0, 2, 4, 8, 12],
         visualRole: 'radius',
     }),
-    ry: ui('shape', '垂直圆角/半径', '控制矩形纵向圆角，或椭圆纵向半径。', {
-        effectHint: '矩形里数字越大，上下圆角越明显。',
+    ry: ui('shape', 'Vertical corner radius', 'Controls a rectangle vertical corner radius, or an ellipse vertical radius.', {
+        effectHint: 'For rectangles, larger numbers make top and bottom corners rounder.',
         quickValues: [0, 2, 4, 8, 12],
         visualRole: 'radius',
     }),
-    d: ui('shape', '路径', '控制 path 图形的轮廓。', {
-        effectHint: '通常从 SVG 软件导入后保留，不建议手写。',
+    d: ui('shape', 'Path', 'Controls the outline of a path shape.', {
+        effectHint: 'Usually imported from SVG software and not edited by hand.',
         examples: ['M 0 0 L 20 0 L 20 10 Z'],
     }),
-    points: ui('shape', '点列表', '控制折线或多边形经过的点。', {
-        effectHint: '每组数字表示一个点，例如 0,0 20,0。',
+    points: ui('shape', 'Point list', 'Controls the points used by a polyline or polygon.', {
+        effectHint: 'Each number pair is a point, for example 0,0 20,0.',
         examples: ['0,0 20,0 10,15'],
     }),
-    fill: ui('fill', '填充颜色', '控制图形内部填充的颜色。', {
-        effectHint: '设置为 none 可以变成透明填充。',
+    fill: ui('fill', 'Fill color', 'Controls the color inside the shape.', {
+        effectHint: 'Set to none for transparent fill.',
         quickValues: ['#D6ABC1', '#000000', '#FFFFFF', 'none'],
         visualRole: 'fill',
     }),
-    color: ui('fill', '颜色', '给子元素或文字继承使用的基础颜色。', {
+    color: ui('fill', 'Color', 'Base color inherited by child elements or text.', {
         quickValues: ['#000000', '#FFFFFF', '#C23A30'],
         visualRole: 'fill',
     }),
-    stroke: ui('stroke', '边框颜色', '控制外框或线条的颜色。', {
-        effectHint: '设置为 none 可以隐藏边框。',
+    stroke: ui('stroke', 'Stroke color', 'Controls the outline or line color.', {
+        effectHint: 'Set to none to hide the stroke.',
         quickValues: ['none', '#000000', '#FFFFFF', '#C23A30'],
         visualRole: 'stroke',
     }),
-    'stroke-width': ui('stroke', '边框粗细', '控制外框线条有多粗。', {
-        effectHint: '数字越大边框越粗，0 表示没有边框。',
+    'stroke-width': ui('stroke', 'Stroke width', 'Controls how thick the outline is.', {
+        effectHint: 'Larger numbers make the stroke thicker; 0 means no stroke.',
         quickValues: [0, 1, 2, 4],
         visualRole: 'stroke',
     }),
-    'stroke-dasharray': ui('stroke', '虚线样式', '控制边框或线条是否显示为虚线。', {
-        effectHint: '例如 4 2 表示一段实线后留一段空白。',
+    'stroke-dasharray': ui('stroke', 'Dash pattern', 'Controls whether the outline or line is dashed.', {
+        effectHint: 'For example, 4 2 means a dash followed by a gap.',
         quickValues: ['', '4 2', '8 4'],
         examples: ['4 2'],
         visualRole: 'stroke',
     }),
-    'stroke-linecap': ui('stroke', '线端样式', '控制线条两端是平直、圆头还是方头。', {
-        effectHint: 'round 通常更适合线路图。',
+    'stroke-linecap': ui('stroke', 'Line cap', 'Controls whether line ends are flat, round, or square.', {
+        effectHint: 'round often works well for transit maps.',
         quickValues: ['butt', 'round', 'square'],
         visualRole: 'stroke',
     }),
-    'stroke-linejoin': ui('stroke', '转角样式', '控制线条转弯处的连接形状。', {
-        effectHint: 'round 会让转角更圆滑。',
+    'stroke-linejoin': ui('stroke', 'Line join', 'Controls the shape where line segments meet.', {
+        effectHint: 'round makes corners smoother.',
         quickValues: ['miter', 'round', 'bevel'],
         visualRole: 'stroke',
     }),
-    _rmp_children_text: ui('text', '文本内容', '控制这个文字元素显示的内容。', {
-        examples: ['站名', '{Station name}'],
+    _rmp_children_text: ui('text', 'Text content', 'Controls the content shown by this text element.', {
+        examples: ['Station name', '{Station name}'],
         visualRole: 'text',
     }),
-    'font-size': ui('text', '字号', '控制文字大小。', {
-        effectHint: '数字越大文字越大。',
+    'font-size': ui('text', 'Font size', 'Controls text size.', {
+        effectHint: 'Larger numbers make text larger.',
         quickValues: [6, 8, 10, 12, 16],
         visualRole: 'text',
     }),
-    'font-family': ui('text', '字体', '控制文字使用的字体族。', {
-        effectHint: '通常建议使用文字样式 class，而不是直接写字体名。',
+    'font-family': ui('text', 'Font family', 'Controls the font family used by text.', {
+        effectHint: 'Usually prefer a text style class instead of a direct font name.',
         visualRole: 'text',
     }),
-    'font-weight': ui('text', '字重', '控制文字粗细。', {
+    'font-weight': ui('text', 'Font weight', 'Controls text weight.', {
         quickValues: ['normal', 'bold', 400, 700],
         visualRole: 'text',
     }),
-    'letter-spacing': ui('text', '字间距', '控制文字之间的距离。', {
-        effectHint: '负数会让字更紧，正数会让字更松。',
+    'letter-spacing': ui('text', 'Letter spacing', 'Controls spacing between letters.', {
+        effectHint: 'Negative values tighten text; positive values loosen text.',
         quickValues: [-2, -1, 0, 1, 2],
         visualRole: 'text',
     }),
-    'text-anchor': ui('text', '水平对齐', '控制文字相对 X 位置的左右对齐方式。', {
-        effectHint: 'middle 表示文字以 X 位置为中心。',
+    'text-anchor': ui('text', 'Horizontal alignment', 'Controls how text aligns relative to its X position.', {
+        effectHint: 'middle centers text on the X position.',
         quickValues: ['start', 'middle', 'end'],
         visualRole: 'text',
     }),
-    'dominant-baseline': ui('text', '垂直对齐', '控制文字相对 Y 位置的上下对齐方式。', {
-        effectHint: 'middle/central 常用于把文字放在图形中间。',
+    'dominant-baseline': ui('text', 'Vertical alignment', 'Controls how text aligns relative to its Y position.', {
+        effectHint: 'middle or central is often used to center text inside a shape.',
         quickValues: ['auto', 'middle', 'central'],
         visualRole: 'text',
     }),
-    className: ui('text', '文字样式', '选择 RMP 内置的文字样式。', {
-        effectHint: '用于匹配不同城市或语言的字体风格。',
+    className: ui('text', 'Text style', 'Chooses a built-in RMP text style.', {
+        effectHint: 'Used to match font styles for different cities or languages.',
         visualRole: 'text',
     }),
-    transform: ui('transform', '移动/旋转/缩放', '对整个图形做整体变换。', {
-        effectHint: '例如 translate(10, 0) 表示整体向右移动。',
+    transform: ui('transform', 'Move / rotate / scale', 'Applies a transform to the whole shape.', {
+        effectHint: 'For example, translate(10, 0) moves the shape to the right.',
         examples: ['translate(10, 0)', 'rotate(45)', 'scale(1.2)'],
         visualRole: 'transform',
     }),
-    viewBox: ui('transform', '视图范围', '控制 SVG 内部坐标系的可见范围。', {
-        effectHint: '通常用于完整 SVG 容器，不建议随意修改。',
+    viewBox: ui('transform', 'View box', 'Controls the visible range of the SVG coordinate system.', {
+        effectHint: 'Usually used on a full SVG container and not edited casually.',
         examples: ['0 0 100 100'],
         visualRole: 'transform',
     }),
-    opacity: ui('effects', '透明度', '控制整个图形是否透明。', {
-        effectHint: '0 完全透明，1 完全不透明。',
+    opacity: ui('effects', 'Opacity', 'Controls how transparent the whole shape is.', {
+        effectHint: '0 is fully transparent; 1 is fully opaque.',
         quickValues: [0, 0.25, 0.5, 0.75, 1],
         visualRole: 'opacity',
     }),
-    'clip-path': ui('more', '裁剪区域', '用另一个形状裁掉当前图形的一部分。', {
-        effectHint: '通常来自导入 SVG，普通编辑可以保持不变。',
+    'clip-path': ui('more', 'Clip path', 'Uses another shape to clip part of the current shape.', {
+        effectHint: 'Usually imported from SVG and can be left unchanged.',
     }),
-    mask: ui('more', '遮罩', '用遮罩控制图形哪些部分可见。', {
-        effectHint: '通常来自导入 SVG，普通编辑可以保持不变。',
+    mask: ui('more', 'Mask', 'Uses a mask to control which parts of the shape are visible.', {
+        effectHint: 'Usually imported from SVG and can be left unchanged.',
     }),
-    filter: ui('more', '滤镜', '给图形添加阴影、模糊等 SVG 效果。', {
-        effectHint: 'RMP 兼容性取决于具体滤镜内容。',
+    filter: ui('more', 'Filter', 'Adds SVG effects such as shadows or blur.', {
+        effectHint: 'RMP compatibility depends on the filter content.',
     }),
-    style: ui('more', '样式表', '保留导入 SVG 中的内联样式。', {
-        effectHint: '通常来自上传 SVG，只有需要细调时才修改。',
+    style: ui('more', 'Style sheet', 'Keeps inline style content imported from SVG.', {
+        effectHint: 'Usually imported from SVG and edited only for fine tuning.',
     }),
 };
 
@@ -361,7 +372,7 @@ const commonControls: Record<string, AttrControl> = {
     },
     points,
     d: path,
-    _rmp_children_text: { type: 'textarea' },
+    _rmp_children_text: textContent,
     style: { type: 'style' },
 };
 
@@ -446,10 +457,10 @@ export const SVG_ATTR_PRESETS: Record<string, SvgAttrPreset> = {
         recommendedAttrs: ['d', ...paintAttrs, ...transformAttrs],
     },
     text: {
-        recommendedAttrs: ['x', 'y', '_rmp_children_text', ...typographyAttrs, 'fill', 'stroke', 'opacity', ...transformAttrs],
+        recommendedAttrs: ['x', 'y', '_rmp_children_text', ...typographyAttrs, 'fill', 'stroke', 'stroke-width', 'opacity', ...transformAttrs],
     },
     tspan: {
-        recommendedAttrs: ['x', 'y', 'dx', 'dy', '_rmp_children_text', ...typographyAttrs, 'fill', 'opacity'],
+        recommendedAttrs: ['x', 'y', 'dx', 'dy', '_rmp_children_text', ...typographyAttrs, 'fill', 'stroke', 'stroke-width', 'opacity'],
         controls: {
             dx: number(),
             dy: number(),

@@ -1,6 +1,7 @@
 import { Parser } from 'expr-eval';
 import { AttrBinding, AttrCondition, AttrConditionOperand, AttrLiteralValue } from '../constants/attr-binding';
 import type { Components } from '../constants/components';
+import { isTheme, normalizeTheme } from '../constants/constants';
 import type { Theme } from '../constants/constants';
 
 const formulaParser = new Parser({
@@ -10,6 +11,8 @@ const formulaParser = new Parser({
         in: false,
     },
 });
+const formulaExpressionCache = new Map<string, ReturnType<typeof formulaParser.parse>>();
+const maxFormulaExpressionCacheSize = 300;
 
 export interface AttrEvaluationContext {
     components: Components[];
@@ -22,9 +25,12 @@ export interface AttrEvaluationResult {
 
 type FormulaScopeValue = string | number | boolean | object | ((...args: any[]) => unknown);
 
-const formulaFunctionPattern = /\bMath\.(min|max|round|abs|floor|ceil)\s*\(/;
+const formulaFunctionPattern = /\b(?:Math\.)?(min|max|round|abs|floor|ceil)\s*\(/;
 const formulaOperatorPattern = /(?:\d|\}|\))\s*[+\-*/]\s*(?:\d|\{|\(|Math\.)/;
 const variableTokenPattern = /\{([^{}]+)\}/g;
+const supportedMathFunctionNames = ['min', 'max', 'round', 'abs', 'floor', 'ceil'] as const;
+const mathFunctionPattern = /\bMath\.(min|max|round|abs|floor|ceil)\s*\(/g;
+const bareFunctionPattern = /\b(min|max|round|abs|floor|ceil)\s*\(/g;
 
 export interface AttrVariableToken {
     componentId: string;
@@ -49,6 +55,9 @@ export const createFormulaScope = (components: Components[]): Record<string, For
         Math,
         concat: (...values: unknown[]) => values.map(value => stringifyTemplateValue(value)).join(''),
     };
+    supportedMathFunctionNames.forEach(name => {
+        scope[name] = Math[name];
+    });
     components.forEach(component => {
         const value = toExpressionValue(getComponentRuntimeValue(component));
         if (value === undefined) return;
@@ -79,17 +88,23 @@ const tokenAliasesForComponent = (component: Components): AttrVariableToken[] =>
         return baseAliases.map(token => ({ token, componentId: component.id }));
     }
 
+    const hexAliases = [
+        displayName,
+        `${displayName}.hex`,
+        component.label,
+        `${component.label}.hex`,
+        component.id,
+        `${component.id}.hex`,
+    ];
     const textAliases = [
-        `${displayName}文字色`,
         `${displayName} text`,
         `${displayName}.text`,
-        `${component.label}文字色`,
         `${component.label}.text`,
         `${component.id}.text`,
     ];
 
     return [
-        ...baseAliases.map(token => ({ token, componentId: component.id, path: 'hex' })),
+        ...Array.from(new Set(hexAliases.filter(Boolean))).map(token => ({ token, componentId: component.id, path: 'hex' })),
         ...Array.from(new Set(textAliases.filter(Boolean))).map(token => ({
             token,
             componentId: component.id,
@@ -116,10 +131,11 @@ export const resolveVariableBinding = (
     const value = getComponentRuntimeValue(component);
     if (component.type === 'color') {
         const theme = value as Theme | undefined;
-        if (!Array.isArray(theme)) return { error: `Invalid color variable: ${getComponentDisplayName(component)}` };
-        if (binding.path === 'hex') return { value: theme[2] };
-        if (binding.path === 'text') return { value: theme[3] };
-        return { value: theme };
+        if (!isTheme(theme)) return { error: `Invalid color variable: ${getComponentDisplayName(component)}` };
+        const normalizedTheme = normalizeTheme(theme);
+        if (!binding.path || binding.path === 'hex') return { value: normalizedTheme[2] };
+        if (binding.path === 'text') return { value: normalizedTheme[3] };
+        return { error: `Color variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
     }
 
     if (binding.path) return { error: `Variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
@@ -193,12 +209,22 @@ const normalizeFormulaExpressionForEval = (
         }
         return key;
     });
-    return { expression: normalized.expression, scope, error: normalized.error };
+    return { expression: normalizeMathFunctionsForEval(normalized.expression), scope, error: normalized.error };
 };
 
 const normalizeFormulaExpressionForLegacy = (expression: string, components: Components[]): string =>
-    replaceVariableTokens(expression, components, token => variableToLegacyExpression(token.componentId, token.path, components))
-        .expression;
+    normalizeMathFunctionsForLegacy(
+        replaceVariableTokens(expression, components, token => variableToLegacyExpression(token.componentId, token.path, components))
+            .expression
+    );
+
+const normalizeMathFunctionsForEval = (expression: string): string =>
+    expression.replace(mathFunctionPattern, (_match, name: string) => `${name}(`);
+
+const normalizeMathFunctionsForLegacy = (expression: string): string =>
+    expression.replace(bareFunctionPattern, (match: string, name: string, offset: number) =>
+        expression[offset - 1] === '.' ? match : `Math.${name}(`
+    );
 
 const evaluateOperand = (operand: AttrConditionOperand, context: AttrEvaluationContext): AttrEvaluationResult => {
     if (operand.source === 'literal') return { value: operand.value };
@@ -259,6 +285,19 @@ const evaluateLegacyExpression = (expression: string, components: Components[]):
 export const evaluateLegacyAttr = (legacyAttr: string, context: AttrEvaluationContext): AttrEvaluationResult =>
     evaluateLegacyExpression(legacyAttr.slice(1), context.components);
 
+const parseFormulaExpression = (expression: string) => {
+    const cached = formulaExpressionCache.get(expression);
+    if (cached) return cached;
+
+    const parsed = formulaParser.parse(expression);
+    if (formulaExpressionCache.size >= maxFormulaExpressionCacheSize) {
+        const oldest = formulaExpressionCache.keys().next().value;
+        if (oldest) formulaExpressionCache.delete(oldest);
+    }
+    formulaExpressionCache.set(expression, parsed);
+    return parsed;
+};
+
 export const evaluateAttrBinding = (binding: AttrBinding, context: AttrEvaluationContext): AttrEvaluationResult => {
     try {
         if (binding.kind === 'literal') return { value: binding.value };
@@ -269,7 +308,7 @@ export const evaluateAttrBinding = (binding: AttrBinding, context: AttrEvaluatio
             }
             const normalized = normalizeFormulaExpressionForEval(binding.expression || '0', context.components);
             if (normalized.error) return { error: normalized.error };
-            const expression = formulaParser.parse(normalized.expression || '0');
+            const expression = parseFormulaExpression(normalized.expression || '0');
             return { value: expression.evaluate(normalized.scope as any) };
         }
         if (binding.kind === 'conditional') {
@@ -325,7 +364,7 @@ const variableToLegacyExpression = (componentId: string, path: string | undefine
     const component = findComponentForCompile(componentId, components);
     if (!component) return 'undefined';
     if (component.type === 'color') {
-        if (path === 'hex') return `${component.label}[2]`;
+        if (!path || path === 'hex') return `${component.label}[2]`;
         if (path === 'text') return `${component.label}[3]`;
     }
     return component.label;
@@ -382,7 +421,7 @@ export const compileAttrBindingToLegacyAttr = (binding: AttrBinding, components:
         const component = findComponentForCompile(binding.componentId, components);
         if (!component) return '2undefined';
         if (component.type === 'color') {
-            if (binding.path === 'hex') return `2${component.label}[2]`;
+            if (!binding.path || binding.path === 'hex') return `2${component.label}[2]`;
             if (binding.path === 'text') return `2${component.label}[3]`;
         }
         return `2${component.label}`;
@@ -408,7 +447,15 @@ export const legacyAttrToBinding = (legacyAttr: string, components: Components[]
         const component = components.find(c => c.label === reference || c.id === reference);
         return component ? { kind: 'variable', componentId: component.id } : { kind: 'legacy', expression: reference };
     }
-    return { kind: 'legacy', expression: legacyAttr.startsWith('3') ? legacyAttr.slice(1) : legacyAttr };
+    if (legacyAttr.startsWith('3')) {
+        const expression = legacyAttr.slice(1);
+        try {
+            return { kind: 'literal', value: JSON.parse(expression) };
+        } catch {
+            return { kind: 'legacy', expression };
+        }
+    }
+    return { kind: 'legacy', expression: legacyAttr };
 };
 
 export const evaluateSvgAttrs = (
@@ -441,4 +488,27 @@ export const compileAttrRecord = (
         nextAttrs[key] = compileAttrBindingToLegacyAttr(binding, components);
     });
     return nextAttrs;
+};
+
+const normalizeFormulaTokensForExport = (expression: string, components: Components[]) =>
+    expression.replace(variableTokenPattern, (match, tokenText: string) => {
+        const token = resolveVariableToken(tokenText, components);
+        if (!token) return match;
+        const component = findComponentForCompile(token.componentId, components);
+        if (!component) return match;
+        return `{${component.label}${token.path ? `.${token.path}` : ''}}`;
+    });
+
+export const normalizeAttrBindingForExport = (binding: AttrBinding, components: Components[]): AttrBinding => {
+    if (binding.kind === 'formula') {
+        return { ...binding, expression: normalizeFormulaTokensForExport(binding.expression, components) };
+    }
+    if (binding.kind === 'conditional') {
+        return {
+            ...binding,
+            then: normalizeAttrBindingForExport(binding.then, components),
+            else: normalizeAttrBindingForExport(binding.else, components),
+        };
+    }
+    return binding;
 };

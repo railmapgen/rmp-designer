@@ -53,6 +53,11 @@
             "attrKey": "屬性鍵",
             "attrValue": "屬性值",
             "addTextChildren": "添加文本內容",
+            "complexMode": {
+                "title": "複雜 SVG 已進入不可編輯模式",
+                "summary": "這個 SVG 包含 {{count}} 個元素，超過 {{limit}} 個元素的逐節點編輯上限。",
+                "detail": "畫布預覽和匯出仍會保留完整 SVG。為了避免卡頓，組件樹和單節點拖曳已關閉；如需編輯，請先在 SVG 軟體中簡化圖形或拆分成更小的 SVG 後再匯入。"
+            },
             "attrMode": {
                 "title": "屬性模式",
                 "value": "值",
@@ -61,8 +66,6 @@
             },
             "attrPanel": {
                 "placeholder": "例如：12、{寬度}、3 + {寬度}",
-                "collapse": "收起",
-                "insertValue": "插入參數 / 計算",
                 "common": "常用",
                 "quick": "快捷",
                 "empty": "空",
@@ -80,7 +83,22 @@
                 "deleteBlock": "移除塊",
                 "editBlocks": "編輯",
                 "doneEditing": "完成",
-                "cancelEditing": "取消"
+                "cancelEditing": "取消",
+                "mainColor": "主色",
+                "textColor": "文字色",
+                "calculations": {
+                    "add": "+",
+                    "subtract": "-",
+                    "multiply": "×",
+                    "divide": "÷",
+                    "min": "最小值",
+                    "max": "最大值",
+                    "round": "四捨五入",
+                    "abs": "絕對值",
+                    "floor": "向下取整",
+                    "ceil": "向上取整",
+                    "if": "如果"
+                }
             },
             "attrGroups": {
                 "position": "位置",

@@ -53,6 +53,11 @@
             "attrKey": "Attributes key",
             "attrValue": "Attributes value",
             "addTextChildren": "Add text content",
+            "complexMode": {
+                "title": "Complex SVG is in read-only mode",
+                "summary": "This SVG contains {{count}} elements, above the {{limit}} element limit for per-node editing.",
+                "detail": "Canvas preview and export still keep the full SVG. To avoid slow editing, the component tree and single-node dragging are disabled; simplify the SVG or split it into smaller SVGs before importing if you need to edit it."
+            },
             "attrMode": {
                 "title": "Attributes mode",
                 "value": "Value",
@@ -61,8 +66,6 @@
             },
             "attrPanel": {
                 "placeholder": "Example: 12, {Width}, 3 + {Width}",
-                "collapse": "Collapse",
-                "insertValue": "Insert parameter / calculation",
                 "common": "Common",
                 "quick": "Quick",
                 "empty": "Empty",
@@ -80,7 +83,22 @@
                 "deleteBlock": "Remove block",
                 "editBlocks": "Edit",
                 "doneEditing": "Done",
-                "cancelEditing": "Cancel"
+                "cancelEditing": "Cancel",
+                "mainColor": "Main color",
+                "textColor": "Text color",
+                "calculations": {
+                    "add": "+",
+                    "subtract": "-",
+                    "multiply": "x",
+                    "divide": "/",
+                    "min": "Minimum",
+                    "max": "Maximum",
+                    "round": "Round",
+                    "abs": "Absolute",
+                    "floor": "Floor",
+                    "ceil": "Ceil",
+                    "if": "If"
+                }
             },
             "attrGroups": {
                 "position": "Position",

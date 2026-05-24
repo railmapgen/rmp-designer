@@ -62,7 +62,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                 ctx.scale(scaleFactor, scaleFactor);
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const jpegUrl = canvas.toDataURL('image/jpeg', 0.8); // 最高质量
+                const jpegUrl = canvas.toDataURL('image/jpeg', 0.8);
 
                 const link = document.createElement('a');
                 link.href = jpegUrl;
@@ -269,14 +269,11 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                                 transform={`translate(${param.transform.translateX}, ${param.transform.translateY}) scale(${param.transform.scale}) rotate(${param.transform.rotate})`}
                             >
                                 {param.svgs.map(s => {
-                                    const components = param.color
-                                        ? [...param.components, param.color]
-                                        : param.components;
                                     return (
                                         <CreateSvgs
                                             key={s.id}
                                             svgsElem={s}
-                                            components={components}
+                                            components={param.components}
                                             prefix={[s.id]}
                                             handlePointerDown={() => {}}
                                             handlePointerMove={() => {}}
