@@ -11,16 +11,7 @@ export type AttrControlType =
     | 'points'
     | 'path'
     | 'style';
-export type AttrGroup =
-    | 'position'
-    | 'size'
-    | 'shape'
-    | 'fill'
-    | 'stroke'
-    | 'text'
-    | 'transform'
-    | 'effects'
-    | 'more';
+export type AttrGroup = 'position' | 'size' | 'shape' | 'fill' | 'stroke' | 'text' | 'transform' | 'effects' | 'more';
 
 export type AttrVisualRole =
     | 'x'
@@ -74,7 +65,15 @@ const color: AttrControl = { type: 'color' };
 const path: AttrControl = { type: 'path' };
 const points: AttrControl = { type: 'points' };
 
-const paintAttrs = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity'];
+const paintAttrs = [
+    'fill',
+    'stroke',
+    'stroke-width',
+    'stroke-dasharray',
+    'stroke-linecap',
+    'stroke-linejoin',
+    'opacity',
+];
 const typographyAttrs = ['font-size', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline', 'className'];
 const transformAttrs = ['transform', 'clip-path', 'mask', 'filter'];
 
@@ -180,16 +179,26 @@ const commonUi: Record<string, AttrUiMeta> = {
         quickValues: [4, 6, 8, 10, 12],
         visualRole: 'radius',
     }),
-    rx: ui('shape', 'Horizontal corner radius', 'Controls a rectangle horizontal corner radius, or an ellipse horizontal radius.', {
-        effectHint: 'For rectangles, larger numbers make side corners rounder.',
-        quickValues: [0, 2, 4, 8, 12],
-        visualRole: 'radius',
-    }),
-    ry: ui('shape', 'Vertical corner radius', 'Controls a rectangle vertical corner radius, or an ellipse vertical radius.', {
-        effectHint: 'For rectangles, larger numbers make top and bottom corners rounder.',
-        quickValues: [0, 2, 4, 8, 12],
-        visualRole: 'radius',
-    }),
+    rx: ui(
+        'shape',
+        'Horizontal corner radius',
+        'Controls a rectangle horizontal corner radius, or an ellipse horizontal radius.',
+        {
+            effectHint: 'For rectangles, larger numbers make side corners rounder.',
+            quickValues: [0, 2, 4, 8, 12],
+            visualRole: 'radius',
+        }
+    ),
+    ry: ui(
+        'shape',
+        'Vertical corner radius',
+        'Controls a rectangle vertical corner radius, or an ellipse vertical radius.',
+        {
+            effectHint: 'For rectangles, larger numbers make top and bottom corners rounder.',
+            quickValues: [0, 2, 4, 8, 12],
+            visualRole: 'radius',
+        }
+    ),
     d: ui('shape', 'Path', 'Controls the outline of a path shape.', {
         effectHint: 'Usually imported from SVG software and not edited by hand.',
         examples: ['M 0 0 L 20 0 L 20 10 Z'],
@@ -437,7 +446,17 @@ export const SVG_ATTR_PRESETS: Record<string, SvgAttrPreset> = {
         recommendedAttrs: ['cx', 'cy', 'rx', 'ry', ...paintAttrs, ...transformAttrs],
     },
     line: {
-        recommendedAttrs: ['x1', 'y1', 'x2', 'y2', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'opacity'],
+        recommendedAttrs: [
+            'x1',
+            'y1',
+            'x2',
+            'y2',
+            'stroke',
+            'stroke-width',
+            'stroke-dasharray',
+            'stroke-linecap',
+            'opacity',
+        ],
         defaults: {
             x1: literal(0),
             y1: literal(0),
@@ -457,10 +476,31 @@ export const SVG_ATTR_PRESETS: Record<string, SvgAttrPreset> = {
         recommendedAttrs: ['d', ...paintAttrs, ...transformAttrs],
     },
     text: {
-        recommendedAttrs: ['x', 'y', '_rmp_children_text', ...typographyAttrs, 'fill', 'stroke', 'stroke-width', 'opacity', ...transformAttrs],
+        recommendedAttrs: [
+            'x',
+            'y',
+            '_rmp_children_text',
+            ...typographyAttrs,
+            'fill',
+            'stroke',
+            'stroke-width',
+            'opacity',
+            ...transformAttrs,
+        ],
     },
     tspan: {
-        recommendedAttrs: ['x', 'y', 'dx', 'dy', '_rmp_children_text', ...typographyAttrs, 'fill', 'stroke', 'stroke-width', 'opacity'],
+        recommendedAttrs: [
+            'x',
+            'y',
+            'dx',
+            'dy',
+            '_rmp_children_text',
+            ...typographyAttrs,
+            'fill',
+            'stroke',
+            'stroke-width',
+            'opacity',
+        ],
         controls: {
             dx: number(),
             dy: number(),

@@ -33,26 +33,28 @@ const components: Components[] = [
 describe('attr binding evaluator', () => {
     it('evaluates literal, variable, formula, condition and legacy bindings', () => {
         expect(evaluateAttrBinding({ kind: 'literal', value: 'fixed' }, { components }).value).toEqual('fixed');
+        expect(evaluateAttrBinding({ kind: 'variable', componentId: 'component_width' }, { components }).value).toEqual(
+            12
+        );
         expect(
-            evaluateAttrBinding({ kind: 'variable', componentId: 'component_width' }, { components }).value
-        ).toEqual(12);
-        expect(evaluateAttrBinding({ kind: 'variable', componentId: 'color', path: 'hex' }, { components }).value).toEqual(
-            '#c23a30'
+            evaluateAttrBinding({ kind: 'variable', componentId: 'color', path: 'hex' }, { components }).value
+        ).toEqual('#c23a30');
+        expect(evaluateAttrBinding({ kind: 'formula', expression: 'widthValue + 8' }, { components }).value).toEqual(
+            20
         );
-        expect(evaluateAttrBinding({ kind: 'formula', expression: 'widthValue + 8' }, { components }).value).toEqual(20);
         expect(evaluateAttrBinding({ kind: 'formula', expression: '3 + {Width}' }, { components }).value).toEqual(15);
-        expect(evaluateAttrBinding({ kind: 'formula', expression: 'Line{Station label}' }, { components }).value).toEqual(
-            'LineAlpha'
-        );
-        expect(evaluateAttrBinding({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, { components }).value).toEqual(
-            8
-        );
-        expect(evaluateAttrBinding({ kind: 'formula', expression: 'Math.round({Width} / 5)' }, { components }).value).toEqual(
-            2
-        );
-        expect(evaluateAttrBinding({ kind: 'formula', expression: 'round({Width} / 5)' }, { components }).value).toEqual(
-            2
-        );
+        expect(
+            evaluateAttrBinding({ kind: 'formula', expression: 'Line{Station label}' }, { components }).value
+        ).toEqual('LineAlpha');
+        expect(
+            evaluateAttrBinding({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, { components }).value
+        ).toEqual(8);
+        expect(
+            evaluateAttrBinding({ kind: 'formula', expression: 'Math.round({Width} / 5)' }, { components }).value
+        ).toEqual(2);
+        expect(
+            evaluateAttrBinding({ kind: 'formula', expression: 'round({Width} / 5)' }, { components }).value
+        ).toEqual(2);
         expect(evaluateAttrBinding({ kind: 'formula', expression: 'abs(-{Width})' }, { components }).value).toEqual(12);
         expect(
             evaluateAttrBinding(
@@ -82,21 +84,21 @@ describe('attr binding evaluator', () => {
 describe('attr binding compiler', () => {
     it('compiles bindings to current RMP-compatible attr strings', () => {
         expect(compileAttrBindingToLegacyAttr({ kind: 'literal', value: 20 }, components)).toEqual('1"20"');
-        expect(compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'component_width' }, components)).toEqual(
-            '2widthValue'
-        );
-        expect(compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'color', path: 'hex' }, components)).toEqual(
-            '2color[2]'
-        );
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'component_width' }, components)
+        ).toEqual('2widthValue');
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'variable', componentId: 'color', path: 'hex' }, components)
+        ).toEqual('2color[2]');
         expect(compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'widthValue + 2' }, components)).toEqual(
             '3widthValue + 2'
         );
         expect(compileAttrBindingToLegacyAttr({ kind: 'formula', expression: '3 + {Width}' }, components)).toEqual(
             '33 + widthValue'
         );
-        expect(compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Line{Station label}' }, components)).toEqual(
-            '3"Line" + String(stationLabel == null ? "" : stationLabel)'
-        );
+        expect(
+            compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Line{Station label}' }, components)
+        ).toEqual('3"Line" + String(stationLabel == null ? "" : stationLabel)');
         expect(
             compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, components)
         ).toEqual('3Math.min(widthValue, 8)');

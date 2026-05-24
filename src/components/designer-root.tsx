@@ -34,7 +34,10 @@ const DesignerRoot = () => {
     const minTopHeight = 160;
     const minBottomHeight = 160;
     const maxTopHeight = Math.max(minTopHeight, availableHeight - dividerHeight - minBottomHeight);
-    const svgHeight = Math.min(maxTopHeight, Math.max(minTopHeight, (availableHeight - dividerHeight) * panelSplitRatio));
+    const svgHeight = Math.min(
+        maxTopHeight,
+        Math.max(minTopHeight, (availableHeight - dividerHeight) * panelSplitRatio)
+    );
     const bottomHeight = availableHeight - dividerHeight - svgHeight;
     const dividerBg = useColorModeValue('gray.200', 'gray.700');
     const dividerHoverBg = useColorModeValue('blue.300', 'blue.500');

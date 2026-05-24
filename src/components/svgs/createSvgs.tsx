@@ -17,7 +17,15 @@ export interface CreateSvgsProps {
 }
 
 const CreateSvgsComponent = (props: CreateSvgsProps) => {
-    const { svgsElem, components, prefix, isEditable = true, handlePointerUp, handlePointerMove, handlePointerDown } = props;
+    const {
+        svgsElem,
+        components,
+        prefix,
+        isEditable = true,
+        handlePointerUp,
+        handlePointerMove,
+        handlePointerDown,
+    } = props;
     const { id, type, attrs } = svgsElem;
     const dispatch = useRootDispatch();
     const hasGlobalAlert = useRootSelector(state => state.runtime.globalAlerts.has(id));
@@ -43,7 +51,8 @@ const CreateSvgsComponent = (props: CreateSvgsProps) => {
         return evaluateSvgAttrs(attrs, svgsElem.attrBindings, components);
     }, [attrs, svgsElem.attrBindings, components, hasGlobalAlert]);
     const newAttrs = evaluatedAttrs.attrs;
-    const styleError = 'style' in newAttrs && typeof newAttrs.style !== 'object' ? '"style" must be an object!' : undefined;
+    const styleError =
+        'style' in newAttrs && typeof newAttrs.style !== 'object' ? '"style" must be an object!' : undefined;
     const error = evaluatedAttrs.error ?? styleError;
 
     React.useEffect(() => {

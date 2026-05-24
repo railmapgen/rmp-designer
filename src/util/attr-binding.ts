@@ -104,7 +104,11 @@ const tokenAliasesForComponent = (component: Components): AttrVariableToken[] =>
     ];
 
     return [
-        ...Array.from(new Set(hexAliases.filter(Boolean))).map(token => ({ token, componentId: component.id, path: 'hex' })),
+        ...Array.from(new Set(hexAliases.filter(Boolean))).map(token => ({
+            token,
+            componentId: component.id,
+            path: 'hex',
+        })),
         ...Array.from(new Set(textAliases.filter(Boolean))).map(token => ({
             token,
             componentId: component.id,
@@ -138,7 +142,8 @@ export const resolveVariableBinding = (
         return { error: `Color variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
     }
 
-    if (binding.path) return { error: `Variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
+    if (binding.path)
+        return { error: `Variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
     return { value };
 };
 
@@ -214,8 +219,9 @@ const normalizeFormulaExpressionForEval = (
 
 const normalizeFormulaExpressionForLegacy = (expression: string, components: Components[]): string =>
     normalizeMathFunctionsForLegacy(
-        replaceVariableTokens(expression, components, token => variableToLegacyExpression(token.componentId, token.path, components))
-            .expression
+        replaceVariableTokens(expression, components, token =>
+            variableToLegacyExpression(token.componentId, token.path, components)
+        ).expression
     );
 
 const normalizeMathFunctionsForEval = (expression: string): string =>
@@ -360,7 +366,11 @@ const conditionToJsExpression = (condition: AttrCondition, components: Component
     }
 };
 
-const variableToLegacyExpression = (componentId: string, path: string | undefined, components: Components[]): string => {
+const variableToLegacyExpression = (
+    componentId: string,
+    path: string | undefined,
+    components: Components[]
+): string => {
     const component = findComponentForCompile(componentId, components);
     if (!component) return 'undefined';
     if (component.type === 'color') {
@@ -370,8 +380,7 @@ const variableToLegacyExpression = (componentId: string, path: string | undefine
     return component.label;
 };
 
-const legacyStringExpression = (expression: string): string =>
-    `String(${expression} == null ? "" : ${expression})`;
+const legacyStringExpression = (expression: string): string => `String(${expression} == null ? "" : ${expression})`;
 
 const templateConcatExpressionToLegacy = (expression: string, components: Components[]): string => {
     const parts: string[] = [];
@@ -384,7 +393,9 @@ const templateConcatExpressionToLegacy = (expression: string, components: Compon
         if (literal) parts.push(JSON.stringify(literal));
 
         const token = resolveVariableToken(tokenText, components);
-        const variableExpression = token ? variableToLegacyExpression(token.componentId, token.path, components) : 'undefined';
+        const variableExpression = token
+            ? variableToLegacyExpression(token.componentId, token.path, components)
+            : 'undefined';
         parts.push(legacyStringExpression(variableExpression));
         cursor = (match.index ?? 0) + rawToken.length;
     }

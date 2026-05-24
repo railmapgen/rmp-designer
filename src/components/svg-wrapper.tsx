@@ -42,10 +42,7 @@ export default function SvgWrapper(props: { height?: number }) {
     const components = React.useMemo(() => param.components, [param.components]);
     const svgNodeCount = React.useMemo(() => countSvgNodes(param.svgs), [param.svgs]);
     const svgTreeEditable = svgNodeCount <= MAX_EDITABLE_SVG_NODE_COUNT;
-    const rootPrefixes = React.useMemo(
-        () => new Map(param.svgs.map(s => [s.id, [s.id] as Id[]])),
-        [param.svgs]
-    );
+    const rootPrefixes = React.useMemo(() => new Map(param.svgs.map(s => [s.id, [s.id] as Id[]])), [param.svgs]);
     const canvasBackground =
         canvasColor === 'dark' ? 'var(--chakra-colors-gray-800)' : canvasColor === 'white' ? 'white' : '';
 

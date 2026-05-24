@@ -259,7 +259,12 @@ const coerceLiteralValue = (elemType: string, attrKey: string, value: string): A
     return value;
 };
 
-const editorTextToBinding = (elemType: string, attrKey: string, value: string, components: Components[]): AttrBinding => {
+const editorTextToBinding = (
+    elemType: string,
+    attrKey: string,
+    value: string,
+    components: Components[]
+): AttrBinding => {
     const trimmed = value.trim();
     const exactToken = trimmed.match(/^\{([^{}]+)\}$/);
     if (exactToken) {
@@ -365,9 +370,7 @@ const AttrAddControl = (props: { elem: SvgsElem; existingKeys: string[]; onAdd: 
                     data={options}
                     value={selected?.value ?? ''}
                     displayHandler={item => `${item.value}${item.recommended ? ' *' : ''}`}
-                    filter={(query, item) =>
-                        `${item.id} ${item.value}`.toLowerCase().includes(query.toLowerCase())
-                    }
+                    filter={(query, item) => `${item.id} ${item.value}`.toLowerCase().includes(query.toLowerCase())}
                     onChange={setSelected}
                 />
             </Box>
@@ -382,13 +385,16 @@ const AttrAddControl = (props: { elem: SvgsElem; existingKeys: string[]; onAdd: 
     );
 };
 
-const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
-    value: string;
-    placeholder: string;
-    components: Components[];
-    onChange: (value: string) => void;
-    onEditModeChange?: (isEditing: boolean) => void;
-}>((props, ref) => {
+const ExpressionBlockInput = React.forwardRef<
+    ExpressionBlockInputHandle,
+    {
+        value: string;
+        placeholder: string;
+        components: Components[];
+        onChange: (value: string) => void;
+        onEditModeChange?: (isEditing: boolean) => void;
+    }
+>((props, ref) => {
     const { value, placeholder, components, onChange, onEditModeChange } = props;
     const { t } = useTranslation();
     const blockIdRef = React.useRef(0);
@@ -643,6 +649,8 @@ const ExpressionBlockInput = React.forwardRef<ExpressionBlockInputHandle, {
     );
 });
 
+ExpressionBlockInput.displayName = 'ExpressionBlockInput';
+
 const ExpressionValueControl = (props: {
     elemType: string;
     attrKey: string;
@@ -731,7 +739,12 @@ const ExpressionValueControl = (props: {
                         {t('panel.svgs.attrPanel.common')}
                     </Text>
                     {quickOptions.map(([key, label]) => (
-                        <Button key={key} size="xs" variant={value === key ? 'solid' : 'outline'} onClick={() => handleTextChange(key)}>
+                        <Button
+                            key={key}
+                            size="xs"
+                            variant={value === key ? 'solid' : 'outline'}
+                            onClick={() => handleTextChange(key)}
+                        >
                             {label}
                         </Button>
                     ))}
@@ -996,7 +1009,10 @@ const VisualAttrPanel = (props: {
         () => ATTR_GROUP_ORDER.filter(group => group !== 'more' && grouped[group].length > 0),
         [grouped]
     );
-    const visualKeys = React.useMemo(() => unique(visualGroups.flatMap(group => grouped[group])), [grouped, visualGroups]);
+    const visualKeys = React.useMemo(
+        () => unique(visualGroups.flatMap(group => grouped[group])),
+        [grouped, visualGroups]
+    );
     const moreKeys = React.useMemo(() => grouped.more.filter(key => !visualKeys.includes(key)), [grouped, visualKeys]);
     const allVisibleKeys = React.useMemo(() => unique([...visualKeys, ...moreKeys]), [moreKeys, visualKeys]);
     const mutedColor = useColorModeValue('gray.500', 'gray.400');
@@ -1050,7 +1066,9 @@ const VisualAttrPanel = (props: {
                                             {t('panel.svgs.attrPanel.emptyMore')}
                                         </Text>
                                     ))}
-                                {isExpanded && <AttrAddControl elem={elem} existingKeys={allVisibleKeys} onAdd={onAdd} />}
+                                {isExpanded && (
+                                    <AttrAddControl elem={elem} existingKeys={allVisibleKeys} onAdd={onAdd} />
+                                )}
                             </AccordionPanel>
                         </>
                     )}
@@ -1218,7 +1236,9 @@ export function DetailsSvgs() {
                     {({ isExpanded }) => {
                         const displayChildren = isExpanded && s.children ? dfsField(s.children, currentPath, s.id) : [];
                         const displayTextChildrenButton =
-                            supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
+                            supportsChildren(s.type) &&
+                            displayChildren.length === 0 &&
+                            !('_rmp_children_text' in s.attrs) ? (
                                 <Button
                                     width="100%"
                                     onClick={() => {

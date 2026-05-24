@@ -125,8 +125,7 @@ export function DetailsComponents() {
                                 type: nextType,
                                 defaultValue: normalizeDefaultValue(nextType, defaultValue),
                                 value: c.value === undefined ? undefined : normalizeDefaultValue(nextType, c.value),
-                                constraints:
-                                    nextType === 'number' ? { step: 1, ...constraints } : constraints,
+                                constraints: nextType === 'number' ? { step: 1, ...constraints } : constraints,
                             },
                         })
                     );

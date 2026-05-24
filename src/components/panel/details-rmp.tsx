@@ -1,4 +1,10 @@
-import { RmgFields, RmgFieldsField, RmgSidePanel, RmgSidePanelBody, RmgSidePanelHeader } from '@railmapgen/rmg-components';
+import {
+    RmgFields,
+    RmgFieldsField,
+    RmgSidePanel,
+    RmgSidePanelBody,
+    RmgSidePanelHeader,
+} from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../redux';

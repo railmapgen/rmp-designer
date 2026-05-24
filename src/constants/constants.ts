@@ -102,7 +102,13 @@ export const isTheme = (value: unknown): value is Theme =>
 export const normalizeTheme = (value: unknown, fallback: Theme = defaultColorTheme): Theme => {
     if (!Array.isArray(value) || value.length < 4) return fallback;
     const monoColour = normalizeMonoColour(value[3]);
-    if (typeof value[0] !== 'string' || typeof value[1] !== 'string' || typeof value[2] !== 'string' || !value[2].startsWith('#') || !monoColour) {
+    if (
+        typeof value[0] !== 'string' ||
+        typeof value[1] !== 'string' ||
+        typeof value[2] !== 'string' ||
+        !value[2].startsWith('#') ||
+        !monoColour
+    ) {
         return fallback;
     }
     return [value[0] as CityCode, value[1], value[2] as ColourHex, monoColour];

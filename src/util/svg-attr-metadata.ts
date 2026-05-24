@@ -139,7 +139,8 @@ export const getAttrControl = (type: string, attr: string): AttrControl => {
     if (info.number) return { type: 'number', step: 1 };
     const cssInfo = cssPropertyMap[attr];
     if (cssInfo?.syntax?.includes('<color>')) return { type: 'color' };
-    if (cssInfo?.syntax?.includes('<number>') || cssInfo?.syntax?.includes('<length>')) return { type: 'number', step: 1 };
+    if (cssInfo?.syntax?.includes('<number>') || cssInfo?.syntax?.includes('<length>'))
+        return { type: 'number', step: 1 };
 
     return DEFAULT_ATTR_CONTROL;
 };
@@ -183,7 +184,9 @@ export const getGroupedAttrKeys = (
     attrBindings: Record<string, AttrBinding> | undefined
 ): GroupedAttrKeys => {
     const metadata = getSvgAttrMetadata(type, [...Object.keys(attrs), ...Object.keys(attrBindings ?? {})]);
-    const keys = Array.from(new Set([...metadata.recommendedAttrs, ...Object.keys(attrs), ...Object.keys(attrBindings ?? {})]));
+    const keys = Array.from(
+        new Set([...metadata.recommendedAttrs, ...Object.keys(attrs), ...Object.keys(attrBindings ?? {})])
+    );
     const grouped = ATTR_GROUP_ORDER.reduce((acc, group) => ({ ...acc, [group]: [] }), {} as GroupedAttrKeys);
 
     keys.forEach(key => {

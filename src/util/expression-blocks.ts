@@ -59,7 +59,11 @@ export const insertExpressionText = (
     return [...blocks.slice(0, index), ...inserted, ...blocks.slice(index)];
 };
 
-export const moveExpressionBlock = (blocks: ExpressionBlock[], fromIndex: number, toIndex: number): ExpressionBlock[] => {
+export const moveExpressionBlock = (
+    blocks: ExpressionBlock[],
+    fromIndex: number,
+    toIndex: number
+): ExpressionBlock[] => {
     if (fromIndex < 0 || fromIndex >= blocks.length || toIndex < 0) return blocks;
     const next = [...blocks];
     const [moved] = next.splice(fromIndex, 1);
@@ -67,11 +71,7 @@ export const moveExpressionBlock = (blocks: ExpressionBlock[], fromIndex: number
     return next;
 };
 
-export const updateExpressionBlock = (
-    blocks: ExpressionBlock[],
-    index: number,
-    text: string
-): ExpressionBlock[] =>
+export const updateExpressionBlock = (blocks: ExpressionBlock[], index: number, text: string): ExpressionBlock[] =>
     blocks.map((block, blockIndex) =>
         blockIndex === index ? { text, kind: getExpressionBlockKind(text.trim()) } : block
     );
