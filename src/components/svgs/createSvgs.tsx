@@ -1,10 +1,10 @@
 import React from 'react';
 import { Id, SvgsElem } from '../../constants/constants';
-import { calcFunc } from '../../util/parse';
 import { Components } from '../../constants/components';
 import { supportsChildren } from '../../util/svgTagWithChildren';
 import { addGlobalAlert } from '../../redux/runtime/runtime-slice';
 import { useRootDispatch, useRootSelector } from '../../redux';
+import { evaluateSvgAttrs } from '../../util/attr-binding';
 
 export interface CreateSvgsProps {
     svgsElem: SvgsElem;
@@ -43,43 +43,12 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
         }
     }, [error]);
 
-    const modifyAttributes = (
-        svgAttrs: Record<string, string>,
-        varIds: string[],
-        varValues: string[],
-        varType: string[]
-    ): Record<string, string> => {
-        const modifiedAttrs: Partial<Record<string, string>> = {};
-        if (error || hasGlobalAlert) return modifiedAttrs as Record<string, string>;
-
-        for (const key in svgAttrs) {
-            if (Object.prototype.hasOwnProperty.call(svgAttrs, key)) {
-                try {
-                    modifiedAttrs[key] = calcFunc(
-                        svgAttrs[key].slice(1),
-                        ...varIds
-                    )(
-                        ...varValues.map((v, varI) =>
-                            varType[varI] === 'number' && !Number.isNaN(Number(v)) ? Number(v) : v
-                        )
-                    );
-                } catch (e) {
-                    if (e instanceof Error) {
-                        setError(e.message);
-                    }
-                }
-            }
-        }
-
-        return modifiedAttrs as Record<string, string>;
-    };
-
-    const newAttrs = modifyAttributes(
-        attrs,
-        components.map(s => s.label),
-        components.map(s => (s.value ? s.value : s.defaultValue)),
-        components.map(s => s.type)
-    );
+    const newAttrs = React.useMemo(() => {
+        if (error || hasGlobalAlert) return {};
+        const result = evaluateSvgAttrs(attrs, svgsElem.attrBindings, components);
+        if (result.error) setError(result.error);
+        return result.attrs;
+    }, [JSON.stringify(attrs), JSON.stringify(svgsElem.attrBindings), JSON.stringify(components), error, hasGlobalAlert]);
     const Children =
         supportsChildren(type) && svgsElem.children
             ? svgsElem.children.map((s, i) => (
@@ -94,7 +63,7 @@ export const CreateSvgs = (props: CreateSvgsProps) => {
                   />
               ))
             : '_rmp_children_text' in newAttrs
-              ? [newAttrs._rmp_children_text]
+              ? [newAttrs._rmp_children_text as React.ReactNode]
               : [];
     if ('style' in newAttrs && typeof newAttrs.style !== 'object') {
         setError('"style" must be an object!');

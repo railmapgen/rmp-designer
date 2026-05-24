@@ -14,6 +14,7 @@ import { useRootDispatch, useRootSelector } from '../../redux';
 import { setColor, setComponentValue } from '../../redux/param/param-slice';
 import { backupParam, openPaletteAppClip } from '../../redux/runtime/runtime-slice';
 import ColourUtil from './colour-util';
+import { getComponentDisplayName } from '../../util/attr-binding';
 
 export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
     const { isOpen, onClose } = props;
@@ -25,7 +26,8 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
     const { t } = useTranslation();
 
     const field: RmgFieldsField[] = param.components.map((c, index) => {
-        const { label, type, defaultValue, value } = c;
+        const { type, defaultValue, value } = c;
+        const label = getComponentDisplayName(c);
         if (type === 'number' || type === 'text') {
             return {
                 label: label,
@@ -33,7 +35,8 @@ export function RmpDetails(props: { isOpen: boolean; onClose: () => void }) {
                 value: value ?? defaultValue,
                 onChange: v => {
                     dispatch(backupParam(param));
-                    dispatch(setComponentValue({ index: index, value: { ...c, value: v } }));
+                    const nextValue = type === 'number' && v !== '' ? Number(v) : v;
+                    dispatch(setComponentValue({ index: index, value: { ...c, value: nextValue } }));
                 },
             };
         } else if (type === 'switch') {

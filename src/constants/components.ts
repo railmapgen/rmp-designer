@@ -13,9 +13,17 @@ export const ComponentsTypeOptions = {
 export interface Components {
     id: string;
     label: string;
+    name?: string;
+    group?: string;
     type: ComponentsType;
     defaultValue: any;
     value?: any;
+    constraints?: {
+        min?: number;
+        max?: number;
+        step?: number;
+        options?: string[];
+    };
 }
 
 export const colorComponents: Components = {

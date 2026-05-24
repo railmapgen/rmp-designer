@@ -18,6 +18,7 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { MetadataDetail } from '../../constants/marketplace';
 import { setLabel, setTransform } from '../../redux/param/param-slice';
 import { Export } from './export';
+import { stringifyParam } from '../../util/save';
 
 export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMode?: boolean }) => {
     const { isOpen, onClose, exportMode } = props;
@@ -92,7 +93,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                     metadata: {
                         name: { en: '' },
                         desc: { en: '' },
-                        param: JSON.stringify(param),
+                        param: stringifyParam(param),
                         type: param.type,
                         svgString: svgStr,
                         id: -1,
