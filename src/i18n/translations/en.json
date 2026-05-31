@@ -50,7 +50,6 @@
         },
         "svgs": {
             "title": "SVG Components",
-            "core": "Connectable",
             "attrKey": "Attributes key",
             "attrValue": "Attributes value",
             "addTextChildren": "Add text content",

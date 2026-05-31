@@ -113,6 +113,31 @@ describe('Unit tests for param upgrade function', () => {
         expect(exported.svgs[0].attrBindings.width.expression).toEqual('{widthValue} + 1');
     });
 
+    it('v4 export omits legacy station core', () => {
+        const exported = JSON.parse(
+            stringifyParam({
+                id: 'new',
+                label: 'new',
+                transform: { translateX: 0, translateY: 0, scale: 1, rotate: 0 },
+                version: 4,
+                type: 'Station',
+                core: 'id_rect',
+                components: [],
+                svgs: [
+                    {
+                        id: 'id_rect',
+                        type: 'rect',
+                        label: 'rect',
+                        attrs: {},
+                    },
+                ],
+            } as any)
+        );
+
+        expect(exported.type).toEqual('Station');
+        expect(exported.core).toBeUndefined();
+    });
+
     it('v4 export normalizes option variables', () => {
         const exported = JSON.parse(
             stringifyParam({

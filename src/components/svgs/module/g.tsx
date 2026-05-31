@@ -1,7 +1,7 @@
 import React from 'react';
-import { Svgs } from '../../../constants/svgs';
+import type { Svgs } from '../../../constants/svgs';
 
-const defaultGSvgAttrs: Record<string, string> = {};
+const defaultGSvgAttrBindings = {} satisfies Svgs['defaultAttrBindings'];
 
 const gIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
@@ -14,7 +14,7 @@ const gIcon = (
 
 const gSvgs: Svgs = {
     icon: gIcon,
-    defaultAttrs: defaultGSvgAttrs,
+    defaultAttrBindings: defaultGSvgAttrBindings,
     displayName: 'Group',
 };
 

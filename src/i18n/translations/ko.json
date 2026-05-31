@@ -50,7 +50,6 @@
         },
         "svgs": {
             "title": "SVG 구성 요소",
-            "core": "연결 가능",
             "attrKey": "속성 키",
             "attrValue": "속성 값",
             "addTextChildren": "텍스트 콘텐츠 추가",

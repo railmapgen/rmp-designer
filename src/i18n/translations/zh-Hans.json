@@ -50,7 +50,6 @@
         },
         "svgs": {
             "title": "SVG 组件",
-            "core": "可被连接",
             "attrKey": "属性键",
             "attrValue": "属性值",
             "addTextChildren": "添加文本内容",

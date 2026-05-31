@@ -43,6 +43,9 @@ export interface Param {
      * @deprecated Kept only so older saves can be migrated to color components.
      */
     color?: Components;
+    /**
+     * @deprecated Legacy connectable SVG id. Station components no longer require it.
+     */
     core?: string;
 }
 

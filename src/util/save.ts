@@ -19,7 +19,7 @@ type ExportSvgsElem = Omit<SvgsElem, 'attrs' | 'children'> & {
     children?: ExportSvgsElem[];
 };
 
-type ExportParam = Omit<Param, 'svgs' | 'color' | 'version'> & {
+type ExportParam = Omit<Param, 'svgs' | 'color' | 'version' | 'core'> & {
     version: 4;
     svgs: ExportSvgsElem[];
 };
@@ -27,7 +27,7 @@ type ExportParam = Omit<Param, 'svgs' | 'color' | 'version'> & {
 export const prepareParamForExport = (param: Param): ExportParam => {
     const normalizedParam = normalizeParamForDesigner(param);
     const components = normalizedParam.components;
-    const { color: _color, svgs: _svgs, version: _version, ...rest } = normalizedParam;
+    const { color: _color, svgs: _svgs, version: _version, core: _core, ...rest } = normalizedParam;
     return {
         ...rest,
         version: SAVE_VERSION,
@@ -182,6 +182,7 @@ export const normalizeParamForDesigner = (param: Param): Param => {
         ...param,
         version: SAVE_VERSION,
         color: undefined,
+        core: undefined,
         components: nextComponents,
         svgs: normalizeSvgsForDesigner(param.svgs ?? [], nextComponents),
     };

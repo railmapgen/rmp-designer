@@ -17,6 +17,8 @@ import {
     setSvgViewBoxZoom,
 } from '../redux/runtime/runtime-slice';
 import { addSvg, setParam, setSvgs } from '../redux/param/param-slice';
+import { createLiteralAttrBinding, type AttrBinding } from '../constants/attr-binding';
+import type { Components } from '../constants/components';
 import { Id, SvgsElem } from '../constants/constants';
 import { SvgsType } from '../constants/svgs';
 import { getMousePosition, isMacClient, nanoid, pointerPosToSVGCoord, roundToNearestN } from '../util/helper';
@@ -27,6 +29,99 @@ import { updateTransformString } from '../util/parse';
 import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../util/svg-node-count';
 import { useSmoothPathEditor } from './smooth-path/use-smooth-path-editor';
 import { SmoothPathOverlay } from './smooth-path/smooth-path-overlay';
+import { compileAttrBindingToLegacyAttr, compileAttrRecord, legacyAttrToBinding } from '../util/attr-binding';
+
+type AttrPatch = {
+    attrs: Record<string, string>;
+    attrBindings: Record<string, AttrBinding>;
+};
+
+const numericLiteralValue = (value: unknown): number | undefined => {
+    if (typeof value !== 'number' && typeof value !== 'string') return undefined;
+    if (String(value).trim() === '') return undefined;
+    const numberValue = Number(value);
+    return Number.isNaN(numberValue) ? undefined : numberValue;
+};
+
+const getMovableNumericAttrValue = (elem: SvgsElem, key: 'x' | 'y', components: Components[]): number | undefined => {
+    const binding = elem.attrBindings?.[key];
+    if (binding) return binding.kind === 'literal' ? numericLiteralValue(binding.value) : undefined;
+
+    const attr = elem.attrs[key];
+    if (attr === undefined) return 0;
+
+    const legacyBinding = legacyAttrToBinding(attr, components);
+    return legacyBinding.kind === 'literal' ? numericLiteralValue(legacyBinding.value) : undefined;
+};
+
+const getMovedNumericAttrPatch = (
+    elem: SvgsElem,
+    key: 'x' | 'y',
+    delta: number,
+    components: Components[]
+): { attr: string; binding: AttrBinding } | undefined => {
+    const currentValue = getMovableNumericAttrValue(elem, key, components);
+    if (currentValue === undefined) return undefined;
+
+    const binding = createLiteralAttrBinding(roundToNearestN(currentValue + delta, 1));
+    return {
+        attr: compileAttrBindingToLegacyAttr(binding, components),
+        binding,
+    };
+};
+
+const hasSvgAttr = (elem: SvgsElem, key: string): boolean =>
+    elem.attrs[key] !== undefined || !!elem.attrBindings?.[key];
+
+const getMovedPositionPatch = (
+    elem: SvgsElem,
+    dx: number,
+    dy: number,
+    components: Components[]
+): AttrPatch | undefined => {
+    const xPatch = getMovedNumericAttrPatch(elem, 'x', dx, components);
+    const yPatch = getMovedNumericAttrPatch(elem, 'y', dy, components);
+    if (!xPatch && !yPatch) return undefined;
+
+    return {
+        attrs: {
+            ...(xPatch ? { x: xPatch.attr } : {}),
+            ...(yPatch ? { y: yPatch.attr } : {}),
+        },
+        attrBindings: {
+            ...(xPatch ? { x: xPatch.binding } : {}),
+            ...(yPatch ? { y: yPatch.binding } : {}),
+        },
+    };
+};
+
+const getMovedTransformPatch = (
+    elem: SvgsElem,
+    dx: number,
+    dy: number,
+    components: Components[]
+): AttrPatch | undefined => {
+    const binding = elem.attrBindings?.transform;
+    if (binding && binding.kind !== 'literal') return undefined;
+
+    const currentAttr = binding ? compileAttrBindingToLegacyAttr(binding, components) : elem.attrs.transform;
+    if (!currentAttr) return undefined;
+
+    const nextAttr = updateTransformString(currentAttr, dx, dy);
+    return {
+        attrs: { transform: nextAttr },
+        attrBindings: { transform: legacyAttrToBinding(nextAttr, components) },
+    };
+};
+
+const applyAttrPatch = (elem: SvgsElem, patch: AttrPatch | undefined): SvgsElem =>
+    patch
+        ? {
+              ...elem,
+              attrs: { ...elem.attrs, ...patch.attrs },
+              attrBindings: { ...(elem.attrBindings ?? {}), ...patch.attrBindings },
+          }
+        : elem;
 
 export default function SvgWrapper(props: { height?: number }) {
     const { height } = props;
@@ -67,17 +162,18 @@ export default function SvgWrapper(props: { height?: number }) {
             const id: Id = `id_${rand}`;
             const { x: svgX, y: svgY } = pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin);
             const type = mode.slice(5) as SvgsType;
-            const attr = structuredClone(svgs[type].defaultAttrs);
+            const attrBindings: Record<string, AttrBinding> = {
+                ...structuredClone(svgs[type].defaultAttrBindings),
+                x: createLiteralAttrBinding(roundToNearestN(svgX, 1)),
+                y: createLiteralAttrBinding(roundToNearestN(svgY, 1)),
+            };
 
             const svgElem: SvgsElem = {
                 id,
                 type,
                 label: nanoid(5),
-                attrs: {
-                    x: `1"${roundToNearestN(svgX, 1)}"`,
-                    y: `1"${roundToNearestN(svgY, 1)}"`,
-                    ...attr,
-                },
+                attrs: compileAttrRecord({}, attrBindings, components),
+                attrBindings,
             };
             dispatch(backupParam(param));
             dispatch(addSvg(svgElem));
@@ -156,19 +252,12 @@ export default function SvgWrapper(props: { height?: number }) {
                 if (selected.has(s.id)) {
                     const dx = ((x - offset.x) * svgViewBoxZoom) / 100;
                     const dy = ((y - offset.y) * svgViewBoxZoom) / 100;
-                    if (s.attrs.x || s.attrs.y || (!s.attrs.x && !s.attrs.y && !s.attrs.transform)) {
-                        const newX =
-                            s.attrs.x === undefined || !Number.isNaN(Number(s.attrs.x.slice(2, -1)))
-                                ? `1"${roundToNearestN(Number(s.attrs.x ? s.attrs.x.slice(2, -1) : 0) + dx, 1)}"`
-                                : s.attrs.x;
-                        const newY =
-                            s.attrs.y === undefined || !Number.isNaN(Number(s.attrs.y.slice(2, -1)))
-                                ? `1"${roundToNearestN(Number(s.attrs.y ? s.attrs.y.slice(2, -1) : 0) + dy, 1)}"`
-                                : s.attrs.y;
-                        return { ...s, attrs: { ...s.attrs, x: newX, y: newY } };
-                    } else if (s.attrs.transform) {
-                        const newTransform = updateTransformString(s.attrs.transform ?? '', dx, dy);
-                        return { ...s, attrs: { ...s.attrs, transform: newTransform } };
+                    const hasPositionAttr = hasSvgAttr(s, 'x') || hasSvgAttr(s, 'y');
+                    const hasTransformAttr = hasSvgAttr(s, 'transform');
+                    if (hasPositionAttr || (!hasPositionAttr && !hasTransformAttr)) {
+                        return applyAttrPatch(s, getMovedPositionPatch(s, dx, dy, components));
+                    } else if (hasTransformAttr) {
+                        return applyAttrPatch(s, getMovedTransformPatch(s, dx, dy, components));
                     } else {
                         return s;
                     }

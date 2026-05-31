@@ -1,4 +1,5 @@
 import { ComponentsType } from './components';
+import type { AttrBinding } from './attr-binding';
 
 export enum SvgsType {
     Rect = 'rect',
@@ -18,6 +19,6 @@ export interface Variable {
 
 export interface Svgs {
     icon: JSX.Element;
-    defaultAttrs: Record<string, string>;
+    defaultAttrBindings: Record<string, AttrBinding>;
     displayName: string;
 }

@@ -50,7 +50,6 @@
         },
         "svgs": {
             "title": "SVGコンポーネント",
-            "core": "接続可能",
             "attrKey": "属性キー",
             "attrValue": "属性値",
             "addTextChildren": "テキストコンテンツを追加",

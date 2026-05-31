@@ -1,10 +1,11 @@
 import React from 'react';
-import { Svgs } from '../../../constants/svgs';
+import { createLiteralAttrBinding } from '../../../constants/attr-binding';
+import type { Svgs } from '../../../constants/svgs';
 
-const defaultPolygonSvgAttrs: Record<string, string> = {
-    points: '1"8,6 16,6 20,13 16,20 8,20 4,13"',
-    fill: '1"#D6ABC1"',
-};
+const defaultPolygonSvgAttrBindings = {
+    points: createLiteralAttrBinding('8,6 16,6 20,13 16,20 8,20 4,13'),
+    fill: createLiteralAttrBinding('#D6ABC1'),
+} satisfies Svgs['defaultAttrBindings'];
 
 const polygonIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
@@ -14,7 +15,7 @@ const polygonIcon = (
 
 const polygonSvgs: Svgs = {
     icon: polygonIcon,
-    defaultAttrs: defaultPolygonSvgAttrs,
+    defaultAttrBindings: defaultPolygonSvgAttrBindings,
     displayName: 'Polygon',
 };
 

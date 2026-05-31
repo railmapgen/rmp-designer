@@ -1,7 +1,7 @@
 import React from 'react';
-import { Svgs } from '../../../constants/svgs';
+import type { Svgs } from '../../../constants/svgs';
 
-const defaultAnySvgAttrs: Record<string, string> = {};
+const defaultAnySvgAttrBindings = {} satisfies Svgs['defaultAttrBindings'];
 
 const anyIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
@@ -13,7 +13,7 @@ const anyIcon = (
 
 const anySvgs: Svgs = {
     icon: anyIcon,
-    defaultAttrs: defaultAnySvgAttrs,
+    defaultAttrBindings: defaultAnySvgAttrBindings,
     displayName: 'Any',
 };
 

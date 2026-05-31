@@ -19,7 +19,7 @@ import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdErro
 import type { AttrBinding } from '../../constants/attr-binding';
 import { Id, SvgsElem } from '../../constants/constants';
 import { SvgsType } from '../../constants/svgs';
-import { setCore, setSvgs } from '../../redux/param/param-slice';
+import { setSvgs } from '../../redux/param/param-slice';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import {
     addSelected,
@@ -140,15 +140,6 @@ export function DetailsSvgs() {
                     type: 'input',
                     value: s.type,
                     onChange: value => handleSetValue(s.id, 'type', value, currentPath),
-                },
-                {
-                    label: t('panel.svgs.core'),
-                    type: 'switch',
-                    isChecked: param.core ? param.core === s.id : false,
-                    onChange: value => {
-                        dispatch(setCore(value ? s.id : undefined));
-                    },
-                    hidden: param.type !== 'Station',
                 },
                 {
                     label: '',

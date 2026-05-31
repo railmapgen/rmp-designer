@@ -7,6 +7,11 @@ export type AttrBinding =
     | { kind: 'conditional'; if: AttrCondition; then: AttrBinding; else: AttrBinding }
     | { kind: 'legacy'; expression: string };
 
+export const createLiteralAttrBinding = (value: AttrLiteralValue): AttrBinding => ({
+    kind: 'literal',
+    value,
+});
+
 export type AttrConditionOperator = 'eq' | 'ne' | 'gt' | 'gte' | 'lt' | 'lte' | 'contains' | 'empty' | 'notEmpty';
 
 export type AttrConditionOperand =
