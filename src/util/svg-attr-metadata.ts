@@ -22,47 +22,10 @@ export interface SvgAttrMetadata {
 
 export type GroupedAttrKeys = Record<AttrGroup, string[]>;
 
-const attrLabels: Record<string, string> = {
-    x: 'X position',
-    y: 'Y position',
-    x1: 'Start X',
-    y1: 'Start Y',
-    x2: 'End X',
-    y2: 'End Y',
-    cx: 'Center X',
-    cy: 'Center Y',
-    dx: 'Horizontal offset',
-    dy: 'Vertical offset',
-    r: 'Radius',
-    rx: 'Horizontal corner radius',
-    ry: 'Vertical corner radius',
-    width: 'Width',
-    height: 'Height',
-    fill: 'Fill color',
-    stroke: 'Stroke color',
-    'stroke-width': 'Stroke width',
-    'stroke-dasharray': 'Dash pattern',
-    'stroke-linecap': 'Line cap',
-    'stroke-linejoin': 'Line join',
-    opacity: 'Opacity',
-    transform: 'Move / rotate / scale',
-    d: 'Path',
-    points: 'Point list',
-    _rmp_children_text: 'Text content',
-    'font-size': 'Font size',
-    'font-family': 'Font family',
-    'font-weight': 'Font weight',
-    'letter-spacing': 'Letter spacing',
-    'text-anchor': 'Horizontal alignment',
-    'dominant-baseline': 'Vertical alignment',
-    className: 'Text style',
-    viewBox: 'View box',
-    color: 'Color',
-    style: 'Style sheet',
-    filter: 'Filter',
-    mask: 'Mask',
-    'clip-path': 'Clip path',
-};
+export interface ResolvedAttrUiMeta extends AttrUiMeta {
+    title: string;
+    description: string;
+}
 
 const fallbackAttrLabel = (attr: string): string =>
     attr
@@ -164,11 +127,11 @@ const mergeUiMeta = (type: string, attr: string): Partial<AttrUiMeta> => {
     };
 };
 
-export const getAttrUiMeta = (type: string, attr: string): AttrUiMeta => {
+export const getAttrUiMeta = (type: string, attr: string): ResolvedAttrUiMeta => {
     const meta = mergeUiMeta(type, attr);
     return {
         group: meta.group ?? 'more',
-        title: meta.title ?? attrLabels[attr] ?? fallbackAttrLabel(attr),
+        title: meta.title ?? fallbackAttrLabel(attr),
         description: meta.description ?? fallbackDescription(type, attr),
         effectHint: meta.effectHint,
         unitHint: meta.unitHint,

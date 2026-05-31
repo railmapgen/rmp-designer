@@ -891,9 +891,7 @@ const AttrBindingRow = (props: {
     const isMore = meta.group === 'more';
     const title = t(attrTextKey(attrKey, 'title'), { defaultValue: meta.title });
     const description = t(attrTextKey(attrKey, 'description'), { defaultValue: meta.description });
-    const effectHint = meta.effectHint
-        ? t(attrTextKey(attrKey, 'effectHint'), { defaultValue: meta.effectHint })
-        : undefined;
+    const effectHint = t(attrTextKey(attrKey, 'effectHint'), { defaultValue: meta.effectHint ?? '' }) || undefined;
     const unitHint = meta.unitHint ? t(attrTextKey(attrKey, 'unitHint'), { defaultValue: meta.unitHint }) : undefined;
     const rowBg = useColorModeValue('white', 'gray.800');
     const descriptionColor = useColorModeValue('gray.600', 'gray.300');

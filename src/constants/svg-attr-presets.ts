@@ -36,8 +36,8 @@ export interface AttrControl {
 
 export interface AttrUiMeta {
     group: AttrGroup;
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
     effectHint?: string;
     unitHint?: string;
     examples?: string[];
@@ -74,7 +74,7 @@ const paintAttrs = [
     'stroke-linejoin',
     'opacity',
 ];
-const typographyAttrs = ['font-size', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline', 'className'];
+const typographyAttrs = ['font-size', 'className', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline'];
 const transformAttrs = ['transform', 'clip-path', 'mask', 'filter'];
 
 export const ATTR_GROUP_ORDER: AttrGroup[] = [
@@ -103,208 +103,154 @@ export const ATTR_GROUP_LABELS: Record<AttrGroup, string> = {
 
 const ui = (
     group: AttrGroup,
-    title: string,
-    description: string,
-    extra: Omit<Partial<AttrUiMeta>, 'group' | 'title' | 'description'> = {}
+    extra: Omit<Partial<AttrUiMeta>, 'group' | 'title' | 'description' | 'effectHint'> = {}
 ): AttrUiMeta => ({
     group,
-    title,
-    description,
     ...extra,
 });
 
 const commonUi: Record<string, AttrUiMeta> = {
-    x: ui('position', 'X position', 'Controls the horizontal position of a shape or text start point.', {
-        effectHint: 'Larger numbers move it to the right.',
+    x: ui('position', {
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'x',
     }),
-    y: ui('position', 'Y position', 'Controls the vertical position of a shape or text start point.', {
-        effectHint: 'Larger numbers move it down.',
+    y: ui('position', {
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'y',
     }),
-    x1: ui('position', 'Start X', 'Controls the horizontal position of the line start.', {
-        effectHint: 'Larger numbers move the start point to the right.',
+    x1: ui('position', {
         quickValues: [-40, 0, 20, 40],
         visualRole: 'x',
     }),
-    y1: ui('position', 'Start Y', 'Controls the vertical position of the line start.', {
-        effectHint: 'Larger numbers move the start point down.',
+    y1: ui('position', {
         quickValues: [-40, 0, 20, 40],
         visualRole: 'y',
     }),
-    x2: ui('position', 'End X', 'Controls the horizontal position of the line end.', {
-        effectHint: 'Larger numbers move the end point to the right.',
+    x2: ui('position', {
         quickValues: [-40, 0, 20, 40],
         visualRole: 'x',
     }),
-    y2: ui('position', 'End Y', 'Controls the vertical position of the line end.', {
-        effectHint: 'Larger numbers move the end point down.',
+    y2: ui('position', {
         quickValues: [-40, 0, 20, 40],
         visualRole: 'y',
     }),
-    cx: ui('position', 'Center X', 'Controls the horizontal position of a circle or ellipse center.', {
-        effectHint: 'Larger numbers move the center to the right.',
+    cx: ui('position', {
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'x',
     }),
-    cy: ui('position', 'Center Y', 'Controls the vertical position of a circle or ellipse center.', {
-        effectHint: 'Larger numbers move the center down.',
+    cy: ui('position', {
         quickValues: [-40, -20, 0, 20, 40],
         visualRole: 'y',
     }),
-    dx: ui('position', 'Horizontal offset', 'Moves text or child elements horizontally from their original position.', {
-        effectHint: 'Positive values move right; negative values move left.',
+    dx: ui('position', {
         quickValues: [-10, -5, 0, 5, 10],
         visualRole: 'x',
     }),
-    dy: ui('position', 'Vertical offset', 'Moves text or child elements vertically from their original position.', {
-        effectHint: 'Positive values move down; negative values move up.',
+    dy: ui('position', {
         quickValues: [-10, -5, 0, 5, 10],
         visualRole: 'y',
     }),
-    width: ui('size', 'Width', 'Controls the horizontal size of the shape.', {
-        effectHint: 'Larger numbers make it wider.',
+    width: ui('size', {
         quickValues: [8, 16, 24, 40, 80],
         visualRole: 'width',
     }),
-    height: ui('size', 'Height', 'Controls the vertical size of the shape.', {
-        effectHint: 'Larger numbers make it taller.',
+    height: ui('size', {
         quickValues: [8, 10, 16, 24, 40],
         visualRole: 'height',
     }),
-    r: ui('size', 'Radius', 'Controls the distance from the circle center to its edge.', {
-        effectHint: 'Larger numbers make the circle bigger.',
+    r: ui('size', {
         quickValues: [4, 6, 8, 10, 12],
         visualRole: 'radius',
     }),
-    rx: ui(
-        'shape',
-        'Horizontal corner radius',
-        'Controls a rectangle horizontal corner radius, or an ellipse horizontal radius.',
-        {
-            effectHint: 'For rectangles, larger numbers make side corners rounder.',
-            quickValues: [0, 2, 4, 8, 12],
-            visualRole: 'radius',
-        }
-    ),
-    ry: ui(
-        'shape',
-        'Vertical corner radius',
-        'Controls a rectangle vertical corner radius, or an ellipse vertical radius.',
-        {
-            effectHint: 'For rectangles, larger numbers make top and bottom corners rounder.',
-            quickValues: [0, 2, 4, 8, 12],
-            visualRole: 'radius',
-        }
-    ),
-    d: ui('shape', 'Path', 'Controls the outline of a path shape.', {
-        effectHint: 'Usually imported from SVG software and not edited by hand.',
+    rx: ui('shape', {
+        quickValues: [0, 2, 4, 8, 12],
+        visualRole: 'radius',
+    }),
+    ry: ui('shape', {
+        quickValues: [0, 2, 4, 8, 12],
+        visualRole: 'radius',
+    }),
+    d: ui('shape', {
         examples: ['M 0 0 L 20 0 L 20 10 Z'],
     }),
-    points: ui('shape', 'Point list', 'Controls the points used by a polyline or polygon.', {
-        effectHint: 'Each number pair is a point, for example 0,0 20,0.',
+    points: ui('shape', {
         examples: ['0,0 20,0 10,15'],
     }),
-    fill: ui('fill', 'Fill color', 'Controls the color inside the shape.', {
-        effectHint: 'Set to none for transparent fill.',
+    fill: ui('fill', {
         quickValues: ['#D6ABC1', '#000000', '#FFFFFF', 'none'],
         visualRole: 'fill',
     }),
-    color: ui('fill', 'Color', 'Base color inherited by child elements or text.', {
+    color: ui('fill', {
         quickValues: ['#000000', '#FFFFFF', '#C23A30'],
         visualRole: 'fill',
     }),
-    stroke: ui('stroke', 'Stroke color', 'Controls the outline or line color.', {
-        effectHint: 'Set to none to hide the stroke.',
+    stroke: ui('stroke', {
         quickValues: ['none', '#000000', '#FFFFFF', '#C23A30'],
         visualRole: 'stroke',
     }),
-    'stroke-width': ui('stroke', 'Stroke width', 'Controls how thick the outline is.', {
-        effectHint: 'Larger numbers make the stroke thicker; 0 means no stroke.',
+    'stroke-width': ui('stroke', {
         quickValues: [0, 1, 2, 4],
         visualRole: 'stroke',
     }),
-    'stroke-dasharray': ui('stroke', 'Dash pattern', 'Controls whether the outline or line is dashed.', {
-        effectHint: 'For example, 4 2 means a dash followed by a gap.',
+    'stroke-dasharray': ui('stroke', {
         quickValues: ['', '4 2', '8 4'],
         examples: ['4 2'],
         visualRole: 'stroke',
     }),
-    'stroke-linecap': ui('stroke', 'Line cap', 'Controls whether line ends are flat, round, or square.', {
-        effectHint: 'round often works well for transit maps.',
+    'stroke-linecap': ui('stroke', {
         quickValues: ['butt', 'round', 'square'],
         visualRole: 'stroke',
     }),
-    'stroke-linejoin': ui('stroke', 'Line join', 'Controls the shape where line segments meet.', {
-        effectHint: 'round makes corners smoother.',
+    'stroke-linejoin': ui('stroke', {
         quickValues: ['miter', 'round', 'bevel'],
         visualRole: 'stroke',
     }),
-    _rmp_children_text: ui('text', 'Text content', 'Controls the content shown by this text element.', {
+    _rmp_children_text: ui('text', {
         examples: ['Station name', '{Station name}'],
         visualRole: 'text',
     }),
-    'font-size': ui('text', 'Font size', 'Controls text size.', {
-        effectHint: 'Larger numbers make text larger.',
+    'font-size': ui('text', {
         quickValues: [6, 8, 10, 12, 16],
         visualRole: 'text',
     }),
-    'font-family': ui('text', 'Font family', 'Controls the font family used by text.', {
-        effectHint: 'Usually prefer a text style class instead of a direct font name.',
+    'font-family': ui('text', {
         visualRole: 'text',
     }),
-    'font-weight': ui('text', 'Font weight', 'Controls text weight.', {
+    'font-weight': ui('text', {
         quickValues: ['normal', 'bold', 400, 700],
         visualRole: 'text',
     }),
-    'letter-spacing': ui('text', 'Letter spacing', 'Controls spacing between letters.', {
-        effectHint: 'Negative values tighten text; positive values loosen text.',
+    'letter-spacing': ui('text', {
         quickValues: [-2, -1, 0, 1, 2],
         visualRole: 'text',
     }),
-    'text-anchor': ui('text', 'Horizontal alignment', 'Controls how text aligns relative to its X position.', {
-        effectHint: 'middle centers text on the X position.',
+    'text-anchor': ui('text', {
         quickValues: ['start', 'middle', 'end'],
         visualRole: 'text',
     }),
-    'dominant-baseline': ui('text', 'Vertical alignment', 'Controls how text aligns relative to its Y position.', {
-        effectHint: 'middle or central is often used to center text inside a shape.',
+    'dominant-baseline': ui('text', {
         quickValues: ['auto', 'middle', 'central'],
         visualRole: 'text',
     }),
-    className: ui('text', 'Text style', 'Chooses a built-in RMP text style.', {
-        effectHint: 'Used to match font styles for different cities or languages.',
+    className: ui('text', {
         visualRole: 'text',
     }),
-    transform: ui('transform', 'Move / rotate / scale', 'Applies a transform to the whole shape.', {
-        effectHint: 'For example, translate(10, 0) moves the shape to the right.',
+    transform: ui('transform', {
         examples: ['translate(10, 0)', 'rotate(45)', 'scale(1.2)'],
         visualRole: 'transform',
     }),
-    viewBox: ui('transform', 'View box', 'Controls the visible range of the SVG coordinate system.', {
-        effectHint: 'Usually used on a full SVG container and not edited casually.',
+    viewBox: ui('transform', {
         examples: ['0 0 100 100'],
         visualRole: 'transform',
     }),
-    opacity: ui('effects', 'Opacity', 'Controls how transparent the whole shape is.', {
-        effectHint: '0 is fully transparent; 1 is fully opaque.',
+    opacity: ui('effects', {
         quickValues: [0, 0.25, 0.5, 0.75, 1],
         visualRole: 'opacity',
     }),
-    'clip-path': ui('more', 'Clip path', 'Uses another shape to clip part of the current shape.', {
-        effectHint: 'Usually imported from SVG and can be left unchanged.',
-    }),
-    mask: ui('more', 'Mask', 'Uses a mask to control which parts of the shape are visible.', {
-        effectHint: 'Usually imported from SVG and can be left unchanged.',
-    }),
-    filter: ui('more', 'Filter', 'Adds SVG effects such as shadows or blur.', {
-        effectHint: 'RMP compatibility depends on the filter content.',
-    }),
-    style: ui('more', 'Style sheet', 'Keeps inline style content imported from SVG.', {
-        effectHint: 'Usually imported from SVG and edited only for fine tuning.',
-    }),
+    'clip-path': ui('more'),
+    mask: ui('more'),
+    filter: ui('more'),
+    style: ui('more'),
 };
 
 const commonControls: Record<string, AttrControl> = {

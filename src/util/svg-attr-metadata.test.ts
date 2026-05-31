@@ -4,10 +4,12 @@ describe('svg attr metadata', () => {
     it('returns visual metadata for known attrs', () => {
         const meta = getAttrUiMeta('rect', 'stroke-width');
 
-        expect(meta.title).toBe('Stroke width');
+        expect(meta.title).toBe('Stroke Width');
         expect(meta.group).toBe('stroke');
-        expect(meta.description).toContain('outline');
+        expect(meta.description).toContain('number');
+        expect(meta.effectHint).toBeUndefined();
         expect(meta.quickValues).toEqual([0, 1, 2, 4]);
+        expect(meta.visualRole).toBe('stroke');
     });
 
     it('falls back unknown attrs into the more group', () => {
