@@ -25,6 +25,8 @@ import { CreateSvgs } from './svgs/createSvgs';
 import svgs from './svgs/module/svgs';
 import { updateTransformString } from '../util/parse';
 import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../util/svg-node-count';
+import { useSmoothPathEditor } from './smooth-path/use-smooth-path-editor';
+import { SmoothPathOverlay } from './smooth-path/smooth-path-overlay';
 
 export default function SvgWrapper(props: { height?: number }) {
     const { height } = props;
@@ -45,8 +47,19 @@ export default function SvgWrapper(props: { height?: number }) {
     const rootPrefixes = React.useMemo(() => new Map(param.svgs.map(s => [s.id, [s.id] as Id[]])), [param.svgs]);
     const canvasBackground =
         canvasColor === 'dark' ? 'var(--chakra-colors-gray-800)' : canvasColor === 'white' ? 'white' : '';
+    const smoothPathEditor = useSmoothPathEditor({
+        param,
+        components,
+        selected,
+        mode,
+        active,
+        svgViewBoxZoom,
+        svgViewBoxMin,
+    });
 
     const handleBackgroundDown = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        if (smoothPathEditor.handleBackgroundDown(e)) return;
+
         const { x, y } = getMousePosition(e);
         if (mode.startsWith('svgs-')) {
             dispatch(setMode('free'));
@@ -81,6 +94,8 @@ export default function SvgWrapper(props: { height?: number }) {
         }
     });
     const handleBackgroundMove = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        if (smoothPathEditor.handleBackgroundMove(e)) return;
+
         const { x, y } = getMousePosition(e);
         if (active === 'background') {
             dispatch(
@@ -92,6 +107,8 @@ export default function SvgWrapper(props: { height?: number }) {
         }
     });
     const handleBackgroundUp = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        if (smoothPathEditor.handleBackgroundUp(e)) return;
+
         if (active === 'background' && !e.shiftKey) {
             dispatch(setActive(undefined)); // svg mouse event only
         }
@@ -214,6 +231,10 @@ export default function SvgWrapper(props: { height?: number }) {
         // tabIndex need to be on the element to make onKeyDown worked
         // https://www.delftstack.com/howto/react/onkeydown-react/
         if (isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
+            if (smoothPathEditor.handleKeyDelete()) {
+                e.preventDefault();
+                return;
+            }
             // remove all the selected nodes and edges
             if (selected.size > 0) {
                 const dfsRemove = (data: SvgsElem[]): SvgsElem[] => {
@@ -281,6 +302,15 @@ export default function SvgWrapper(props: { height?: number }) {
         >
             <rect id="canvas-x" x={-200000} y={-1} width={400000} height={2} fill="black" />
             <rect id="canvas-y" x={-1} y={-200000} width={2} height={400000} fill="black" />
+            {smoothPathEditor.drawingPreviewPath && (
+                <path
+                    d={smoothPathEditor.drawingPreviewPath}
+                    fill="#D6ABC1"
+                    opacity={0.45}
+                    stroke="none"
+                    pointerEvents="none"
+                />
+            )}
             {param.svgs.map(s => {
                 return (
                     <CreateSvgs
@@ -295,6 +325,14 @@ export default function SvgWrapper(props: { height?: number }) {
                     />
                 );
             })}
+            {svgTreeEditable && (
+                <SmoothPathOverlay
+                    selectedSmoothPath={smoothPathEditor.selectedSmoothPath}
+                    handleSize={smoothPathEditor.handleSize}
+                    handleSelection={smoothPathEditor.handleSelection}
+                    handlers={smoothPathEditor.overlayHandlers}
+                />
+            )}
         </svg>
     );
 }

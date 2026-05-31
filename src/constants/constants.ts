@@ -114,7 +114,7 @@ export const normalizeTheme = (value: unknown, fallback: Theme = defaultColorThe
     return [value[0] as CityCode, value[1], value[2] as ColourHex, monoColour];
 };
 
-export type RuntimeMode = 'free' | `svgs-${SvgsType}`;
+export type RuntimeMode = 'free' | 'draw-smooth-path' | `svgs-${SvgsType}`;
 
 export type RuntimeActive = 'background' | Id | undefined;
 

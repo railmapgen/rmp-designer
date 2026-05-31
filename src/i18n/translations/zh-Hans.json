@@ -42,7 +42,8 @@
     },
     "panel": {
         "tools": {
-            "showLess": "显示更少"
+            "showLess": "显示更少",
+            "smoothPath": "圆滑路径"
         },
         "details": {
             "header": "RMP 详情面板"
@@ -167,7 +168,23 @@
             "tipsA1": "点击右上角的",
             "tipsA2": "以上传你的 SVG 图形",
             "tipsB1": "点击左侧的图标",
-            "tipsB2": "再点击画布以添加一个 SVG 组件"
+            "tipsB2": "再点击画布以添加一个 SVG 组件",
+            "smoothPath": {
+                "title": "圆滑路径",
+                "smoothing": "平滑度",
+                "startCap": "起点端帽",
+                "endCap": "终点端帽",
+                "arrowLength": "箭头长度",
+                "arrowWidth": "箭头宽度",
+                "widthStops": "粗细控制点",
+                "widthStopsHint": "位置表示路径上的百分比。",
+                "addWidthStop": "添加粗细点",
+                "caps": {
+                    "round": "圆头",
+                    "flat": "平头",
+                    "arrow": "箭头"
+                }
+            }
         },
         "components": {
             "title": "变量",

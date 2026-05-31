@@ -42,7 +42,8 @@
     },
     "panel": {
         "tools": {
-            "showLess": "顯示更少"
+            "showLess": "顯示更少",
+            "smoothPath": "圓滑路徑"
         },
         "details": {
             "header": "RMP 詳情面板"

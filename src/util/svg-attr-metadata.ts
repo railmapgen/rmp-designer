@@ -147,9 +147,10 @@ export const getGroupedAttrKeys = (
     attrBindings: Record<string, AttrBinding> | undefined
 ): GroupedAttrKeys => {
     const metadata = getSvgAttrMetadata(type, [...Object.keys(attrs), ...Object.keys(attrBindings ?? {})]);
+    const visibleAttrs = new Set(metadata.allAttrs);
     const keys = Array.from(
         new Set([...metadata.recommendedAttrs, ...Object.keys(attrs), ...Object.keys(attrBindings ?? {})])
-    );
+    ).filter(key => visibleAttrs.has(key));
     const grouped = ATTR_GROUP_ORDER.reduce((acc, group) => ({ ...acc, [group]: [] }), {} as GroupedAttrKeys);
 
     keys.forEach(key => {

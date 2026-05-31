@@ -42,7 +42,8 @@
     },
     "panel": {
         "tools": {
-            "showLess": "少なく表示"
+            "showLess": "少なく表示",
+            "smoothPath": "スムーズパス"
         },
         "details": {
             "header": "RMP詳細パネル"

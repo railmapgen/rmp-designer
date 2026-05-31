@@ -369,6 +369,7 @@ const hiddenAttrs = [
     'onpointerdown',
     'onpointermove',
     'onpointerup',
+    'data-rmp-smooth-path',
 ];
 
 export const DEFAULT_ATTR_CONTROL: AttrControl = { type: 'text' };

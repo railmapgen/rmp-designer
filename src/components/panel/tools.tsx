@@ -1,7 +1,7 @@
 import { Button, Flex, SystemStyleObject, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdExpandLess, MdExpandMore } from 'react-icons/md';
+import { MdExpandLess, MdExpandMore, MdGesture } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setMode } from '../../redux/runtime/runtime-slice';
 import { SvgsType } from '../../constants/svgs';
@@ -29,6 +29,7 @@ export const ToolsPanel = () => {
         else setIsTextShown(false);
     };
     const handleClick = (type: SvgsType) => dispatch(setMode(mode === 'free' ? `svgs-${type}` : 'free'));
+    const handleSmoothPathClick = () => dispatch(setMode(mode === 'draw-smooth-path' ? 'free' : 'draw-smooth-path'));
 
     return (
         <Flex
@@ -57,6 +58,15 @@ export const ToolsPanel = () => {
             </Button>
 
             <Flex direction="column" overflow="auto">
+                <Button
+                    aria-label="Smooth path"
+                    leftIcon={<MdGesture size={40} />}
+                    onClick={handleSmoothPathClick}
+                    variant={mode === 'draw-smooth-path' ? 'solid' : 'outline'}
+                    sx={buttonStyle}
+                >
+                    {isTextShown ? t('panel.tools.smoothPath', { defaultValue: 'Smooth path' }) : undefined}
+                </Button>
                 {Object.values(SvgsType).map(type => (
                     <Button
                         key={type}

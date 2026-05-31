@@ -36,6 +36,19 @@ describe('svg attr metadata', () => {
         expect(grouped.more).toContain('data-custom');
     });
 
+    it('hides smooth path editor metadata from the visual attr list', () => {
+        const grouped = getGroupedAttrKeys(
+            'path',
+            {
+                d: '1"M 0 0 L 10 0"',
+                'data-rmp-smooth-path': '1"{}"',
+            },
+            undefined
+        );
+
+        expect(Object.values(grouped).flat()).not.toContain('data-rmp-smooth-path');
+    });
+
     it('uses the block editor control for visible text content', () => {
         expect(getAttrControl('text', '_rmp_children_text').type).toBe('text-content');
         expect(getAttrControl('tspan', '_rmp_children_text').type).toBe('text-content');

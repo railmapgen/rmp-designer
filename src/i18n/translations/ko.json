@@ -42,7 +42,8 @@
     },
     "panel": {
         "tools": {
-            "showLess": "간단히 보기"
+            "showLess": "간단히 보기",
+            "smoothPath": "부드러운 경로"
         },
         "details": {
             "header": "RMP 세부 정보 패널"

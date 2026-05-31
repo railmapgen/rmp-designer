@@ -42,7 +42,8 @@
     },
     "panel": {
         "tools": {
-            "showLess": "Show less"
+            "showLess": "Show less",
+            "smoothPath": "Smooth path"
         },
         "details": {
             "header": "RMP Details Panel"
@@ -167,7 +168,23 @@
             "tipsA1": "Click the upper right corner",
             "tipsA2": "to upload your SVG graphic",
             "tipsB1": "Click left side icon",
-            "tipsB2": "and then click the canvas to add a SVG component."
+            "tipsB2": "and then click the canvas to add a SVG component.",
+            "smoothPath": {
+                "title": "Smooth path",
+                "smoothing": "Smoothing",
+                "startCap": "Start cap",
+                "endCap": "End cap",
+                "arrowLength": "Arrow length",
+                "arrowWidth": "Arrow width",
+                "widthStops": "Width stops",
+                "widthStopsHint": "Position is a percentage along the path.",
+                "addWidthStop": "Add width stop",
+                "caps": {
+                    "round": "Round",
+                    "flat": "Flat",
+                    "arrow": "Arrow"
+                }
+            }
         },
         "components": {
             "title": "Variables",
