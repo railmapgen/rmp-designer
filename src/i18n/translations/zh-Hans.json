@@ -194,6 +194,9 @@
             "defaultColor": "默认颜色",
             "options": "选项",
             "optionsHelper": "每行一个选项。",
+            "minimum": "最小值",
+            "maximum": "最大值",
+            "step": "步长",
             "types": {
                 "text": "单行文本",
                 "textarea": "多行文本",

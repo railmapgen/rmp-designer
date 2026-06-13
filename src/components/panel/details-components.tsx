@@ -287,7 +287,7 @@ export function DetailsComponents() {
                 hidden: type !== 'option',
             },
             {
-                label: 'Minimum',
+                label: t('panel.components.minimum', { defaultValue: 'Minimum' }),
                 type: 'input',
                 value: constraints?.min?.toString() ?? '',
                 onChange: v => {
@@ -308,7 +308,7 @@ export function DetailsComponents() {
                 hidden: type !== 'number',
             },
             {
-                label: 'Maximum',
+                label: t('panel.components.maximum', { defaultValue: 'Maximum' }),
                 type: 'input',
                 value: constraints?.max?.toString() ?? '',
                 onChange: v => {
@@ -329,7 +329,7 @@ export function DetailsComponents() {
                 hidden: type !== 'number',
             },
             {
-                label: 'Step',
+                label: t('panel.components.step', { defaultValue: 'Step' }),
                 type: 'input',
                 value: constraints?.step?.toString() ?? '1',
                 onChange: v => {

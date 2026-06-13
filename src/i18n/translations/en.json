@@ -194,6 +194,9 @@
             "defaultColor": "Default color",
             "options": "Options",
             "optionsHelper": "Enter one option per line.",
+            "minimum": "Minimum",
+            "maximum": "Maximum",
+            "step": "Step",
             "types": {
                 "text": "Text",
                 "textarea": "Text area",

@@ -82,7 +82,12 @@ const DesignerRoot = () => {
                     setIsResizing(false);
                     event.currentTarget.releasePointerCapture(event.pointerId);
                 }}
-                onPointerCancel={() => setIsResizing(false)}
+                onPointerCancel={event => {
+                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                        event.currentTarget.releasePointerCapture(event.pointerId);
+                    }
+                    setIsResizing(false);
+                }}
                 role="separator"
                 aria-orientation="horizontal"
                 aria-valuemin={minTopHeight}

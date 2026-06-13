@@ -59,7 +59,7 @@ export const ToolsPanel = () => {
 
             <Flex direction="column" overflow="auto">
                 <Button
-                    aria-label="Smooth path"
+                    aria-label={t('panel.tools.smoothPath', { defaultValue: 'Smooth path' })}
                     leftIcon={<MdGesture size={40} />}
                     onClick={handleSmoothPathClick}
                     variant={mode === 'draw-smooth-path' ? 'solid' : 'outline'}

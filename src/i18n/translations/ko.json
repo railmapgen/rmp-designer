@@ -178,6 +178,9 @@
             "defaultColor": "기본 색상",
             "options": "옵션",
             "optionsHelper": "한 줄에 옵션 하나씩 입력하세요.",
+            "minimum": "최소",
+            "maximum": "최대",
+            "step": "단계",
             "types": {
                 "text": "텍스트",
                 "textarea": "여러 줄 텍스트",

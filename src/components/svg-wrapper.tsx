@@ -163,6 +163,11 @@ export default function SvgWrapper(props: { height?: number }) {
     });
 
     const handleBackgroundDown = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        if (!svgTreeEditable && (mode.startsWith('svgs-') || mode === 'draw-smooth-path')) {
+            dispatch(setMode('free'));
+            return;
+        }
+
         if (smoothPathEditor.handleBackgroundDown(e)) return;
 
         const { x, y } = getMousePosition(e);

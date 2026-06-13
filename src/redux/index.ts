@@ -42,11 +42,11 @@ const flushPersistedLocalState = () => {
     }
 
     if (pendingParam !== undefined) {
-        localStorage.setItem('rmp-designer__param', JSON.stringify(pendingParam));
+        window.localStorage.setItem('rmp-designer__param', JSON.stringify(pendingParam));
         pendingParam = undefined;
     }
     if (pendingApp !== undefined) {
-        localStorage.setItem('rmp-designer__app', JSON.stringify(pendingApp));
+        window.localStorage.setItem('rmp-designer__app', JSON.stringify(pendingApp));
         pendingApp = undefined;
     }
 };

@@ -178,6 +178,9 @@
             "defaultColor": "デフォルト色",
             "options": "選択肢",
             "optionsHelper": "1 行に 1 つの選択肢を入力します。",
+            "minimum": "最小",
+            "maximum": "最大",
+            "step": "ステップ",
             "types": {
                 "text": "テキスト",
                 "textarea": "複数行テキスト",
