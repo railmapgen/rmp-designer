@@ -53,6 +53,8 @@
             "attrKey": "屬性鍵",
             "attrValue": "屬性值",
             "addTextChildren": "添加文本內容",
+            "polygonEditHint": "拖曳頂點可移動頂點位置，按兩下邊可新增頂點，右擊頂點可刪除該頂點。",
+            "smoothPathEditHint": "拖曳頂點可移動頂點位置，按兩下路徑可新增頂點，按兩下頂點可在同位置新增寬度控制點，右擊頂點可刪除該頂點。",
             "complexMode": {
                 "title": "複雜 SVG 已進入不可編輯模式",
                 "summary": "這個 SVG 包含 {{count}} 個元素，超過 {{limit}} 個元素的逐節點編輯上限。",

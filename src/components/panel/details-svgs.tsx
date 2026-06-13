@@ -11,6 +11,7 @@ import {
     Heading,
     HStack,
     Text,
+    useColorModeValue,
 } from '@chakra-ui/react';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
@@ -28,7 +29,7 @@ import {
     removeGlobalAlert,
     removeSelected,
 } from '../../redux/runtime/runtime-slice';
-import { applySmoothPathModelToSvgElem } from '../../util/smooth-path';
+import { applySmoothPathModelToSvgElem, SMOOTH_PATH_DATA_ATTR } from '../../util/smooth-path';
 import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../../util/svg-node-count';
 import { getDefaultAttrBinding } from '../../util/svg-attr-metadata';
 import { supportsChildren } from '../../util/svgTagWithChildren';
@@ -48,6 +49,9 @@ export function DetailsSvgs() {
     const variableOptions = React.useMemo(() => createVariableOptions(components, t), [components, t]);
     const svgNodeCount = React.useMemo(() => countSvgNodes(param.svgs), [param.svgs]);
     const isComplexSvg = svgNodeCount > MAX_EDITABLE_SVG_NODE_COUNT;
+    const svgEditHintBg = useColorModeValue('blue.50', 'blue.900');
+    const svgEditHintBorder = useColorModeValue('blue.200', 'blue.700');
+    const svgEditHintColor = useColorModeValue('blue.800', 'blue.100');
 
     const handleMove = (index: number, d: number, path: number[]) => {
         const dfsMove = (data: SvgsElem[], path: number[], p: number): SvgsElem[] => {
@@ -128,6 +132,13 @@ export function DetailsSvgs() {
         svgs.toReversed().map((s, index) => {
             const i = svgs.length - index - 1;
             const currentPath = [...path, i];
+            const editHintKey =
+                s.type === 'polygon'
+                    ? 'panel.svgs.polygonEditHint'
+                    : s.type === 'path' &&
+                        (SMOOTH_PATH_DATA_ATTR in s.attrs || SMOOTH_PATH_DATA_ATTR in (s.attrBindings ?? {}))
+                      ? 'panel.svgs.smoothPathEditHint'
+                      : undefined;
             const field: RmgFieldsField[] = [
                 {
                     label: t('panel.common.label'),
@@ -233,6 +244,22 @@ export function DetailsSvgs() {
                                     {isExpanded && (
                                         <>
                                             <RmgFields fields={field} />
+                                            {editHintKey && (
+                                                <Box
+                                                    borderWidth="1px"
+                                                    borderColor={svgEditHintBorder}
+                                                    borderRadius="md"
+                                                    bg={svgEditHintBg}
+                                                    px={3}
+                                                    py={2}
+                                                    mt={1}
+                                                    mb={4}
+                                                >
+                                                    <Text fontSize="sm" color={svgEditHintColor}>
+                                                        {t(editHintKey)}
+                                                    </Text>
+                                                </Box>
+                                            )}
                                             <SmoothPathPanel
                                                 elem={s}
                                                 components={components}

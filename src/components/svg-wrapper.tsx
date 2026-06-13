@@ -30,6 +30,8 @@ import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../util/svg-node-cou
 import { useSmoothPathEditor } from './smooth-path/use-smooth-path-editor';
 import { SmoothPathOverlay } from './smooth-path/smooth-path-overlay';
 import { compileAttrBindingToLegacyAttr, compileAttrRecord, legacyAttrToBinding } from '../util/attr-binding';
+import { usePolygonEditor } from './polygon/use-polygon-editor';
+import { PolygonOverlay } from './polygon/polygon-overlay';
 
 type AttrPatch = {
     attrs: Record<string, string>;
@@ -148,6 +150,14 @@ export default function SvgWrapper(props: { height?: number }) {
         selected,
         mode,
         active,
+        svgViewBoxZoom,
+        svgViewBoxMin,
+    });
+    const polygonEditor = usePolygonEditor({
+        param,
+        components,
+        selected,
+        mode,
         svgViewBoxZoom,
         svgViewBoxMin,
     });
@@ -324,6 +334,10 @@ export default function SvgWrapper(props: { height?: number }) {
                 e.preventDefault();
                 return;
             }
+            if (polygonEditor.handleKeyDelete()) {
+                e.preventDefault();
+                return;
+            }
             // remove all the selected nodes and edges
             if (selected.size > 0) {
                 const dfsRemove = (data: SvgsElem[]): SvgsElem[] => {
@@ -415,12 +429,20 @@ export default function SvgWrapper(props: { height?: number }) {
                 );
             })}
             {svgTreeEditable && (
-                <SmoothPathOverlay
-                    selectedSmoothPath={smoothPathEditor.selectedSmoothPath}
-                    handleSize={smoothPathEditor.handleSize}
-                    handleSelection={smoothPathEditor.handleSelection}
-                    handlers={smoothPathEditor.overlayHandlers}
-                />
+                <>
+                    <SmoothPathOverlay
+                        selectedSmoothPath={smoothPathEditor.selectedSmoothPath}
+                        handleSize={smoothPathEditor.handleSize}
+                        handleSelection={smoothPathEditor.handleSelection}
+                        handlers={smoothPathEditor.overlayHandlers}
+                    />
+                    <PolygonOverlay
+                        selectedPolygon={polygonEditor.selectedPolygon}
+                        handleSize={polygonEditor.handleSize}
+                        handleSelection={polygonEditor.handleSelection}
+                        handlers={polygonEditor.overlayHandlers}
+                    />
+                </>
             )}
         </svg>
     );

@@ -53,6 +53,8 @@
             "attrKey": "Attributes key",
             "attrValue": "Attributes value",
             "addTextChildren": "Add text content",
+            "polygonEditHint": "Drag a vertex to move it. Double-click an edge to add a vertex. Right-click a vertex to delete it.",
+            "smoothPathEditHint": "Drag a vertex to move it. Double-click the path to add a vertex. Double-click a vertex to add a width control point at the same position. Right-click a vertex to delete it.",
             "complexMode": {
                 "title": "Complex SVG is in read-only mode",
                 "summary": "This SVG contains {{count}} elements, above the {{limit}} element limit for per-node editing.",
