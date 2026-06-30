@@ -24,9 +24,6 @@ export const isMacClient = navigator.platform.startsWith('Mac');
 
 export const getErrorList = (globalAlerts: Map<string, string>, param: Param): Array<string[]> => {
     const list: Array<string[]> = [];
-    if (param.type === 'Station' && !param.core) {
-        list.push(['Configuration', 'A station need to be connected.']);
-    }
     globalAlerts.forEach((val, key) => {
         list.push([key, val]);
     });

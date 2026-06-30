@@ -11,11 +11,16 @@ import {
     Heading,
     HStack,
     Text,
+    useColorModeValue,
 } from '@chakra-ui/react';
-import { RmgAutoComplete, RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
+import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdArrowDownward, MdArrowUpward, MdClose, MdDriveFileMoveOutline, MdError, MdUpload } from 'react-icons/md';
+import type { AttrBinding } from '../../constants/attr-binding';
+import { Id, SvgsElem } from '../../constants/constants';
+import { SvgsType } from '../../constants/svgs';
+import { setSvgs } from '../../redux/param/param-slice';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import {
     addSelected,
@@ -24,26 +29,29 @@ import {
     removeGlobalAlert,
     removeSelected,
 } from '../../redux/runtime/runtime-slice';
-import { setCore, setSvgs } from '../../redux/param/param-slice';
-import { Id, SvgsElem } from '../../constants/constants';
+import { applySmoothPathModelToSvgElem, SMOOTH_PATH_DATA_ATTR } from '../../util/smooth-path';
+import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../../util/svg-node-count';
+import { getDefaultAttrBinding } from '../../util/svg-attr-metadata';
 import { supportsChildren } from '../../util/svgTagWithChildren';
-import { MoveChildrenModal } from './details-svgs-move-children';
 import svgs from '../svgs/module/svgs';
-import { SvgsType } from '../../constants/svgs';
-import { getValueSelect, getValueSelectValue } from './details-svgs-select';
-
-interface AttrVarList {
-    id: string;
-    value: string;
-}
-
-type AttrVarMode = 'value' | 'var' | 'advanced';
+import { ComplexSvgNotice } from './details-svgs/complex-svg-notice';
+import { SmoothPathPanel } from './details-svgs/smooth-path-panel';
+import { createVariableOptions, removeAttrBinding, updateAttrBinding, updateSvgAtPath } from '../../util/svg-panel';
+import { VisualAttrPanel } from './details-svgs/visual-attr-panel';
+import { MoveChildrenModal } from './details-svgs-move-children';
 
 export function DetailsSvgs() {
     const dispatch = useRootDispatch();
     const param = useRootSelector(store => store.param);
     const { globalAlerts, selected } = useRootSelector(store => store.runtime);
     const { t } = useTranslation();
+    const components = React.useMemo(() => param.components, [param.components]);
+    const variableOptions = React.useMemo(() => createVariableOptions(components, t), [components, t]);
+    const svgNodeCount = React.useMemo(() => countSvgNodes(param.svgs), [param.svgs]);
+    const isComplexSvg = svgNodeCount > MAX_EDITABLE_SVG_NODE_COUNT;
+    const svgEditHintBg = useColorModeValue('blue.50', 'blue.900');
+    const svgEditHintBorder = useColorModeValue('blue.200', 'blue.700');
+    const svgEditHintColor = useColorModeValue('blue.800', 'blue.100');
 
     const handleMove = (index: number, d: number, path: number[]) => {
         const dfsMove = (data: SvgsElem[], path: number[], p: number): SvgsElem[] => {
@@ -72,32 +80,32 @@ export function DetailsSvgs() {
 
     const handleSetValue = (
         id: string,
-        key: 'type' | 'label' | 'attrs',
-        value: string | Record<string, string>,
+        key: 'type' | 'label' | 'attrs' | 'attrBindings',
+        value: string | Record<string, string> | Record<string, AttrBinding>,
         path: number[]
     ) => {
-        const dfsChangeValue = (
-            data: SvgsElem,
-            key: 'type' | 'label' | 'attrs',
-            value: string | Record<string, string>,
-            index: number
-        ): SvgsElem => {
-            if (index >= path.length) {
-                if (key === 'attrs') {
-                    return { ...data, attrs: value as Record<string, string> };
-                } else {
-                    return { ...data, [key]: value as string };
-                }
-            }
-            const newChildren = structuredClone(data.children!);
-            newChildren[path[index]] = dfsChangeValue(data.children![path[index]], key, value, index + 1);
-            return { ...data, children: newChildren };
-        };
-        const newSvgs = structuredClone(param.svgs);
-        newSvgs[path[0]] = dfsChangeValue(newSvgs[path[0]], key, value, 1);
         dispatch(backupParam(param));
-        dispatch(setSvgs(newSvgs));
+        dispatch(
+            setSvgs(
+                updateSvgAtPath(param.svgs, path, data => {
+                    if (key === 'attrs') return { ...data, attrs: value as Record<string, string> };
+                    if (key === 'attrBindings') return { ...data, attrBindings: value as Record<string, AttrBinding> };
+                    return { ...data, [key]: value as string };
+                })
+            )
+        );
         dispatch(removeGlobalAlert(id));
+    };
+
+    const handleSetAttrsAndBindings = (
+        elem: SvgsElem,
+        attrs: Record<string, string>,
+        attrBindings: Record<string, AttrBinding>,
+        path: number[]
+    ) => {
+        dispatch(backupParam(param));
+        dispatch(setSvgs(updateSvgAtPath(param.svgs, path, data => ({ ...data, attrs, attrBindings }))));
+        dispatch(removeGlobalAlert(elem.id));
     };
 
     const handleRemove = (id: string, path: number[]) => {
@@ -120,43 +128,29 @@ export function DetailsSvgs() {
     const [moveChildrenId, setMoveChildrenId] = React.useState<number[]>([]);
     const [moveChildrenElem, setMoveChildrenElem] = React.useState<SvgsElem>();
 
-    const [varList, setVarList] = React.useState<AttrVarList[]>([]);
-    React.useEffect(() => {
-        const list = param.components.map(c => {
-            return { id: c.label, value: c.label };
-        });
-        if (param.color) {
-            list.push({ id: 'color[2]', value: 'color[2]' });
-            list.push({ id: 'color[3]', value: 'color[3]' });
-        }
-        list.push({ id: 'undefined', value: 'undefined' });
-        setVarList(list);
-    }, [param.components, param.color]);
-
     const dfsField = (svgs: SvgsElem[], path: number[], father: Id) =>
         svgs.toReversed().map((s, index) => {
-            const i = svgs.length - index - 1; // reversed index
+            const i = svgs.length - index - 1;
+            const currentPath = [...path, i];
+            const editHintKey =
+                s.type === 'polygon'
+                    ? 'panel.svgs.polygonEditHint'
+                    : s.type === 'path' &&
+                        (SMOOTH_PATH_DATA_ATTR in s.attrs || SMOOTH_PATH_DATA_ATTR in (s.attrBindings ?? {}))
+                      ? 'panel.svgs.smoothPathEditHint'
+                      : undefined;
             const field: RmgFieldsField[] = [
                 {
                     label: t('panel.common.label'),
                     type: 'input',
                     value: s.label,
-                    onChange: value => handleSetValue(s.id, 'label', value, [...path, i]),
+                    onChange: value => handleSetValue(s.id, 'label', value, currentPath),
                 },
                 {
                     label: t('panel.common.type'),
                     type: 'input',
                     value: s.type,
-                    onChange: value => handleSetValue(s.id, 'type', value, [...path, i]),
-                },
-                {
-                    label: t('panel.svgs.core'),
-                    type: 'switch',
-                    isChecked: param.core ? param.core === s.id : false,
-                    onChange: value => {
-                        dispatch(setCore(value ? s.id : undefined));
-                    },
-                    hidden: param.type !== 'Station',
+                    onChange: value => handleSetValue(s.id, 'type', value, currentPath),
                 },
                 {
                     label: '',
@@ -173,7 +167,7 @@ export function DetailsSvgs() {
                             <Button
                                 size="md"
                                 onClick={() => {
-                                    setMoveChildrenId([...path, i]);
+                                    setMoveChildrenId(currentPath);
                                     setMoveChildrenElem(s);
                                     setIsMoveChildrenOpen(true);
                                     dispatch(backupParam(param));
@@ -181,128 +175,14 @@ export function DetailsSvgs() {
                             >
                                 <MdDriveFileMoveOutline />
                             </Button>
-                            <Button size="md" onClick={() => handleRemove(s.id, [...path, i])}>
+                            <Button size="md" onClick={() => handleRemove(s.id, currentPath)}>
                                 <MdClose />
                             </Button>
                         </>
                     ),
                 },
             ];
-            const attrsField = Object.entries(s.attrs).map(([key, value]) => {
-                const mode = value.startsWith('1') ? 'value' : value.startsWith('2') ? 'var' : 'advanced';
-                const valueSelect = getValueSelect(s.type, key);
-                const valueSelectVal = valueSelect ? getValueSelectValue(valueSelect, value.slice(2, -1)) : '';
-                const valueSelectOptions = valueSelect ? valueSelect.options : {};
-                const handleChangeMode = (mode: AttrVarMode, value: string) => {
-                    if (mode === 'value') {
-                        return `1"${value.slice(1)}"`;
-                    } else if (mode === 'var') {
-                        return `2undefined`;
-                    } else {
-                        return `3${value.slice(1)}`;
-                    }
-                };
-                const field: RmgFieldsField[] = [
-                    {
-                        label: t('panel.svgs.attrKey'),
-                        type: 'input',
-                        value: key,
-                        onChange: v => {
-                            const { [key]: _, ...newAttrs } = s.attrs;
-                            handleSetValue(s.id, 'attrs', { ...newAttrs, [v]: value }, [...path, i]);
-                        },
-                    },
-                    {
-                        label: t('panel.svgs.attrMode.title'),
-                        type: 'select',
-                        options: {
-                            value: t('panel.svgs.attrMode.value'),
-                            var: t('panel.svgs.attrMode.var'),
-                            advanced: t('panel.svgs.attrMode.advanced'),
-                        },
-                        value: mode,
-                        onChange: v =>
-                            handleSetValue(
-                                s.id,
-                                'attrs',
-                                { ...s.attrs, [key]: handleChangeMode(v as AttrVarMode, value) },
-                                [...path, i]
-                            ),
-                    },
-                    {
-                        label: t('panel.svgs.attrValue'),
-                        type: 'input',
-                        value: mode === 'value' ? value.slice(2, -1) : value.slice(1),
-                        onChange: v =>
-                            handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: handleChangeMode(mode, '_' + v) }, [
-                                ...path,
-                                i,
-                            ]),
-                        hidden: mode === 'var' || (mode === 'value' && !!valueSelect),
-                    },
-                    {
-                        label: t('panel.svgs.attrValue'),
-                        type: 'select',
-                        value: valueSelectVal,
-                        options: valueSelectOptions,
-                        onChange: v =>
-                            handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: handleChangeMode(mode, '_' + v) }, [
-                                ...path,
-                                i,
-                            ]),
-                        hidden: mode !== 'value' || !valueSelect,
-                    },
-                    {
-                        label: t('panel.svgs.attrValue'),
-                        type: 'custom',
-                        component: (
-                            <RmgAutoComplete
-                                data={varList}
-                                displayHandler={item => item.value}
-                                filter={(query, item) =>
-                                    item.id.toLowerCase().includes(query.toLowerCase()) ||
-                                    Object.values(item.id).some(name =>
-                                        name.toLowerCase().includes(query.toLowerCase())
-                                    )
-                                }
-                                value={value.slice(1)}
-                                onChange={item =>
-                                    handleSetValue(s.id, 'attrs', { ...s.attrs, [key]: '2' + item.value }, [...path, i])
-                                }
-                            />
-                        ),
-                        hidden: mode !== 'var',
-                    },
-                    {
-                        label: '',
-                        type: 'custom',
-                        oneLine: true,
-                        component: (
-                            <Button
-                                onClick={() => {
-                                    const { [key]: _, ...newAttrs } = s.attrs;
-                                    handleSetValue(s.id, 'attrs', { ...newAttrs }, [...path, i]);
-                                }}
-                            >
-                                -
-                            </Button>
-                        ),
-                    },
-                ];
-                return <RmgFields key={key} fields={field} />;
-            });
-            const displayChildren = s.children ? dfsField(s.children, [...path, i], s.id) : [];
-            const displayTextChildrenButton =
-                supportsChildren(s.type) && displayChildren.length === 0 && !('_rmp_children_text' in s.attrs) ? (
-                    <Button
-                        width="100%"
-                        onClick={() =>
-                            handleSetValue(s.id, 'attrs', { ...s.attrs, _rmp_children_text: '1"value"' }, [...path, i])
-                        }
-                    >
-                        {t('panel.svgs.addTextChildren')}
-                    </Button>
-                ) : null;
+
             const handleCheck = (e: React.ChangeEvent) => {
                 e.stopPropagation();
                 if (selected.has(s.id)) {
@@ -314,36 +194,132 @@ export function DetailsSvgs() {
                     dispatch(addSelected(s.id));
                 }
             };
+
             return (
                 <AccordionItem key={s.id}>
-                    <AccordionButton p={2}>
-                        <Checkbox isChecked={selected.has(s.id) || selected.has(father)} onChange={handleCheck} />
-                        <Box mr={2} />
-                        <Box as="span" flex="1" textAlign="left">
-                            <Text as="span" fontWeight="bold">
-                                {s.label}
-                            </Text>{' '}
-                            <Text as="span">&lt;{s.type}&gt;</Text>
-                        </Box>
-                        {globalAlerts.has(s.id) ? <MdError color="#D9534F" title={globalAlerts.get(s.id)} /> : ''}
-                        <AccordionIcon />
-                    </AccordionButton>
-                    <AccordionPanel>
-                        <RmgFields fields={field} />
-                        {...attrsField}
-                        <HStack width="100%" pb={2}>
-                            <Button
-                                width="100%"
-                                onClick={() =>
-                                    handleSetValue(s.id, 'attrs', { ...s.attrs, new: '1"value"' }, [...path, i])
-                                }
-                            >
-                                +
-                            </Button>
-                            {displayTextChildrenButton}
-                        </HStack>
-                        {...displayChildren}
-                    </AccordionPanel>
+                    {({ isExpanded }) => {
+                        const displayChildren = isExpanded && s.children ? dfsField(s.children, currentPath, s.id) : [];
+                        const displayTextChildrenButton =
+                            supportsChildren(s.type) &&
+                            displayChildren.length === 0 &&
+                            !('_rmp_children_text' in s.attrs) ? (
+                                <Button
+                                    width="100%"
+                                    onClick={() => {
+                                        const next = updateAttrBinding(
+                                            s,
+                                            '_rmp_children_text',
+                                            getDefaultAttrBinding(s.type, '_rmp_children_text'),
+                                            components
+                                        );
+                                        handleSetAttrsAndBindings(s, next.attrs, next.attrBindings, currentPath);
+                                    }}
+                                >
+                                    {t('panel.svgs.addTextChildren')}
+                                </Button>
+                            ) : null;
+
+                        return (
+                            <>
+                                <AccordionButton p={2}>
+                                    <Checkbox
+                                        isChecked={selected.has(s.id) || selected.has(father)}
+                                        onChange={handleCheck}
+                                    />
+                                    <Box mr={2} />
+                                    <Box as="span" flex="1" textAlign="left">
+                                        <Text as="span" fontWeight="bold">
+                                            {s.label}
+                                        </Text>{' '}
+                                        <Text as="span">&lt;{s.type}&gt;</Text>
+                                    </Box>
+                                    {globalAlerts.has(s.id) ? (
+                                        <MdError color="#D9534F" title={globalAlerts.get(s.id)} />
+                                    ) : (
+                                        ''
+                                    )}
+                                    <AccordionIcon />
+                                </AccordionButton>
+                                <AccordionPanel>
+                                    {isExpanded && (
+                                        <>
+                                            <RmgFields fields={field} />
+                                            {editHintKey && (
+                                                <Box
+                                                    borderWidth="1px"
+                                                    borderColor={svgEditHintBorder}
+                                                    borderRadius="md"
+                                                    bg={svgEditHintBg}
+                                                    px={3}
+                                                    py={2}
+                                                    mt={1}
+                                                    mb={4}
+                                                >
+                                                    <Text fontSize="sm" color={svgEditHintColor}>
+                                                        {t(editHintKey)}
+                                                    </Text>
+                                                </Box>
+                                            )}
+                                            <SmoothPathPanel
+                                                elem={s}
+                                                components={components}
+                                                onChangeModel={model => {
+                                                    const next = applySmoothPathModelToSvgElem(s, model);
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings ?? {},
+                                                        currentPath
+                                                    );
+                                                }}
+                                            />
+                                            <VisualAttrPanel
+                                                elem={s}
+                                                components={components}
+                                                variableOptions={variableOptions}
+                                                onChange={(attrKey, nextBinding) => {
+                                                    const next = updateAttrBinding(s, attrKey, nextBinding, components);
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                                onRemove={attrKey => {
+                                                    const next = removeAttrBinding(s, attrKey);
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                                onAdd={attr => {
+                                                    const next = updateAttrBinding(
+                                                        s,
+                                                        attr,
+                                                        getDefaultAttrBinding(s.type, attr),
+                                                        components
+                                                    );
+                                                    handleSetAttrsAndBindings(
+                                                        s,
+                                                        next.attrs,
+                                                        next.attrBindings,
+                                                        currentPath
+                                                    );
+                                                }}
+                                            />
+                                            <HStack width="100%" pb={2}>
+                                                {displayTextChildrenButton}
+                                            </HStack>
+                                            {displayChildren}
+                                        </>
+                                    )}
+                                </AccordionPanel>
+                            </>
+                        );
+                    }}
                 </AccordionItem>
             );
         });
@@ -358,9 +334,13 @@ export function DetailsSvgs() {
                 </Flex>
                 <Box width="100%" height="100%" overflow="scroll">
                     {param.svgs.length > 0 ? (
-                        <Accordion width="100%" allowMultiple>
-                            {...dfsField(param.svgs, [], 'id_@root')}
-                        </Accordion>
+                        isComplexSvg ? (
+                            <ComplexSvgNotice count={svgNodeCount} limit={MAX_EDITABLE_SVG_NODE_COUNT} />
+                        ) : (
+                            <Accordion width="100%" allowMultiple>
+                                {dfsField(param.svgs, [], 'id_@root')}
+                            </Accordion>
+                        )
                     ) : (
                         <Flex height="100%" width="100%" justifyContent="center" alignItems="center" direction="column">
                             <Text textAlign="center">

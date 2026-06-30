@@ -13,6 +13,7 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Param } from '../../constants/constants';
+import { stringifyParam } from '../../util/save';
 
 const RMP_MASTER_CHANNEL_NAME = 'RMP_MASTER_CHANNEL';
 const RMP_MASTER_CHANNEL_POST = 'MASTER_POST';
@@ -24,11 +25,11 @@ export const Export = (props: { isOpen: boolean; onClose: () => void; param: Par
 
     const [code, setCode] = React.useState('');
     React.useEffect(() => {
-        setCode(JSON.stringify(param));
+        setCode(stringifyParam(param));
     }, [isOpen]);
 
     const postMessage = () => {
-        const post = JSON.stringify(param);
+        const post = stringifyParam(param);
         CHN_MASTER.postMessage({
             event: RMP_MASTER_CHANNEL_POST,
             data: post,

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useRootSelector } from '../../redux';
 import { downloadAs } from '../../util/helper';
 import { Preview } from '../panel/preview';
+import { stringifyParam } from '../../util/save';
 
 export default function ExportActions() {
     const { t } = useTranslation();
@@ -23,7 +24,7 @@ export default function ExportActions() {
                             downloadAs(
                                 `RMP-Designer_${new Date().valueOf()}.json`,
                                 'application/json',
-                                JSON.stringify(param)
+                                stringifyParam(param)
                             );
                         }}
                     >

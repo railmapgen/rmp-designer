@@ -18,6 +18,7 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { MetadataDetail } from '../../constants/marketplace';
 import { setLabel, setTransform } from '../../redux/param/param-slice';
 import { Export } from './export';
+import { stringifyParam } from '../../util/save';
 
 export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMode?: boolean }) => {
     const { isOpen, onClose, exportMode } = props;
@@ -61,7 +62,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                 ctx.scale(scaleFactor, scaleFactor);
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const jpegUrl = canvas.toDataURL('image/jpeg', 0.8); // 最高质量
+                const jpegUrl = canvas.toDataURL('image/jpeg', 0.8);
 
                 const link = document.createElement('a');
                 link.href = jpegUrl;
@@ -92,7 +93,7 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                     metadata: {
                         name: { en: '' },
                         desc: { en: '' },
-                        param: JSON.stringify(param),
+                        param: stringifyParam(param),
                         type: param.type,
                         svgString: svgStr,
                         id: -1,
@@ -268,14 +269,11 @@ export const Preview = (props: { isOpen: boolean; onClose: () => void; exportMod
                                 transform={`translate(${param.transform.translateX}, ${param.transform.translateY}) scale(${param.transform.scale}) rotate(${param.transform.rotate})`}
                             >
                                 {param.svgs.map(s => {
-                                    const components = param.color
-                                        ? [...param.components, param.color]
-                                        : param.components;
                                     return (
                                         <CreateSvgs
                                             key={s.id}
                                             svgsElem={s}
-                                            components={components}
+                                            components={param.components}
                                             prefix={[s.id]}
                                             handlePointerDown={() => {}}
                                             handlePointerMove={() => {}}

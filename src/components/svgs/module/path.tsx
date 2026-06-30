@@ -1,11 +1,12 @@
 import React from 'react';
-import { Svgs } from '../../../constants/svgs';
+import { createLiteralAttrBinding } from '../../../constants/attr-binding';
+import type { Svgs } from '../../../constants/svgs';
 
-const defaultPathSvgAttrs: Record<string, string> = {
-    d: '1"M 0 5 L 20 5"',
-    stroke: '1"#D6ABC1"',
-    strokeWidth: '1"5"',
-};
+const defaultPathSvgAttrBindings = {
+    d: createLiteralAttrBinding('M 0 5 L 20 5'),
+    stroke: createLiteralAttrBinding('#D6ABC1'),
+    'stroke-width': createLiteralAttrBinding(5),
+} satisfies Svgs['defaultAttrBindings'];
 
 const pathIcon = (
     <svg viewBox="0 0 24 24" height={40} width={40} focusable={false}>
@@ -15,7 +16,7 @@ const pathIcon = (
 
 const pathSvgs: Svgs = {
     icon: pathIcon,
-    defaultAttrs: defaultPathSvgAttrs,
+    defaultAttrBindings: defaultPathSvgAttrBindings,
     displayName: 'Path',
 };
 
