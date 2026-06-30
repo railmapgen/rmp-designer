@@ -43,8 +43,10 @@ export default function Ticket() {
     React.useEffect(() => {
         const handleMessage = (e: MessageEvent) => {
             const { event, id } = e.data;
+            console.log('Received message from RMP_MASTER_CHANNEL:', e.data);
             if (event === RMP_MASTER_CHANNEL_POST && id) {
                 setMetadata({ ...metadata, id: Number(id) });
+                setOpenGallery(false);
             }
         };
         CHN.addEventListener('message', handleMessage);
