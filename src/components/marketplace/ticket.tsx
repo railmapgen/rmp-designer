@@ -7,7 +7,7 @@ import { useRootSelector } from '../../redux';
 import { RMT_SERVER } from '../../constants/constants';
 import { defaultMetadataDetail, MetadataDetail } from '../../constants/marketplace';
 import { compressToBase64, createHash } from '../../util/helper';
-import RmpGalleryAppClip from '../header/rmp-gallery-app-clip';
+import { RmpGalleryReplacingAppClip } from '../header/rmp-gallery-app-clip';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
 const pageStyles: SystemStyleObject = {
@@ -217,7 +217,7 @@ export default function Ticket() {
                     </Button>
                 </HStack>
             </Flex>
-            <RmpGalleryAppClip isOpen={openGallery} onClose={() => setOpenGallery(false)} />
+            <RmpGalleryReplacingAppClip isOpen={openGallery} onClose={() => setOpenGallery(false)} />
         </RmgPage>
     );
 }

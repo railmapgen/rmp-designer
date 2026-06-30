@@ -27,7 +27,18 @@ export default function RmpGalleryAppClip(props: RmpGalleryAppClipProps) {
 
     return (
         <RmgAppClip isOpen={isOpen} onClose={onClose} size="full" sx={styles}>
-            <iframe src="/rmp-gallery/?tabId=2" loading="lazy" />
+            <iframe src="/rmp-gallery/?tabId=designer" loading="lazy" />
+            <CloseButton onClick={onClose} position="fixed" top="5px" right="15px" />
+        </RmgAppClip>
+    );
+}
+
+export function RmpGalleryReplacingAppClip(props: RmpGalleryAppClipProps) {
+    const { isOpen, onClose } = props;
+
+    return (
+        <RmgAppClip isOpen={isOpen} onClose={onClose} size="full" sx={styles}>
+            <iframe src="/rmp-gallery/?tabId=user&master=true" loading="lazy" />
             <CloseButton onClick={onClose} position="fixed" top="5px" right="15px" />
         </RmgAppClip>
     );
