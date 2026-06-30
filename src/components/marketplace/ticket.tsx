@@ -10,6 +10,10 @@ import { compressToBase64, createHash } from '../../util/helper';
 import { RmpGalleryReplacingAppClip } from '../header/rmp-gallery-app-clip';
 import MultiLangEntryCard from './multi-lang-entry-card';
 
+const RMP_MASTER_CHANNEL_NAME = 'RMP_MASTER_CHANNEL';
+const RMP_MASTER_CHANNEL_POST = 'MASTER_POST';
+const CHN = new BroadcastChannel(RMP_MASTER_CHANNEL_NAME);
+
 const pageStyles: SystemStyleObject = {
     px: 2,
     pt: 2,
@@ -35,6 +39,20 @@ export default function Ticket() {
     const { t } = useTranslation();
 
     const handleBack = () => navigate('/');
+
+    React.useEffect(() => {
+        const handleMessage = (e: MessageEvent) => {
+            const { event, id } = e.data;
+            if (event === RMP_MASTER_CHANNEL_POST && id) {
+                setMetadata({ ...metadata, id: Number(id) });
+            }
+        };
+        CHN.addEventListener('message', handleMessage);
+
+        return () => {
+            CHN.removeEventListener('message', handleMessage);
+        };
+    }, []);
 
     const [metadata, setMetadata] = React.useState<MetadataDetail>(defaultMetadataDetail);
     React.useEffect(() => {
