@@ -5,6 +5,10 @@
     "apply": "사용",
     "remove": "삭제",
     "close": "다시",
+    "clipboard": {
+        "copy": "복사",
+        "paste": "붙여넣기"
+    },
 
     "header": {
         "about": {

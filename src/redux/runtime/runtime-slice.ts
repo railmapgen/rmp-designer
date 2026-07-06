@@ -14,6 +14,10 @@ interface RuntimeState {
         x: number;
         y: number;
     };
+    svgCursorPosition?: {
+        x: number;
+        y: number;
+    };
     paletteAppClip: {
         input: Theme | undefined;
         output: Theme | undefined;
@@ -32,6 +36,7 @@ const initialState: RuntimeState = {
         x: -500,
         y: -250,
     },
+    svgCursorPosition: undefined,
     paletteAppClip: {
         input: undefined,
         output: undefined,
@@ -94,6 +99,9 @@ const runtimeSlice = createSlice({
         setSvgViewBoxMin: (state, action: PayloadAction<{ x: number; y: number }>) => {
             state.svgViewBoxMin = action.payload;
         },
+        setSvgCursorPosition: (state, action: PayloadAction<{ x: number; y: number } | undefined>) => {
+            state.svgCursorPosition = action.payload;
+        },
         backupParam: (state, action: PayloadAction<Param>) => {
             state.history.push(action.payload);
             state.undo_history = [];
@@ -126,6 +134,7 @@ export const {
     clearGlobalAlerts,
     setSvgViewBoxZoom,
     setSvgViewBoxMin,
+    setSvgCursorPosition,
     backupParam,
     backupUndo,
     backupRedo,

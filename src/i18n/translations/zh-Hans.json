@@ -5,6 +5,10 @@
     "apply": "应用",
     "remove": "移除",
     "close": "关闭",
+    "clipboard": {
+        "copy": "复制",
+        "paste": "粘贴"
+    },
 
     "header": {
         "about": {

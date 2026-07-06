@@ -3,10 +3,11 @@ import { RmgEnvBadge, RmgWindowHeader } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdHelp, MdRedo, MdSettings, MdUndo } from 'react-icons/md';
+import { MdContentCopy, MdContentPaste, MdHelp, MdRedo, MdSettings, MdUndo } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setParam } from '../../redux/param/param-slice';
 import { backupParam, backupRedo, backupRemove, backupUndo } from '../../redux/runtime/runtime-slice';
+import { useSvgClipboardActions } from '../../util/use-svg-clipboard';
 import AboutModal from './about-modal';
 import { ZoomPopover } from './zoom-popover';
 import OpenActions from './open-actions';
@@ -18,6 +19,7 @@ export default function WindowHeader() {
     const dispatch = useRootDispatch();
     const { history, undo_history } = useRootSelector(store => store.runtime);
     const param = useRootSelector(store => store.param);
+    const { canCopy, copySelectedSvg, pasteSvg } = useSvgClipboardActions();
 
     const environment = rmgRuntime.getEnv();
     const appVersion = rmgRuntime.getAppVersion();
@@ -56,6 +58,23 @@ export default function WindowHeader() {
                         dispatch(setParam(undo_history[undo_history.length - 1]));
                         dispatch(backupRedo());
                     }}
+                />
+                <IconButton
+                    size="sm"
+                    variant="ghost"
+                    aria-label={t('clipboard.copy')}
+                    title={t('clipboard.copy')}
+                    icon={<MdContentCopy />}
+                    isDisabled={!canCopy}
+                    onClick={() => void copySelectedSvg()}
+                />
+                <IconButton
+                    size="sm"
+                    variant="ghost"
+                    aria-label={t('clipboard.paste')}
+                    title={t('clipboard.paste')}
+                    icon={<MdContentPaste />}
+                    onClick={() => void pasteSvg()}
                 />
                 <ZoomPopover />
                 <OpenActions />

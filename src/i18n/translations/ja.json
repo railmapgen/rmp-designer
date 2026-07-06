@@ -5,6 +5,10 @@
     "apply": "適用",
     "remove": "削除",
     "close": "閉じる",
+    "clipboard": {
+        "copy": "コピー",
+        "paste": "貼り付け"
+    },
 
     "header": {
         "about": {

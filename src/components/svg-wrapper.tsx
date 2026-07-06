@@ -13,6 +13,7 @@ import {
     setActive,
     setMode,
     setSelected,
+    setSvgCursorPosition,
     setSvgViewBoxMin,
     setSvgViewBoxZoom,
 } from '../redux/runtime/runtime-slice';
@@ -26,6 +27,7 @@ import { useWindowSize } from '../util/hook';
 import { CreateSvgs } from './svgs/createSvgs';
 import svgs from './svgs/module/svgs';
 import { updateTransformString } from '../util/parse';
+import { useSvgClipboardActions } from '../util/use-svg-clipboard';
 import { countSvgNodes, MAX_EDITABLE_SVG_NODE_COUNT } from '../util/svg-node-count';
 import { useSmoothPathEditor } from './smooth-path/use-smooth-path-editor';
 import { SmoothPathOverlay } from './smooth-path/smooth-path-overlay';
@@ -125,6 +127,9 @@ const applyAttrPatch = (elem: SvgsElem, patch: AttrPatch | undefined): SvgsElem 
           }
         : elem;
 
+const isClipboardShortcut = (e: React.KeyboardEvent<SVGSVGElement>, key: 'c' | 'v') =>
+    e.key.toLowerCase() === key && (e.ctrlKey || (isMacClient && e.metaKey)) && !e.altKey;
+
 export default function SvgWrapper(props: { height?: number }) {
     const { height } = props;
     const dispatch = useRootDispatch();
@@ -161,6 +166,7 @@ export default function SvgWrapper(props: { height?: number }) {
         svgViewBoxZoom,
         svgViewBoxMin,
     });
+    const { copySelectedSvg, pasteSvg } = useSvgClipboardActions();
 
     const handleBackgroundDown = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
         if (!svgTreeEditable && (mode.startsWith('svgs-') || mode === 'draw-smooth-path')) {
@@ -331,10 +337,22 @@ export default function SvgWrapper(props: { height?: number }) {
         );
     });
 
+    const updateSvgCursorPosition = useEvent((e: React.PointerEvent<SVGSVGElement>) => {
+        const { x, y } = getMousePosition(e);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+        dispatch(setSvgCursorPosition(pointerPosToSVGCoord(x, y, svgViewBoxZoom, svgViewBoxMin)));
+    });
+
     const handleKeyDown = useEvent(async (e: React.KeyboardEvent<SVGSVGElement>) => {
         // tabIndex need to be on the element to make onKeyDown worked
         // https://www.delftstack.com/howto/react/onkeydown-react/
-        if (isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
+        if (isClipboardShortcut(e, 'c')) {
+            e.preventDefault();
+            await copySelectedSvg();
+        } else if (isClipboardShortcut(e, 'v')) {
+            e.preventDefault();
+            await pasteSvg();
+        } else if (isMacClient ? e.key === 'Backspace' : e.key === 'Delete') {
             if (smoothPathEditor.handleKeyDelete()) {
                 e.preventDefault();
                 return;
@@ -402,7 +420,9 @@ export default function SvgWrapper(props: { height?: number }) {
                 backgroundColor: canvasBackground,
             }}
             onPointerDown={handleBackgroundDown}
+            onPointerDownCapture={updateSvgCursorPosition}
             onPointerMove={handleBackgroundMove}
+            onPointerMoveCapture={updateSvgCursorPosition}
             onPointerUp={handleBackgroundUp}
             onWheel={handleBackgroundWheel}
             onKeyDown={handleKeyDown}

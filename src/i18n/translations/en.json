@@ -5,6 +5,10 @@
     "apply": "Apply",
     "remove": "Remove",
     "close": "Close",
+    "clipboard": {
+        "copy": "Copy",
+        "paste": "Paste"
+    },
 
     "header": {
         "about": {
