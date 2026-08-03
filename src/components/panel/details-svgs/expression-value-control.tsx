@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import type { AttrBinding, AttrLiteralValue } from '../../../constants/attr-binding';
 import type { Components } from '../../../constants/components';
 import type { SvgPanelVariableOption } from '../../../constants/svg-panel-options';
-import { compileAttrBindingToLegacyAttr, resolveVariableToken } from '../../../util/attr-binding';
+import {
+    compileAttrBindingToLegacyAttr,
+    isSvgPointsTemplateExpression,
+    resolveVariableToken,
+} from '../../../util/attr-binding';
 import { getAttrControl } from '../../../util/svg-attr-metadata';
 import { ExpressionBlockInput, ExpressionBlockInputHandle, setPaletteDragText } from './expression-block-input';
 import { stringifyValue } from '../../../util/svg-panel';
@@ -75,17 +79,22 @@ const coerceLiteralValue = (elemType: string, attrKey: string, value: string): A
     return value;
 };
 
-const editorTextToBinding = (
+export const editorTextToBinding = (
     elemType: string,
     attrKey: string,
     value: string,
     components: Components[]
 ): AttrBinding => {
+    const control = getAttrControl(elemType, attrKey);
     const trimmed = value.trim();
     const exactToken = trimmed.match(/^\{([^{}]+)\}$/);
     if (exactToken) {
         const variable = resolveVariableToken(exactToken[1], components);
         if (variable) return { kind: 'variable', componentId: variable.componentId, path: variable.path };
+    }
+    if (control.type === 'points') {
+        const expression = normalizeEditorFormulaText(value, components);
+        return isSvgPointsTemplateExpression(expression) ? { kind: 'formula', expression } : { kind: 'literal', value };
     }
     if (isFormulaText(value)) return { kind: 'formula', expression: normalizeEditorFormulaText(value, components) };
     return { kind: 'literal', value: coerceLiteralValue(elemType, attrKey, value) };

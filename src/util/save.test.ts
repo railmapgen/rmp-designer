@@ -1,4 +1,4 @@
-import { stringifyParam, upgrade, UPGRADE_COLLECTION } from './save';
+import { normalizeParamForDesigner, stringifyParam, upgrade, UPGRADE_COLLECTION } from './save';
 
 describe('Unit tests for param upgrade function', () => {
     it('upgrade will return the default tutorial if originalParam is null', async () => {
@@ -167,6 +167,36 @@ describe('Unit tests for param upgrade function', () => {
             defaultValue: 'local',
             value: 'local',
             constraints: { options: ['local', 'express'] },
+        });
+    });
+
+    it('repairs historical points formulas while loading and exporting', () => {
+        const points = '-3,8 3,0 3,0 3,8 -1,0';
+        const param = {
+            id: 'new',
+            label: 'new',
+            transform: { translateX: 0, translateY: 0, scale: 1, rotate: 0 },
+            version: 4,
+            type: 'MiscNode',
+            components: [],
+            svgs: [
+                {
+                    id: 'id_polygon',
+                    type: 'polygon',
+                    label: 'polygon',
+                    attrs: {},
+                    attrBindings: { points: { kind: 'formula', expression: points } },
+                },
+            ],
+        } as any;
+
+        expect(normalizeParamForDesigner(param).svgs[0].attrBindings?.points).toEqual({
+            kind: 'literal',
+            value: points,
+        });
+        expect(JSON.parse(stringifyParam(param)).svgs[0].attrBindings.points).toEqual({
+            kind: 'literal',
+            value: points,
         });
     });
 });

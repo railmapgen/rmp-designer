@@ -11,6 +11,23 @@ const numberTokenPattern = /[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?/g;
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 
+const parsePointNumbers = (value: unknown): number[] | undefined => {
+    if (typeof value !== 'string') return undefined;
+    const input = value.trim();
+    if (!input) return undefined;
+
+    const leftover = input.replace(numberTokenPattern, '').replace(/[,\s]+/g, '');
+    if (leftover) return undefined;
+
+    const numbers = input.match(numberTokenPattern)?.map(Number) ?? [];
+    if (numbers.length < 2 || numbers.length % 2 !== 0 || numbers.some(number => !Number.isFinite(number))) {
+        return undefined;
+    }
+    return numbers;
+};
+
+export const isSvgPointsValue = (value: unknown): value is string => parsePointNumbers(value) !== undefined;
+
 const formatNumber = (value: number): string => {
     const rounded = Math.round(value * 1000) / 1000;
     return Object.is(rounded, -0) ? '0' : String(rounded);
@@ -35,17 +52,8 @@ const distanceToSegment = (point: Point, start: Point, end: Point): { distance: 
 };
 
 export const parsePolygonPoints = (value: unknown): PolygonPoint[] | undefined => {
-    if (typeof value !== 'string') return undefined;
-    const input = value.trim();
-    if (!input) return undefined;
-
-    const leftover = input.replace(numberTokenPattern, '').replace(/[,\s]+/g, '');
-    if (leftover) return undefined;
-
-    const numbers = input.match(numberTokenPattern)?.map(Number) ?? [];
-    if (numbers.length < 6 || numbers.length % 2 !== 0 || numbers.some(number => !Number.isFinite(number))) {
-        return undefined;
-    }
+    const numbers = parsePointNumbers(value);
+    if (!numbers || numbers.length < 6) return undefined;
 
     const points: Point[] = [];
     for (let i = 0; i < numbers.length; i += 2) {

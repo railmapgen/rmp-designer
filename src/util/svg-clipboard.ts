@@ -195,10 +195,7 @@ const applyPastePosition = (
     };
 };
 
-export const createPastedSvgElem = (
-    element: SvgsElem,
-    createId: () => Id = () => `id_${nanoid(10)}`
-): SvgsElem => {
+export const createPastedSvgElem = (element: SvgsElem, createId: () => Id = () => `id_${nanoid(10)}`): SvgsElem => {
     const { children, ...rest } = element;
     return {
         ...clonePlain(rest),

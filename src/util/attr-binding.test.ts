@@ -3,6 +3,7 @@ import {
     evaluateAttrBinding,
     evaluateSvgAttrs,
     legacyAttrToBinding,
+    normalizeAttrBindingForAttr,
 } from './attr-binding';
 import { Components } from '../constants/components';
 
@@ -58,6 +59,9 @@ describe('attr binding evaluator', () => {
         expect(
             evaluateAttrBinding({ kind: 'formula', expression: 'Line{Station label}' }, { components }).value
         ).toEqual('LineAlpha');
+        expect(
+            evaluateAttrBinding({ kind: 'formula', expression: '-3,8 3,0 {Width},0 3,8 -1,0' }, { components }).value
+        ).toEqual('-3,8 3,0 12,0 3,8 -1,0');
         expect(
             evaluateAttrBinding({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, { components }).value
         ).toEqual(8);
@@ -115,6 +119,9 @@ describe('attr binding compiler', () => {
             compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Line{Station label}' }, components)
         ).toEqual('3"Line" + String(stationLabel == null ? "" : stationLabel)');
         expect(
+            compileAttrBindingToLegacyAttr({ kind: 'formula', expression: '-3,8 3,0 {Width},0 3,8 -1,0' }, components)
+        ).toEqual('3"-3,8 3,0 " + String(widthValue == null ? "" : widthValue) + ",0 3,8 -1,0"');
+        expect(
             compileAttrBindingToLegacyAttr({ kind: 'formula', expression: 'Math.min({Width}, 8)' }, components)
         ).toEqual('3Math.min(widthValue, 8)');
         expect(
@@ -165,5 +172,23 @@ describe('attr binding compiler', () => {
         );
         expect(result.error).toBeUndefined();
         expect(result.attrs).toEqual({ width: 24, fill: '#ffffff' });
+    });
+
+    it.each(['-3,8 3,0 3,0 3,8 0,-1', '-3,8 3,0 3,0 3,8 -1,0'])(
+        'normalizes historical formula points bindings as literals: %s',
+        points => {
+            const binding = { kind: 'formula', expression: points } as const;
+
+            expect(normalizeAttrBindingForAttr('points', binding)).toEqual({ kind: 'literal', value: points });
+            expect(evaluateSvgAttrs({}, { points: binding }, components)).toEqual({ attrs: { points } });
+        }
+    );
+
+    it('leaves non-points formulas and non-point expressions unchanged', () => {
+        const formula = { kind: 'formula', expression: '{Width} - 1' } as const;
+        const dynamicPoints = { kind: 'legacy', expression: 'polygonPoints' } as const;
+
+        expect(normalizeAttrBindingForAttr('width', formula)).toBe(formula);
+        expect(normalizeAttrBindingForAttr('points', dynamicPoints)).toBe(dynamicPoints);
     });
 });

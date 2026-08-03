@@ -2,7 +2,12 @@ import type { AttrBinding } from '../constants/attr-binding';
 import type { Components } from '../constants/components';
 import type { SvgsElem } from '../constants/constants';
 import type { SvgPanelVariableOption } from '../constants/svg-panel-options';
-import { compileAttrBindingToLegacyAttr, getComponentDisplayName, legacyAttrToBinding } from './attr-binding';
+import {
+    compileAttrBindingToLegacyAttr,
+    getComponentDisplayName,
+    legacyAttrToBinding,
+    normalizeAttrBindingForAttr,
+} from './attr-binding';
 import { getDefaultAttrBinding } from './svg-attr-metadata';
 
 export const createVariableOptions = (components: Components[], t: (key: string) => string): SvgPanelVariableOption[] =>
@@ -45,8 +50,9 @@ export const attrTextKey = (attrKey: string, field: 'title' | 'description' | 'e
     `panel.svgs.attrs.${attrKey}.${field}`;
 
 export const getBindingForAttr = (attrKey: string, elem: SvgsElem, components: Components[]): AttrBinding => {
-    if (elem.attrBindings?.[attrKey]) return elem.attrBindings[attrKey];
-    if (elem.attrs[attrKey]) return legacyAttrToBinding(elem.attrs[attrKey], components);
+    if (elem.attrBindings?.[attrKey]) return normalizeAttrBindingForAttr(attrKey, elem.attrBindings[attrKey]);
+    if (elem.attrs[attrKey])
+        return normalizeAttrBindingForAttr(attrKey, legacyAttrToBinding(elem.attrs[attrKey], components));
     return getDefaultAttrBinding(elem.type, attrKey);
 };
 
@@ -56,12 +62,13 @@ export const updateAttrBinding = (
     binding: AttrBinding,
     components: Components[]
 ): { attrs: Record<string, string>; attrBindings: Record<string, AttrBinding> } => {
-    const attrBindings = { ...(elem.attrBindings ?? {}), [attrKey]: binding };
+    const normalizedBinding = normalizeAttrBindingForAttr(attrKey, binding);
+    const attrBindings = { ...(elem.attrBindings ?? {}), [attrKey]: normalizedBinding };
     return {
         attrBindings,
         attrs: {
             ...elem.attrs,
-            [attrKey]: compileAttrBindingToLegacyAttr(binding, components),
+            [attrKey]: compileAttrBindingToLegacyAttr(normalizedBinding, components),
         },
     };
 };

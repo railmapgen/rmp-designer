@@ -3,6 +3,7 @@ import { AttrBinding, AttrCondition, AttrConditionOperand, AttrLiteralValue } fr
 import type { Components } from '../constants/components';
 import { isTheme, normalizeTheme } from '../constants/constants';
 import type { Theme } from '../constants/constants';
+import { isSvgPointsValue } from './polygon-points';
 
 const formulaParser = new Parser({
     operators: {
@@ -23,6 +24,21 @@ export interface AttrEvaluationResult {
     error?: string;
 }
 
+export const normalizeAttrBindingForAttr = (attrKey: string, binding: AttrBinding): AttrBinding => {
+    if (attrKey !== 'points') return binding;
+    if (binding.kind === 'formula' || binding.kind === 'legacy') {
+        return isSvgPointsValue(binding.expression) ? { kind: 'literal', value: binding.expression } : binding;
+    }
+    if (binding.kind === 'conditional') {
+        return {
+            ...binding,
+            then: normalizeAttrBindingForAttr(attrKey, binding.then),
+            else: normalizeAttrBindingForAttr(attrKey, binding.else),
+        };
+    }
+    return binding;
+};
+
 type FormulaScopeValue = string | number | boolean | object | ((...args: any[]) => unknown);
 
 const formulaFunctionPattern = /\b(?:Math\.)?(min|max|round|abs|floor|ceil)\s*\(/;
@@ -31,6 +47,9 @@ const variableTokenPattern = /\{([^{}]+)\}/g;
 const supportedMathFunctionNames = ['min', 'max', 'round', 'abs', 'floor', 'ceil'] as const;
 const mathFunctionPattern = /\bMath\.(min|max|round|abs|floor|ceil)\s*\(/g;
 const bareFunctionPattern = /\b(min|max|round|abs|floor|ceil)\s*\(/g;
+
+export const isSvgPointsTemplateExpression = (expression: string): boolean =>
+    /\{[^{}]+\}/.test(expression) && isSvgPointsValue(expression.replace(variableTokenPattern, '0'));
 
 export interface AttrVariableToken {
     componentId: string;
@@ -173,11 +192,15 @@ const stringifyTemplateValue = (value: unknown): string => {
     return String(value);
 };
 
-const isTemplateConcatExpression = (expression: string): boolean =>
-    /\{[^{}]+\}/.test(expression) &&
-    !formulaFunctionPattern.test(expression) &&
-    !formulaOperatorPattern.test(expression) &&
-    !expression.includes('?');
+const isTemplateConcatExpression = (expression: string): boolean => {
+    if (isSvgPointsTemplateExpression(expression)) return true;
+    return (
+        /\{[^{}]+\}/.test(expression) &&
+        !formulaFunctionPattern.test(expression) &&
+        !formulaOperatorPattern.test(expression) &&
+        !expression.includes('?')
+    );
+};
 
 const evaluateTemplateConcatExpression = (expression: string, components: Components[]): AttrEvaluationResult => {
     let cursor = 0;
@@ -478,9 +501,14 @@ export const evaluateSvgAttrs = (
     const keys = new Set([...Object.keys(attrs), ...Object.keys(attrBindings ?? {})]);
 
     for (const key of keys) {
-        const result = attrBindings?.[key]
-            ? evaluateAttrBinding(attrBindings[key], { components })
-            : evaluateLegacyAttr(attrs[key], { components });
+        const binding = attrBindings?.[key];
+        const result = binding
+            ? evaluateAttrBinding(normalizeAttrBindingForAttr(key, binding), { components })
+            : key === 'points'
+              ? evaluateAttrBinding(normalizeAttrBindingForAttr(key, legacyAttrToBinding(attrs[key], components)), {
+                    components,
+                })
+              : evaluateLegacyAttr(attrs[key], { components });
         if (result.error) return { attrs: evaluated, error: result.error };
         evaluated[key] = result.value;
     }
@@ -496,7 +524,7 @@ export const compileAttrRecord = (
     const nextAttrs = { ...attrs };
     if (!attrBindings) return nextAttrs;
     Object.entries(attrBindings).forEach(([key, binding]) => {
-        nextAttrs[key] = compileAttrBindingToLegacyAttr(binding, components);
+        nextAttrs[key] = compileAttrBindingToLegacyAttr(normalizeAttrBindingForAttr(key, binding), components);
     });
     return nextAttrs;
 };

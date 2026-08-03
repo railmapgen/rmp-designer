@@ -1,4 +1,5 @@
 import {
+    isSvgPointsValue,
     insertPolygonPointAtNearestSegment,
     movePolygonPoint,
     parsePolygonPoints,
@@ -18,6 +19,14 @@ describe('polygon points geometry', () => {
         ]);
         expect(serializePolygonPoints(points!)).toEqual('0,0 20,0 20,10 0,10');
     });
+
+    it.each(['-3,8 3,0 3,0 3,8 0,-1', '-3,8 3,0 3,0 3,8 -1,0', '-3.5,+8\n3e1,-2E-1 0,0'])(
+        'parses signed points regardless of separator placement: %s',
+        value => {
+            expect(isSvgPointsValue(value)).toBe(true);
+            expect(parsePolygonPoints(value)).toBeDefined();
+        }
+    );
 
     it('moves, inserts, and removes points while preserving polygon validity', () => {
         const points = parsePolygonPoints('0,0 20,0 20,10 0,10')!;

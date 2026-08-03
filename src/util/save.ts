@@ -9,6 +9,7 @@ import { AttrBinding } from '../constants/attr-binding';
 import {
     compileAttrRecord,
     legacyAttrToBinding,
+    normalizeAttrBindingForAttr,
     normalizeAttrBindingForExport,
     slugifyComponentLabel,
 } from './attr-binding';
@@ -205,10 +206,16 @@ const migrateSvgs = (svgs: SvgsElem[], components: Components[]): SvgsElem[] =>
 const normalizeSvgsForDesigner = (svgs: SvgsElem[], components: Components[]): SvgsElem[] =>
     svgs.map(svg => {
         const attrs = svg.attrs ?? {};
+        const attrBindings = svg.attrBindings ?? migrateSvgs([{ ...svg, attrs }], components)[0].attrBindings;
         return {
             ...svg,
             attrs,
-            attrBindings: svg.attrBindings ?? migrateSvgs([{ ...svg, attrs }], components)[0].attrBindings,
+            attrBindings: Object.fromEntries(
+                Object.entries(attrBindings ?? {}).map(([key, binding]) => [
+                    key,
+                    normalizeAttrBindingForAttr(key, binding),
+                ])
+            ),
             children: svg.children ? normalizeSvgsForDesigner(svg.children, components) : undefined,
         };
     });
@@ -226,7 +233,10 @@ const getExportAttrBindings = (svg: SvgsElem, components: Components[]): Record<
         if (!attrBindings[key]) attrBindings[key] = legacyAttrToBinding(value, components);
     });
     return Object.fromEntries(
-        Object.entries(attrBindings).map(([key, binding]) => [key, normalizeAttrBindingForExport(binding, components)])
+        Object.entries(attrBindings).map(([key, binding]) => [
+            key,
+            normalizeAttrBindingForExport(normalizeAttrBindingForAttr(key, binding), components),
+        ])
     );
 };
 
