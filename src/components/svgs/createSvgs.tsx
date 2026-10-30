@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Id, SvgsElem } from '../../constants/constants';
 import { Components } from '../../constants/components';
 import { supportsChildren } from '../../util/svgTagWithChildren';
@@ -17,6 +18,7 @@ export interface CreateSvgsProps {
 }
 
 const CreateSvgsComponent = (props: CreateSvgsProps) => {
+    const { t } = useTranslation();
     const {
         svgsElem,
         components,
@@ -51,8 +53,7 @@ const CreateSvgsComponent = (props: CreateSvgsProps) => {
         return evaluateSvgAttrs(attrs, svgsElem.attrBindings, components);
     }, [attrs, svgsElem.attrBindings, components, hasGlobalAlert]);
     const newAttrs = evaluatedAttrs.attrs;
-    const styleError =
-        'style' in newAttrs && typeof newAttrs.style !== 'object' ? '"style" must be an object!' : undefined;
+    const styleError = 'style' in newAttrs && typeof newAttrs.style !== 'object' ? t('validation.style') : undefined;
     const error = evaluatedAttrs.error ?? styleError;
 
     React.useEffect(() => {

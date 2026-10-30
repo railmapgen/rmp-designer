@@ -173,7 +173,23 @@
             "tipsA1": "右上隅をクリック",
             "tipsA2": "して、SVGグラフィックをアップロードします",
             "tipsB1": "左側のアイコンをクリック",
-            "tipsB2": "して、キャンバスをクリックしてSVGコンポーネントを追加します"
+            "tipsB2": "して、キャンバスをクリックしてSVGコンポーネントを追加します",
+            "smoothPath": {
+                "title": "平滑なパス",
+                "smoothing": "平滑化",
+                "startCap": "始点の形状",
+                "endCap": "終点の形状",
+                "arrowLength": "矢印の長さ",
+                "arrowWidth": "矢印の幅",
+                "widthStops": "幅の制御点",
+                "widthStopsHint": "位置はパス全体の長さに対する割合です。",
+                "addWidthStop": "幅の制御点を追加",
+                "caps": {
+                    "round": "丸形",
+                    "flat": "平形",
+                    "arrow": "矢印"
+                }
+            }
         },
         "components": {
             "title": "変数",
@@ -212,12 +228,35 @@
         "new": "新しい作品として",
         "back": "戻る",
         "submit": "送信",
-        "submitTemplate": "作品を送信"
+        "submitTemplate": "作品を送信",
+        "failed": "失敗：{{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "置き換える作品の ID"
     },
     "multiLangEntry": {
         "lang": "言語",
         "name": "名前",
         "add": "他の言語で名前を追加",
         "remove": "この名前を削除"
+    },
+    "Help": "操作案内",
+    "Undo": "元に戻す",
+    "Redo": "やり直す",
+    "Menu": "操作一覧",
+    "zoom": "表示倍率",
+    "Move": "移動",
+    "Error Code": "エラー番号",
+    "Error Message": "エラー内容",
+    "SVG format not available": "この SVG 形式には対応していません",
+    "Invalid param": "設定が無効です",
+    "Done!": "完了しました。",
+    "validation": {
+        "unknownVariable": "不明な変数：{{name}}",
+        "invalidColor": "色の変数が無効です：{{name}}",
+        "colorPath": "色の変数 {{name}} はパス {{path}} に対応していません",
+        "variablePath": "変数 {{name}} はパス {{path}} に対応していません",
+        "operator": "対応していない条件演算子：{{operator}}",
+        "legacy": "従来形式の式が無効です",
+        "binding": "属性の関連付けが無効です",
+        "style": "\"style\" はオブジェクトである必要があります。"
     }
 }

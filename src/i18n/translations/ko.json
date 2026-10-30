@@ -173,7 +173,23 @@
             "tipsA1": "오른쪽 상단을 클릭하세요",
             "tipsA2": "SVG 그래픽을 업로드하려면",
             "tipsB1": "왼쪽 아이콘을 클릭하세요",
-            "tipsB2": "그런 다음 캔버스를 클릭하여 SVG 구성 요소를 추가하세요"
+            "tipsB2": "그런 다음 캔버스를 클릭하여 SVG 구성 요소를 추가하세요",
+            "smoothPath": {
+                "title": "매끄러운 경로",
+                "smoothing": "평활화",
+                "startCap": "시작점 모양",
+                "endCap": "끝점 모양",
+                "arrowLength": "화살표 길이",
+                "arrowWidth": "화살표 너비",
+                "widthStops": "너비 제어점",
+                "widthStopsHint": "위치는 경로 전체 길이에 대한 백분율입니다.",
+                "addWidthStop": "너비 제어점 추가",
+                "caps": {
+                    "round": "둥근 모양",
+                    "flat": "평평한 모양",
+                    "arrow": "화살표"
+                }
+            }
         },
         "components": {
             "title": "변수",
@@ -212,12 +228,35 @@
         "new": "새로운 작품으로",
         "back": "뒤로",
         "submit": "제출",
-        "submitTemplate": "작품 제출"
+        "submitTemplate": "작품 제출",
+        "failed": "실패: {{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "교체할 작품 ID"
     },
     "multiLangEntry": {
         "lang": "언어",
         "name": "이름",
         "add": "다른 언어로 이름 추가",
         "remove": "이 이름 제거"
+    },
+    "Help": "도움말",
+    "Undo": "실행 취소",
+    "Redo": "다시 실행",
+    "Menu": "메뉴",
+    "zoom": "확대 비율",
+    "Move": "이동",
+    "Error Code": "오류 코드",
+    "Error Message": "오류 메시지",
+    "SVG format not available": "지원하지 않는 SVG 형식입니다",
+    "Invalid param": "잘못된 설정입니다",
+    "Done!": "완료되었습니다.",
+    "validation": {
+        "unknownVariable": "알 수 없는 변수: {{name}}",
+        "invalidColor": "잘못된 색상 변수: {{name}}",
+        "colorPath": "색상 변수 {{name}}은(는) 경로 {{path}}을(를) 지원하지 않습니다",
+        "variablePath": "변수 {{name}}은(는) 경로 {{path}}을(를) 지원하지 않습니다",
+        "operator": "지원하지 않는 조건 연산자: {{operator}}",
+        "legacy": "잘못된 이전 형식의 표현식",
+        "binding": "잘못된 속성 바인딩",
+        "style": "\"style\"은 객체여야 합니다."
     }
 }

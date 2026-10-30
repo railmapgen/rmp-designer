@@ -37,7 +37,7 @@ export default function OpenActions() {
             dispatch(setParam(JSON.parse(p) as Param));
         } else {
             toast({
-                title: 'Invalid param',
+                title: t('Invalid param'),
                 status: 'error' as const,
                 duration: 9000,
                 isClosable: true,
@@ -81,7 +81,7 @@ export default function OpenActions() {
                 const svgStr = await readFileAsText(file);
                 if (isBase64Svg(svgStr)) {
                     toast({
-                        title: 'SVG format not available',
+                        title: t('SVG format not available'),
                         status: 'error' as const,
                         duration: 9000,
                         isClosable: true,

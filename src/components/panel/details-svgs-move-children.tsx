@@ -108,7 +108,7 @@ export const MoveChildrenModal = (props: {
             <ModalContent>
                 <ModalHeader>
                     <Text as="b" fontSize="xl">
-                        Move
+                        {t('Move')}
                     </Text>
                     <ModalCloseButton />
                 </ModalHeader>

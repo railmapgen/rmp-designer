@@ -228,12 +228,24 @@
         "new": "As a new work",
         "back": "Back",
         "submit": "Submit",
-        "submitTemplate": "Submit work"
+        "submitTemplate": "Submit work",
+        "failed": "Failed: {{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "Replacing work ID"
     },
     "multiLangEntry": {
         "lang": "Language",
         "name": "Name",
         "add": "Add a name in another language",
         "remove": "Remove this name"
+    },
+    "validation": {
+        "unknownVariable": "Unknown variable: {{name}}",
+        "invalidColor": "Invalid color variable: {{name}}",
+        "colorPath": "Color variable {{name}} does not support path {{path}}",
+        "variablePath": "Variable {{name}} does not support path {{path}}",
+        "operator": "Unsupported condition operator: {{operator}}",
+        "legacy": "Invalid legacy expression",
+        "binding": "Invalid attribute binding",
+        "style": "\"style\" must be an object!"
     }
 }

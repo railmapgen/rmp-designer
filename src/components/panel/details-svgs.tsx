@@ -364,7 +364,7 @@ export function DetailsSvgs() {
                                         h: 10,
                                     }}
                                 >
-                                    Rectangle
+                                    {t(svgs[SvgsType.Rect].displayName)}
                                 </Button>
                                 {t('panel.svgs.tipsB2')}
                             </Text>
