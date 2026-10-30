@@ -229,7 +229,8 @@
         "back": "Back",
         "submit": "Submit",
         "submitTemplate": "Submit work",
-        "failed": "Failed: {{status}} {{statusText}} {{message}}"
+        "failed": "Failed: {{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "Replacing work ID"
     },
     "multiLangEntry": {
         "lang": "Language",

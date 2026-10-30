@@ -229,7 +229,8 @@
         "back": "戻る",
         "submit": "送信",
         "submitTemplate": "作品を送信",
-        "failed": "失敗：{{status}} {{statusText}} {{message}}"
+        "failed": "失敗：{{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "置き換える作品の ID"
     },
     "multiLangEntry": {
         "lang": "言語",

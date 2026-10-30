@@ -229,7 +229,8 @@
         "back": "뒤로",
         "submit": "제출",
         "submitTemplate": "작품 제출",
-        "failed": "실패: {{status}} {{statusText}} {{message}}"
+        "failed": "실패: {{status}} {{statusText}} {{message}}",
+        "replacingWorkId": "교체할 작품 ID"
     },
     "multiLangEntry": {
         "lang": "언어",

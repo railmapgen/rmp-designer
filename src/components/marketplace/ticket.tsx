@@ -134,7 +134,7 @@ export default function Ticket() {
         {
             type: 'input',
             value: metadata.id.toString(),
-            label: 'replacing work ID',
+            label: t('ticket.replacingWorkId'),
             onChange: val => setMetadata({ ...metadata, id: Number(val) }),
             hidden: metadata.id === -1,
         },
