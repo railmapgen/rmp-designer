@@ -1,4 +1,5 @@
 import { Parser } from 'expr-eval';
+import i18n from '../i18n/config';
 import { AttrBinding, AttrCondition, AttrConditionOperand, AttrLiteralValue } from '../constants/attr-binding';
 import type { Components } from '../constants/components';
 import { isTheme, normalizeTheme } from '../constants/constants';
@@ -149,20 +150,25 @@ export const resolveVariableBinding = (
     components: Components[]
 ): AttrEvaluationResult => {
     const component = components.find(c => c.id === binding.componentId || c.label === binding.componentId);
-    if (!component) return { error: `Unknown variable: ${binding.componentId}` };
+    if (!component) return { error: i18n.t('validation.unknownVariable', { name: binding.componentId }) };
 
     const value = getComponentRuntimeValue(component);
     if (component.type === 'color') {
         const theme = value as Theme | undefined;
-        if (!isTheme(theme)) return { error: `Invalid color variable: ${getComponentDisplayName(component)}` };
+        if (!isTheme(theme))
+            return { error: i18n.t('validation.invalidColor', { name: getComponentDisplayName(component) }) };
         const normalizedTheme = normalizeTheme(theme);
         if (!binding.path || binding.path === 'hex') return { value: normalizedTheme[2] };
         if (binding.path === 'text') return { value: normalizedTheme[3] };
-        return { error: `Color variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
+        return {
+            error: i18n.t('validation.colorPath', { name: getComponentDisplayName(component), path: binding.path }),
+        };
     }
 
     if (binding.path)
-        return { error: `Variable ${getComponentDisplayName(component)} does not support path ${binding.path}` };
+        return {
+            error: i18n.t('validation.variablePath', { name: getComponentDisplayName(component), path: binding.path }),
+        };
     return { value };
 };
 
@@ -176,7 +182,7 @@ const replaceVariableTokens = (
     const nextExpression = expression.replace(variableTokenPattern, (_match, tokenText: string) => {
         const token = resolveVariableToken(tokenText, components);
         if (!token) {
-            error = `Unknown variable: ${tokenText.trim()}`;
+            error = i18n.t('validation.unknownVariable', { name: tokenText.trim() });
             return 'undefined';
         }
         const replacement = replace(token, index);
@@ -211,7 +217,7 @@ const evaluateTemplateConcatExpression = (expression: string, components: Compon
         const [rawToken, tokenText] = match;
         output += expression.slice(cursor, match.index);
         const token = resolveVariableToken(tokenText, components);
-        if (!token) return { error: `Unknown variable: ${tokenText.trim()}` };
+        if (!token) return { error: i18n.t('validation.unknownVariable', { name: tokenText.trim() }) };
         const result = resolveVariableBinding(token, components);
         if (result.error) return result;
         output += stringifyTemplateValue(result.value);
@@ -293,7 +299,7 @@ export const evaluateCondition = (condition: AttrCondition, context: AttrEvaluat
         case 'notEmpty':
             return { value: !(left.value === undefined || left.value === null || left.value === '') };
         default:
-            return { error: `Unsupported condition operator: ${condition.operator}` };
+            return { error: i18n.t('validation.operator', { operator: condition.operator }) };
     }
 };
 
@@ -307,7 +313,7 @@ const evaluateLegacyExpression = (expression: string, components: Components[]):
         const legacyFunc = new Function(...variableNames, `return ${expression}`);
         return { value: legacyFunc(...variableValues) };
     } catch (e) {
-        return { error: e instanceof Error ? e.message : 'Invalid legacy expression' };
+        return { error: e instanceof Error ? e.message : i18n.t('validation.legacy') };
     }
 };
 
@@ -347,7 +353,7 @@ export const evaluateAttrBinding = (binding: AttrBinding, context: AttrEvaluatio
         }
         return evaluateLegacyExpression(binding.expression, context.components);
     } catch (e) {
-        return { error: e instanceof Error ? e.message : 'Invalid attribute binding' };
+        return { error: e instanceof Error ? e.message : i18n.t('validation.binding') };
     }
 };
 

@@ -114,7 +114,7 @@ export default function Ticket() {
         if (rep.status !== 201 && rep.status !== 200) {
             const text = await rep.json();
             toast({
-                title: `Failed: ${rep.status} ${rep.statusText} ${text['message']}`,
+                title: t('ticket.failed', { status: rep.status, statusText: rep.statusText, message: text['message'] }),
                 status: 'error' as const,
                 duration: 9000,
                 isClosable: true,
@@ -122,7 +122,7 @@ export default function Ticket() {
             return;
         }
         toast({
-            title: 'Done!',
+            title: t('Done!'),
             status: 'success' as const,
             duration: 9000,
             isClosable: true,
@@ -134,7 +134,7 @@ export default function Ticket() {
         {
             type: 'input',
             value: metadata.id.toString(),
-            label: 'replacing work ID',
+            label: t('ticket.replacingWorkId'),
             onChange: val => setMetadata({ ...metadata, id: Number(val) }),
             hidden: metadata.id === -1,
         },

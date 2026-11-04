@@ -32,8 +32,8 @@ export const ErrorDisplay = (props: { isOpen: boolean; onClose: () => void; erro
                         <Table variant="striped" colorScheme="orange">
                             <Thead>
                                 <Tr>
-                                    <Th>Error Code</Th>
-                                    <Th>Error Message</Th>
+                                    <Th>{t('Error Code')}</Th>
+                                    <Th>{t('Error Message')}</Th>
                                 </Tr>
                             </Thead>
                             <Tbody>

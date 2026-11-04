@@ -38,7 +38,7 @@ export default function WindowHeader() {
                 <IconButton
                     size="sm"
                     variant="ghost"
-                    aria-label="Undo"
+                    aria-label={t('Undo')}
                     icon={<MdUndo />}
                     isDisabled={history.length === 0}
                     onClick={() => {
@@ -50,7 +50,7 @@ export default function WindowHeader() {
                 <IconButton
                     size="sm"
                     variant="ghost"
-                    aria-label="Redo"
+                    aria-label={t('Redo')}
                     icon={<MdRedo />}
                     isDisabled={undo_history.length === 0}
                     onClick={() => {
@@ -82,7 +82,7 @@ export default function WindowHeader() {
                 <IconButton
                     size="sm"
                     variant="ghost"
-                    aria-label="Settings"
+                    aria-label={t('header.settings.title')}
                     icon={<MdSettings />}
                     onClick={() => setOpenSettings(true)}
                 />

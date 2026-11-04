@@ -121,7 +121,7 @@ export const ImportFromSvg = (props: { isOpen: boolean; onClose: () => void }) =
     const handleImport = () => {
         if (isBase64Svg(svgString)) {
             toast({
-                title: 'SVG format not available',
+                title: t('SVG format not available'),
                 status: 'error' as const,
                 duration: 9000,
                 isClosable: true,

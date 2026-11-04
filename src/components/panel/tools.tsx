@@ -43,7 +43,7 @@ export const ToolsPanel = () => {
             transition={`width ${EXPAND_ANIMATION_DURATION}s ease-in-out`}
         >
             <Button
-                aria-label="Menu"
+                aria-label={t('Menu')}
                 leftIcon={
                     isTextShown ? (
                         <MdExpandMore size={40} transform="rotate(90)" />
@@ -70,7 +70,7 @@ export const ToolsPanel = () => {
                 {Object.values(SvgsType).map(type => (
                     <Button
                         key={type}
-                        aria-label={type}
+                        aria-label={t(svgs[type].displayName)}
                         leftIcon={svgs[type].icon}
                         onClick={() => handleClick(type)}
                         variant={mode === `svgs-${type}` ? 'solid' : 'outline'}
