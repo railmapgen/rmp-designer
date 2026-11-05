@@ -2,35 +2,35 @@
     "color": "顏色",
     "warning": "警告",
     "cancel": "取消",
-    "apply": "應用",
-    "remove": "移除",
+    "apply": "套用",
+    "remove": "刪除",
     "close": "關閉",
     "clipboard": {
         "copy": "複製",
-        "paste": "粘貼"
+        "paste": "貼上"
     },
 
     "header": {
         "about": {
-            "title": "關於 RMP 設計器",
-            "intro": "一個 RMP 大師節點設計器，支持將任何 SVG 添加到 RMP。"
+            "title": "關於 RMP 設計師",
+            "intro": "一個地鐵路綫圖繪製器大師節點設計器，支持將任何 SVG 添加到地鐵路綫圖繪製器。"
         },
         "import": {
-            "new": "新建項目",
+            "new": "新增項目",
             "pasteSVG": "粘貼 SVG",
-            "uploadParam": "上傳項目",
-            "uploadSVG": "上傳 SVG",
-            "gallery": "從畫廊導入"
+            "uploadParam": "上載項目",
+            "uploadSVG": "上載 SVG",
+            "gallery": "從畫廊匯入"
         },
         "export": {
             "preview": "預覽",
-            "showLines": "顯示 RMP 線段",
-            "showBadges": "顯示 RMP 標識",
+            "showLines": "顯示地鐵路綫圖繪製器線段",
+            "showBadges": "顯示地鐵路綫圖繪製器標識",
             "offsetX": "偏移 X",
             "offsetY": "偏移 Y",
-            "scale": "縮放",
+            "scale": "縮放比例",
             "rotate": "旋轉",
-            "export": "匯出到 RMP",
+            "export": "匯出到地鐵路綫圖繪製器",
             "download": "下載",
             "gallery": "發佈到畫廊"
         },
@@ -46,11 +46,11 @@
     },
     "panel": {
         "tools": {
-            "showLess": "顯示更少",
-            "smoothPath": "圓滑路徑"
+            "showLess": "收合",
+            "smoothPath": "平滑路徑"
         },
         "details": {
-            "header": "RMP 詳情面板"
+            "header": "地鐵路綫圖繪製器詳情面板"
         },
         "svgs": {
             "title": "SVG 組件",
@@ -67,14 +67,14 @@
             "attrMode": {
                 "title": "屬性模式",
                 "value": "值",
-                "var": "變量",
+                "var": "變數",
                 "advanced": "高級"
             },
             "attrPanel": {
                 "placeholder": "例如：12、{寬度}、3 + {寬度}",
                 "common": "常用",
                 "quick": "快捷",
-                "empty": "空",
+                "empty": "空值",
                 "insertVariable": "插入參數",
                 "insertCalculation": "插入計算",
                 "unit": "單位",
@@ -83,7 +83,7 @@
                 "error": "無法計算",
                 "currentValue": "當前值",
                 "itemCount": "{{count}} 項",
-                "emptyMore": "暫無額外屬性。上傳 SVG 中未歸類的屬性會顯示在這裡。",
+                "emptyMore": "暫無額外屬性。上載 SVG 中未歸類的屬性會顯示在這裡。",
                 "blockInput": "輸入塊",
                 "dragBlock": "拖動調整順序",
                 "deleteBlock": "移除塊",
@@ -91,7 +91,7 @@
                 "doneEditing": "完成",
                 "cancelEditing": "取消",
                 "mainColor": "主色",
-                "textColor": "文字色",
+                "textColor": "文字顏色",
                 "calculations": {
                     "add": "+",
                     "subtract": "-",
@@ -110,8 +110,8 @@
                 "position": "位置",
                 "size": "大小",
                 "shape": "形狀",
-                "fill": "填充",
-                "stroke": "邊框",
+                "fill": "填滿",
+                "stroke": "描邊",
                 "text": "文字",
                 "transform": "變換",
                 "effects": "效果",
@@ -123,11 +123,11 @@
                 "width": "寬",
                 "height": "高",
                 "radius": "圓",
-                "fill": "色",
-                "stroke": "邊",
-                "text": "文",
+                "fill": "填滿",
+                "stroke": "描邊",
+                "text": "文字",
                 "opacity": "%",
-                "transform": "移"
+                "transform": "移動"
             },
             "attrs": {
                 "x": { "title": "X 位置", "description": "控制圖形左上角或文字起點的水平位置。", "effectHint": "數字越大越靠右。" },
@@ -145,15 +145,15 @@
                 "r": { "title": "半徑", "description": "控制圓形從中心到邊緣的距離。", "effectHint": "數字越大圓越大。" },
                 "rx": { "title": "水平圓角/半徑", "description": "控制矩形橫向圓角，或橢圓橫向半徑。", "effectHint": "矩形裡數字越大，左右圓角越明顯。" },
                 "ry": { "title": "垂直圓角/半徑", "description": "控制矩形縱向圓角，或橢圓縱向半徑。", "effectHint": "矩形裡數字越大，上下圓角越明顯。" },
-                "d": { "title": "路徑", "description": "控制 path 圖形的輪廓。", "effectHint": "通常從 SVG 軟件導入後保留，不建議手寫。" },
+                "d": { "title": "向量路徑", "description": "控制 path 圖形的輪廓。", "effectHint": "通常從 SVG 軟件匯入後保留，不建議手寫。" },
                 "points": { "title": "點列表", "description": "控制折線或多邊形經過的點。", "effectHint": "每組數字表示一個點，例如 0,0 20,0。" },
                 "fill": { "title": "填充顏色", "description": "控制圖形內部填充的顏色。", "effectHint": "設定為 none 可以變成透明填充。" },
                 "color": { "title": "顏色", "description": "給子元素或文字繼承使用的基礎顏色。" },
                 "stroke": { "title": "邊框顏色", "description": "控制外框或線條的顏色。", "effectHint": "設定為 none 可以隱藏邊框。" },
-                "stroke-width": { "title": "邊框粗細", "description": "控制外框線條有多粗。", "effectHint": "數字越大邊框越粗，0 表示沒有邊框。" },
+                "stroke-width": { "title": "描邊寬度", "description": "控制外框線條有多粗。", "effectHint": "數字越大邊框越粗，0 表示沒有邊框。" },
                 "stroke-dasharray": { "title": "虛線樣式", "description": "控制邊框或線條是否顯示為虛線。", "effectHint": "例如 4 2 表示一段實線後留一段空白。" },
-                "stroke-linecap": { "title": "線端樣式", "description": "控制線條兩端是平直、圓頭還是方頭。", "effectHint": "round 通常更適合線路圖。" },
-                "stroke-linejoin": { "title": "轉角樣式", "description": "控制線條轉彎處的連接形狀。", "effectHint": "round 會讓轉角更圓滑。" },
+                "stroke-linecap": { "title": "線端形狀", "description": "控制線條兩端是平直、圓頭還是方頭。", "effectHint": "round 通常更適合路綫圖。" },
+                "stroke-linejoin": { "title": "轉角形狀", "description": "控制線條轉彎處的連接形狀。", "effectHint": "round 會讓轉角更圓滑。" },
                 "_rmp_children_text": { "title": "文本內容", "description": "控制這個文字元素顯示的內容。" },
                 "font-size": { "title": "字號", "description": "控制文字大小。", "effectHint": "數字越大文字越大。" },
                 "font-family": { "title": "字體", "description": "控制文字使用的字體族。", "effectHint": "通常建議使用文字樣式 class，而不是直接寫字體名。" },
@@ -161,25 +161,25 @@
                 "letter-spacing": { "title": "字距", "description": "控制文字之間的距離。", "effectHint": "負數會讓字更緊，正數會讓字更鬆。" },
                 "text-anchor": { "title": "水平對齊", "description": "控制文字相對 X 位置的左右對齊方式。", "effectHint": "middle 表示文字以 X 位置為中心。" },
                 "dominant-baseline": { "title": "垂直對齊", "description": "控制文字相對 Y 位置的上下對齊方式。", "effectHint": "middle/central 常用於把文字放在圖形中間。" },
-                "className": { "title": "文字樣式", "description": "選擇 RMP 內置的文字樣式。", "effectHint": "用於匹配不同城市或語言的字體風格。" },
+                "className": { "title": "文字樣式", "description": "選擇地鐵路綫圖繪製器內置的文字樣式。", "effectHint": "用於匹配不同城市或語言的字體樣式。" },
                 "transform": { "title": "移動/旋轉/縮放", "description": "對整個圖形做整體變換。", "effectHint": "例如 translate(10, 0) 表示整體向右移動。" },
                 "viewBox": { "title": "視圖範圍", "description": "控制 SVG 內部座標系的可見範圍。", "effectHint": "通常用於完整 SVG 容器，不建議隨意修改。" },
-                "opacity": { "title": "透明度", "description": "控制整個圖形是否透明。", "effectHint": "0 完全透明，1 完全不透明。" },
-                "clip-path": { "title": "裁剪區域", "description": "用另一個形狀裁掉當前圖形的一部分。", "effectHint": "通常來自導入 SVG，普通編輯可以保持不變。" },
-                "mask": { "title": "遮罩", "description": "用遮罩控制圖形哪些部分可見。", "effectHint": "通常來自導入 SVG，普通編輯可以保持不變。" },
-                "filter": { "title": "濾鏡", "description": "給圖形添加陰影、模糊等 SVG 效果。", "effectHint": "RMP 兼容性取決於具體濾鏡內容。" },
-                "style": { "title": "樣式表", "description": "保留導入 SVG 中的內聯樣式。", "effectHint": "通常來自上傳 SVG，只有需要微調時才修改。" }
+                "opacity": { "title": "不透明度", "description": "控制整個圖形是否透明。", "effectHint": "0 完全透明，1 完全不透明。" },
+                "clip-path": { "title": "裁剪區域", "description": "用另一個形狀裁掉當前圖形的一部分。", "effectHint": "通常來自匯入 SVG，普通編輯可以保持不變。" },
+                "mask": { "title": "遮罩", "description": "用遮罩控制圖形哪些部分可見。", "effectHint": "通常來自匯入 SVG，普通編輯可以保持不變。" },
+                "filter": { "title": "濾鏡", "description": "給圖形添加陰影、模糊等 SVG 效果。", "effectHint": "地鐵路綫圖繪製器兼容性取決於具體濾鏡內容。" },
+                "style": { "title": "樣式表", "description": "保留匯入 SVG 中的內聯樣式。", "effectHint": "通常來自上載 SVG，只有需要微調時才修改。" }
             },
             "tipsA1": "點擊右上角的",
-            "tipsA2": "以上傳你的 SVG 圖形",
+            "tipsA2": "以上載你的 SVG 圖形",
             "tipsB1": "點擊左側的圖標",
             "tipsB2": "再點擊畫布以添加一個 SVG 組件"
         },
         "components": {
-            "title": "變量",
+            "title": "變數",
             "name": "名稱",
-            "defaultValue": "默認值",
-            "defaultColor": "默認顏色",
+            "defaultValue": "預設值",
+            "defaultColor": "預設顏色",
             "options": "選項",
             "optionsHelper": "每行一個選項。",
             "minimum": "最小值",
@@ -194,7 +194,7 @@
                 "option": "選項"
             },
             "tips1": "點擊",
-            "tips2": "以添加一個變量"
+            "tips2": "以添加一個變數"
         },
         "common": {
             "type": "類型",
@@ -202,8 +202,8 @@
         }
     },
     "ticket": {
-        "title": "上傳至畫廊",
-        "infoSection": "基本信息",
+        "title": "上載至畫廊",
+        "infoSection": "基本資訊",
         "operationSection": "新建或替換",
         "cityName": "作品名稱（需要英文）",
         "description": "描述（可選，需英文）",
@@ -217,7 +217,8 @@
     "multiLangEntry": {
         "lang": "語言",
         "name": "名稱",
-        "add": "添加其他語言的名稱",
-        "remove": "移除此名稱"
-    }
+        "add": "新增其他語言的名稱",
+        "remove": "刪除此名稱"
+    },
+    "Language": "語言"
 }
