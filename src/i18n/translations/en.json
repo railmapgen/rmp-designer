@@ -12,7 +12,7 @@
 
     "header": {
         "about": {
-            "title": "About RMP Designer",
+            "title": "About Rail Map Painter Designer",
             "intro": "A Rail Map Painter master node designer, enabling the addition of any SVG to Rail Map Painter."
         },
         "import": {
