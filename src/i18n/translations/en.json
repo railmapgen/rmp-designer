@@ -1,9 +1,9 @@
 {
-    "color": "Color",
+    "color": "Colour",
     "warning": "Warning",
     "cancel": "Cancel",
     "apply": "Apply",
-    "remove": "Remove",
+    "remove": "Delete",
     "close": "Close",
     "clipboard": {
         "copy": "Copy",
@@ -13,10 +13,10 @@
     "header": {
         "about": {
             "title": "About RMP Designer",
-            "intro": "A RMP master node designer, enabling the addition of any SVG to RMP."
+            "intro": "A Rail Map Painter master node designer, enabling the addition of any SVG to Rail Map Painter."
         },
         "import": {
-            "new": "New",
+            "new": "New project",
             "pasteSVG": "Paste SVG",
             "uploadParam": "Upload project",
             "uploadSVG": "Upload SVG",
@@ -24,21 +24,21 @@
         },
         "export": {
             "preview": "Preview",
-            "showLines": "Show RMP lines",
-            "showBadges": "Show RMP badges",
+            "showLines": "Show Rail Map Painter lines",
+            "showBadges": "Show Rail Map Painter badges",
             "offsetX": "Offset X",
             "offsetY": "Offset Y",
             "scale": "Scale",
             "rotate": "Rotate",
-            "export": "Export to RMP",
+            "export": "Export to Rail Map Painter",
             "download": "Download",
             "gallery": "Publish to gallery"
         },
         "settings": {
             "title": "Settings",
             "canvasBackground": {
-                "label": "Canvas background color",
-                "auto": "Automatic",
+                "label": "Canvas background colour",
+                "auto": "Auto",
                 "white": "Light",
                 "dark": "Dark"
             }
@@ -50,7 +50,7 @@
             "smoothPath": "Smooth path"
         },
         "details": {
-            "header": "RMP Details Panel"
+            "header": "Rail Map Painter Details Panel"
         },
         "svgs": {
             "title": "SVG Components",
@@ -90,16 +90,16 @@
                 "editBlocks": "Edit",
                 "doneEditing": "Done",
                 "cancelEditing": "Cancel",
-                "mainColor": "Main color",
-                "textColor": "Text color",
+                "mainColor": "Main colour",
+                "textColor": "Text colour",
                 "calculations": {
                     "add": "+",
                     "subtract": "-",
-                    "multiply": "x",
+                    "multiply": "×",
                     "divide": "/",
                     "min": "Minimum",
                     "max": "Maximum",
-                    "round": "Round",
+                    "round": "Round number",
                     "abs": "Absolute",
                     "floor": "Floor",
                     "ceil": "Ceil",
@@ -124,7 +124,7 @@
                 "height": "H",
                 "radius": "R",
                 "fill": "Fill",
-                "stroke": "Line",
+                "stroke": "Stroke",
                 "text": "Text",
                 "opacity": "%",
                 "transform": "Move"
@@ -136,20 +136,20 @@
                 "y1": { "title": "Start Y", "description": "Controls the vertical position of a line's start point.", "effectHint": "Larger numbers move the start point downward." },
                 "x2": { "title": "End X", "description": "Controls the horizontal position of a line's end point.", "effectHint": "Larger numbers move the end point to the right." },
                 "y2": { "title": "End Y", "description": "Controls the vertical position of a line's end point.", "effectHint": "Larger numbers move the end point downward." },
-                "cx": { "title": "Center X", "description": "Controls the horizontal position of a circle or ellipse center.", "effectHint": "Larger numbers move the center to the right." },
-                "cy": { "title": "Center Y", "description": "Controls the vertical position of a circle or ellipse center.", "effectHint": "Larger numbers move the center downward." },
+                "cx": { "title": "Centre X", "description": "Controls the horizontal position of a circle or ellipse centre.", "effectHint": "Larger numbers move the centre to the right." },
+                "cy": { "title": "Centre Y", "description": "Controls the vertical position of a circle or ellipse centre.", "effectHint": "Larger numbers move the centre downward." },
                 "dx": { "title": "Horizontal offset", "description": "Moves text or child elements left or right from their original position.", "effectHint": "Positive values move right; negative values move left." },
                 "dy": { "title": "Vertical offset", "description": "Moves text or child elements up or down from their original position.", "effectHint": "Positive values move down; negative values move up." },
                 "width": { "title": "Width", "description": "Controls how much horizontal space the shape takes.", "effectHint": "Larger numbers make it wider." },
                 "height": { "title": "Height", "description": "Controls how much vertical space the shape takes.", "effectHint": "Larger numbers make it taller." },
-                "r": { "title": "Radius", "description": "Controls the distance from a circle center to its edge.", "effectHint": "Larger numbers make the circle larger." },
+                "r": { "title": "Radius", "description": "Controls the distance from a circle centre to its edge.", "effectHint": "Larger numbers make the circle larger." },
                 "rx": { "title": "Horizontal radius / corner", "description": "Controls a rectangle's horizontal corner radius or an ellipse's horizontal radius.", "effectHint": "For rectangles, larger numbers make left and right corners rounder." },
                 "ry": { "title": "Vertical radius / corner", "description": "Controls a rectangle's vertical corner radius or an ellipse's vertical radius.", "effectHint": "For rectangles, larger numbers make top and bottom corners rounder." },
-                "d": { "title": "Path", "description": "Controls the outline of a path shape.", "effectHint": "Usually kept from imported SVG software; hand editing is not recommended." },
+                "d": { "title": "Vector path", "description": "Controls the outline of a path shape.", "effectHint": "Usually kept from imported SVG software; hand editing is not recommended." },
                 "points": { "title": "Point list", "description": "Controls the points used by a polyline or polygon.", "effectHint": "Each pair of numbers is a point, for example 0,0 20,0." },
-                "fill": { "title": "Fill color", "description": "Controls the color inside the shape.", "effectHint": "Set it to none to make the fill transparent." },
-                "color": { "title": "Color", "description": "Sets a base color inherited by child elements or text." },
-                "stroke": { "title": "Stroke color", "description": "Controls the color of the outline or line.", "effectHint": "Set it to none to hide the outline." },
+                "fill": { "title": "Fill colour", "description": "Controls the colour inside the shape.", "effectHint": "Set it to none to make the fill transparent." },
+                "color": { "title": "Colour", "description": "Sets a base colour inherited by child elements or text." },
+                "stroke": { "title": "Stroke colour", "description": "Controls the colour of the outline or line.", "effectHint": "Set it to none to hide the outline." },
                 "stroke-width": { "title": "Stroke width", "description": "Controls how thick the outline is.", "effectHint": "Larger numbers make the outline thicker. 0 means no outline." },
                 "stroke-dasharray": { "title": "Dash pattern", "description": "Controls whether the outline or line is dashed.", "effectHint": "For example, 4 2 means a line segment followed by a gap." },
                 "stroke-linecap": { "title": "Line cap", "description": "Controls whether line ends are flat, round, or square.", "effectHint": "round usually works better for rail maps." },
@@ -160,14 +160,14 @@
                 "font-weight": { "title": "Font weight", "description": "Controls text thickness." },
                 "letter-spacing": { "title": "Letter spacing", "description": "Controls the space between letters.", "effectHint": "Negative values tighten text; positive values spread it out." },
                 "text-anchor": { "title": "Horizontal alignment", "description": "Controls how text aligns around its X position.", "effectHint": "middle centers the text on the X position." },
-                "dominant-baseline": { "title": "Vertical alignment", "description": "Controls how text aligns around its Y position.", "effectHint": "middle/central is often used to place text in the center of a shape." },
-                "className": { "title": "Text style", "description": "Selects a built-in RMP text style.", "effectHint": "Use it to match fonts for different cities or languages." },
+                "dominant-baseline": { "title": "Vertical alignment", "description": "Controls how text aligns around its Y position.", "effectHint": "middle/central is often used to place text in the centre of a shape." },
+                "className": { "title": "Text style", "description": "Selects a built-in Rail Map Painter text style.", "effectHint": "Use it to match fonts for different cities or languages." },
                 "transform": { "title": "Move / rotate / scale", "description": "Applies an overall transform to the shape.", "effectHint": "For example, translate(10, 0) moves the whole shape right." },
                 "viewBox": { "title": "View box", "description": "Controls the visible coordinate range inside an SVG.", "effectHint": "Usually used for full SVG containers; avoid changing it casually." },
                 "opacity": { "title": "Opacity", "description": "Controls whether the whole shape is transparent.", "effectHint": "0 is fully transparent; 1 is fully opaque." },
                 "clip-path": { "title": "Clip area", "description": "Uses another shape to cut away part of the current shape.", "effectHint": "Usually comes from imported SVGs and can be left unchanged." },
                 "mask": { "title": "Mask", "description": "Uses a mask to control which parts of the shape are visible.", "effectHint": "Usually comes from imported SVGs and can be left unchanged." },
-                "filter": { "title": "Filter", "description": "Adds SVG effects such as shadow or blur.", "effectHint": "RMP compatibility depends on the exact filter content." },
+                "filter": { "title": "Filter", "description": "Adds SVG effects such as shadow or blur.", "effectHint": "Rail Map Painter compatibility depends on the exact filter content." },
                 "style": { "title": "Style sheet", "description": "Keeps inline styles from imported SVGs.", "effectHint": "Usually comes from uploaded SVGs; edit only when fine tuning is needed." }
             },
             "tipsA1": "Click the upper right corner",
@@ -185,29 +185,29 @@
                 "widthStopsHint": "Position is a percentage along the path.",
                 "addWidthStop": "Add width stop",
                 "caps": {
-                    "round": "Round",
-                    "flat": "Flat",
+                    "round": "Round cap",
+                    "flat": "Flat cap",
                     "arrow": "Arrow"
                 }
             }
         },
         "components": {
-            "title": "Variables",
+            "title": "Variable",
             "name": "Name",
             "defaultValue": "Default value",
-            "defaultColor": "Default color",
+            "defaultColor": "Default colour",
             "options": "Options",
             "optionsHelper": "Enter one option per line.",
             "minimum": "Minimum",
             "maximum": "Maximum",
             "step": "Step",
             "types": {
-                "text": "Text",
+                "text": "Single-line text",
                 "textarea": "Text area",
                 "number": "Number",
-                "switch": "Switch",
-                "color": "Color",
-                "option": "Option"
+                "switch": "Boolean switch",
+                "color": "Colour",
+                "option": "Options"
             },
             "tips1": "Click",
             "tips2": "to add a variable."
@@ -222,7 +222,7 @@
         "infoSection": "Basic information",
         "operationSection": "New or replacement",
         "cityName": "Work name (English required)",
-        "description": "Description (Optional, English required)",
+        "description": "Description (optional, English required)",
         "change": "Change work in designer",
         "replace": "Replace a existing work",
         "new": "As a new work",
@@ -236,16 +236,20 @@
         "lang": "Language",
         "name": "Name",
         "add": "Add a name in another language",
-        "remove": "Remove this name"
+        "remove": "Delete this name"
     },
     "validation": {
         "unknownVariable": "Unknown variable: {{name}}",
-        "invalidColor": "Invalid color variable: {{name}}",
-        "colorPath": "Color variable {{name}} does not support path {{path}}",
+        "invalidColor": "Invalid colour variable: {{name}}",
+        "colorPath": "Colour variable {{name}} does not support path {{path}}",
         "variablePath": "Variable {{name}} does not support path {{path}}",
         "operator": "Unsupported condition operator: {{operator}}",
         "legacy": "Invalid legacy expression",
         "binding": "Invalid attribute binding",
         "style": "\"style\" must be an object!"
-    }
+    },
+    "Done!": "Done",
+    "Error Code": "Error code",
+    "Error Message": "Error message",
+    "zoom": "Zoom"
 }

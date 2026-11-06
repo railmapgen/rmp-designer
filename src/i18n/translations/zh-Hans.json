@@ -3,7 +3,7 @@
     "warning": "警告",
     "cancel": "取消",
     "apply": "应用",
-    "remove": "移除",
+    "remove": "删除",
     "close": "关闭",
     "clipboard": {
         "copy": "复制",
@@ -12,8 +12,8 @@
 
     "header": {
         "about": {
-            "title": "关于 RMP 设计器",
-            "intro": "一个 RMP 大师节点设计器，支持将任何 SVG 添加到 RMP。"
+            "title": "关于 RMP 设计师",
+            "intro": "一个地铁线路图绘制器大师节点设计器，支持将任何 SVG 添加到地铁线路图绘制器。"
         },
         "import": {
             "new": "新建项目",
@@ -24,13 +24,13 @@
         },
         "export": {
             "preview": "预览",
-            "showLines": "显示 RMP 线段",
-            "showBadges": "显示 RMP 标识",
+            "showLines": "显示地铁线路图绘制器线段",
+            "showBadges": "显示地铁线路图绘制器标识",
             "offsetX": "偏移 X",
             "offsetY": "偏移 Y",
-            "scale": "缩放",
+            "scale": "缩放比例",
             "rotate": "旋转",
-            "export": "导出到 RMP",
+            "export": "导出到地铁线路图绘制器",
             "download": "下载",
             "gallery": "发布到画廊"
         },
@@ -46,11 +46,11 @@
     },
     "panel": {
         "tools": {
-            "showLess": "显示更少",
-            "smoothPath": "圆滑路径"
+            "showLess": "收起",
+            "smoothPath": "平滑路径"
         },
         "details": {
-            "header": "RMP 详情面板"
+            "header": "地铁线路图绘制器详情面板"
         },
         "svgs": {
             "title": "SVG 组件",
@@ -74,7 +74,7 @@
                 "placeholder": "例如：12、{宽度}、3 + {宽度}",
                 "common": "常用",
                 "quick": "快捷",
-                "empty": "空",
+                "empty": "空值",
                 "insertVariable": "插入参数",
                 "insertCalculation": "插入计算",
                 "unit": "单位",
@@ -91,7 +91,7 @@
                 "doneEditing": "完成",
                 "cancelEditing": "取消",
                 "mainColor": "主色",
-                "textColor": "文字色",
+                "textColor": "文字颜色",
                 "calculations": {
                     "add": "+",
                     "subtract": "-",
@@ -111,7 +111,7 @@
                 "size": "大小",
                 "shape": "形状",
                 "fill": "填充",
-                "stroke": "边框",
+                "stroke": "描边",
                 "text": "文字",
                 "transform": "变换",
                 "effects": "效果",
@@ -123,11 +123,11 @@
                 "width": "宽",
                 "height": "高",
                 "radius": "圆",
-                "fill": "色",
-                "stroke": "边",
-                "text": "文",
+                "fill": "填充",
+                "stroke": "描边",
+                "text": "文字",
                 "opacity": "%",
-                "transform": "移"
+                "transform": "移动"
             },
             "attrs": {
                 "x": { "title": "X 位置", "description": "控制图形左上角或文字起点的水平位置。", "effectHint": "数字越大越靠右。" },
@@ -145,15 +145,15 @@
                 "r": { "title": "半径", "description": "控制圆形从中心到边缘的距离。", "effectHint": "数字越大圆越大。" },
                 "rx": { "title": "水平圆角/半径", "description": "控制矩形横向圆角，或椭圆横向半径。", "effectHint": "矩形里数字越大，左右圆角越明显。" },
                 "ry": { "title": "垂直圆角/半径", "description": "控制矩形纵向圆角，或椭圆纵向半径。", "effectHint": "矩形里数字越大，上下圆角越明显。" },
-                "d": { "title": "路径", "description": "控制 path 图形的轮廓。", "effectHint": "通常从 SVG 软件导入后保留，不建议手写。" },
+                "d": { "title": "矢量路径", "description": "控制 path 图形的轮廓。", "effectHint": "通常从 SVG 软件导入后保留，不建议手写。" },
                 "points": { "title": "点列表", "description": "控制折线或多边形经过的点。", "effectHint": "每组数字表示一个点，例如 0,0 20,0。" },
                 "fill": { "title": "填充颜色", "description": "控制图形内部填充的颜色。", "effectHint": "设置为 none 可以变成透明填充。" },
                 "color": { "title": "颜色", "description": "给子元素或文字继承使用的基础颜色。" },
                 "stroke": { "title": "边框颜色", "description": "控制外框或线条的颜色。", "effectHint": "设置为 none 可以隐藏边框。" },
-                "stroke-width": { "title": "边框粗细", "description": "控制外框线条有多粗。", "effectHint": "数字越大边框越粗，0 表示没有边框。" },
+                "stroke-width": { "title": "描边宽度", "description": "控制外框线条有多粗。", "effectHint": "数字越大边框越粗，0 表示没有边框。" },
                 "stroke-dasharray": { "title": "虚线样式", "description": "控制边框或线条是否显示为虚线。", "effectHint": "例如 4 2 表示一段实线后留一段空白。" },
-                "stroke-linecap": { "title": "线端样式", "description": "控制线条两端是平直、圆头还是方头。", "effectHint": "round 通常更适合线路图。" },
-                "stroke-linejoin": { "title": "转角样式", "description": "控制线条转弯处的连接形状。", "effectHint": "round 会让转角更圆滑。" },
+                "stroke-linecap": { "title": "线端形状", "description": "控制线条两端是平直、圆头还是方头。", "effectHint": "round 通常更适合线路图。" },
+                "stroke-linejoin": { "title": "转角形状", "description": "控制线条转弯处的连接形状。", "effectHint": "round 会让转角更圆滑。" },
                 "_rmp_children_text": { "title": "文本内容", "description": "控制这个文字元素显示的内容。" },
                 "font-size": { "title": "字号", "description": "控制文字大小。", "effectHint": "数字越大文字越大。" },
                 "font-family": { "title": "字体", "description": "控制文字使用的字体族。", "effectHint": "通常建议使用文字样式 class，而不是直接写字体名。" },
@@ -161,13 +161,13 @@
                 "letter-spacing": { "title": "字间距", "description": "控制文字之间的距离。", "effectHint": "负数会让字更紧，正数会让字更松。" },
                 "text-anchor": { "title": "水平对齐", "description": "控制文字相对 X 位置的左右对齐方式。", "effectHint": "middle 表示文字以 X 位置为中心。" },
                 "dominant-baseline": { "title": "垂直对齐", "description": "控制文字相对 Y 位置的上下对齐方式。", "effectHint": "middle/central 常用于把文字放在图形中间。" },
-                "className": { "title": "文字样式", "description": "选择 RMP 内置的文字样式。", "effectHint": "用于匹配不同城市或语言的字体风格。" },
+                "className": { "title": "文字样式", "description": "选择地铁线路图绘制器内置的文字样式。", "effectHint": "用于匹配不同城市或语言的字体样式。" },
                 "transform": { "title": "移动/旋转/缩放", "description": "对整个图形做整体变换。", "effectHint": "例如 translate(10, 0) 表示整体向右移动。" },
                 "viewBox": { "title": "视图范围", "description": "控制 SVG 内部坐标系的可见范围。", "effectHint": "通常用于完整 SVG 容器，不建议随意修改。" },
-                "opacity": { "title": "透明度", "description": "控制整个图形是否透明。", "effectHint": "0 完全透明，1 完全不透明。" },
+                "opacity": { "title": "不透明度", "description": "控制整个图形是否透明。", "effectHint": "0 完全透明，1 完全不透明。" },
                 "clip-path": { "title": "裁剪区域", "description": "用另一个形状裁掉当前图形的一部分。", "effectHint": "通常来自导入 SVG，普通编辑可以保持不变。" },
                 "mask": { "title": "遮罩", "description": "用遮罩控制图形哪些部分可见。", "effectHint": "通常来自导入 SVG，普通编辑可以保持不变。" },
-                "filter": { "title": "滤镜", "description": "给图形添加阴影、模糊等 SVG 效果。", "effectHint": "RMP 兼容性取决于具体滤镜内容。" },
+                "filter": { "title": "滤镜", "description": "给图形添加阴影、模糊等 SVG 效果。", "effectHint": "地铁线路图绘制器兼容性取决于具体滤镜内容。" },
                 "style": { "title": "样式表", "description": "保留导入 SVG 中的内联样式。", "effectHint": "通常来自上传 SVG，只有需要细调时才修改。" }
             },
             "tipsA1": "点击右上角的",
@@ -175,15 +175,15 @@
             "tipsB1": "点击左侧的图标",
             "tipsB2": "再点击画布以添加一个 SVG 组件",
             "smoothPath": {
-                "title": "圆滑路径",
+                "title": "平滑路径",
                 "smoothing": "平滑度",
-                "startCap": "起点端帽",
-                "endCap": "终点端帽",
+                "startCap": "起点形状",
+                "endCap": "终点形状",
                 "arrowLength": "箭头长度",
                 "arrowWidth": "箭头宽度",
-                "widthStops": "粗细控制点",
-                "widthStopsHint": "位置表示路径上的百分比。",
-                "addWidthStop": "添加粗细点",
+                "widthStops": "宽度控制点",
+                "widthStopsHint": "位置为路径总长度的百分比。",
+                "addWidthStop": "添加宽度控制点",
                 "caps": {
                     "round": "圆头",
                     "flat": "平头",
@@ -202,7 +202,7 @@
             "maximum": "最大值",
             "step": "步长",
             "types": {
-                "text": "单行文本",
+                "text": "单行文字",
                 "textarea": "多行文本",
                 "number": "数字",
                 "switch": "开关",
@@ -234,6 +234,6 @@
         "lang": "语言",
         "name": "名称",
         "add": "添加其他语言的名称",
-        "remove": "移除此名称"
+        "remove": "删除此名称"
     }
 }

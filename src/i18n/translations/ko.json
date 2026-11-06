@@ -1,10 +1,10 @@
 {
-    "color": "색깔",
+    "color": "색상",
     "warning": "경고",
     "cancel": "취소",
-    "apply": "사용",
+    "apply": "적용",
     "remove": "삭제",
-    "close": "다시",
+    "close": "닫기",
     "clipboard": {
         "copy": "복사",
         "paste": "붙여넣기"
@@ -12,25 +12,25 @@
 
     "header": {
         "about": {
-            "title": "RMP 디자이너 소개",
-            "intro": "RMP 마스터 노드 디자이너로, RMP에 어떤 SVG든 추가할 수 있습니다."
+            "title": "RMP 디자이너 정보",
+            "intro": "철도 노선도 그리기 마스터 노드 디자이너로, 철도 노선도 그리기에 어떤 SVG든 추가할 수 있습니다."
         },
         "import": {
-            "new": "새로 만들기",
+            "new": "새 프로젝트",
             "pasteSVG": "SVG 붙여넣기",
             "uploadParam": "프로젝트 업로드",
             "uploadSVG": "SVG 업로드",
             "gallery": "갤러리에서 가져오기"
         },
         "export": {
-            "preview": "미리보기",
-            "showLines": "RMP 라인 표시",
-            "showBadges": "RMP 배지 표시",
+            "preview": "미리 보기",
+            "showLines": "철도 노선도 그리기 라인 표시",
+            "showBadges": "철도 노선도 그리기 배지 표시",
             "offsetX": "오프셋 X",
             "offsetY": "오프셋 Y",
-            "scale": "크기 조정",
+            "scale": "크기 비율",
             "rotate": "회전",
-            "export": "RMP로 내보내기",
+            "export": "철도 노선도 그리기로 내보내기",
             "download": "다운로드",
             "gallery": "갤러리에 게시"
         },
@@ -39,18 +39,18 @@
             "canvasBackground": {
                 "label": "캔버스 배경색",
                 "auto": "자동",
-                "white": "밝은",
-                "dark": "어두운"
+                "white": "밝은 테마",
+                "dark": "어두운 테마"
             }
         }
     },
     "panel": {
         "tools": {
             "showLess": "간단히 보기",
-            "smoothPath": "부드러운 경로"
+            "smoothPath": "매끄러운 경로"
         },
         "details": {
-            "header": "RMP 세부 정보 패널"
+            "header": "철도 노선도 그리기 세부 정보 패널"
         },
         "svgs": {
             "title": "SVG 구성 요소",
@@ -74,7 +74,7 @@
                 "placeholder": "예: 12, {너비}, 3 + {너비}",
                 "common": "자주 사용",
                 "quick": "빠른 값",
-                "empty": "비어 있음",
+                "empty": "빈 값",
                 "insertVariable": "매개변수 삽입",
                 "insertCalculation": "계산 삽입",
                 "unit": "단위",
@@ -91,11 +91,11 @@
                 "doneEditing": "완료",
                 "cancelEditing": "취소",
                 "mainColor": "기본 색상",
-                "textColor": "글자 색상",
+                "textColor": "텍스트 색상",
                 "calculations": {
                     "add": "+",
                     "subtract": "-",
-                    "multiply": "x",
+                    "multiply": "×",
                     "divide": "/",
                     "min": "최소",
                     "max": "최대",
@@ -111,7 +111,7 @@
                 "size": "크기",
                 "shape": "모양",
                 "fill": "채우기",
-                "stroke": "테두리",
+                "stroke": "윤곽선",
                 "text": "텍스트",
                 "transform": "변형",
                 "effects": "효과",
@@ -123,9 +123,9 @@
                 "width": "너비",
                 "height": "높이",
                 "radius": "반경",
-                "fill": "색",
-                "stroke": "선",
-                "text": "글",
+                "fill": "채우기",
+                "stroke": "윤곽선",
+                "text": "텍스트",
                 "opacity": "%",
                 "transform": "이동"
             },
@@ -145,29 +145,29 @@
                 "r": { "title": "반지름", "description": "원의 중심에서 가장자리까지의 거리를 제어합니다.", "effectHint": "숫자가 클수록 원이 커집니다." },
                 "rx": { "title": "가로 반지름 / 모서리", "description": "사각형의 가로 둥근 모서리 또는 타원의 가로 반지름을 제어합니다.", "effectHint": "사각형에서는 숫자가 클수록 좌우 모서리가 더 둥글어집니다." },
                 "ry": { "title": "세로 반지름 / 모서리", "description": "사각형의 세로 둥근 모서리 또는 타원의 세로 반지름을 제어합니다.", "effectHint": "사각형에서는 숫자가 클수록 위아래 모서리가 더 둥글어집니다." },
-                "d": { "title": "경로", "description": "path 도형의 윤곽을 제어합니다.", "effectHint": "보통 SVG 소프트웨어에서 가져온 값을 유지하며 직접 입력은 권장하지 않습니다." },
+                "d": { "title": "벡터 경로", "description": "path 도형의 윤곽을 제어합니다.", "effectHint": "보통 SVG 소프트웨어에서 가져온 값을 유지하며 직접 입력은 권장하지 않습니다." },
                 "points": { "title": "점 목록", "description": "폴리라인이나 다각형이 지나는 점을 제어합니다.", "effectHint": "각 숫자 쌍은 하나의 점입니다. 예: 0,0 20,0." },
                 "fill": { "title": "채우기 색상", "description": "도형 내부의 채우기 색상을 제어합니다.", "effectHint": "none으로 설정하면 채우기가 투명해집니다." },
                 "color": { "title": "색상", "description": "자식 요소나 텍스트가 상속하는 기본 색상을 설정합니다." },
                 "stroke": { "title": "테두리 색상", "description": "외곽선 또는 선의 색상을 제어합니다.", "effectHint": "none으로 설정하면 테두리를 숨길 수 있습니다." },
-                "stroke-width": { "title": "테두리 두께", "description": "외곽선의 두께를 제어합니다.", "effectHint": "숫자가 클수록 더 두꺼워지고, 0은 테두리 없음을 의미합니다." },
+                "stroke-width": { "title": "윤곽선 너비", "description": "외곽선의 두께를 제어합니다.", "effectHint": "숫자가 클수록 더 두꺼워지고, 0은 테두리 없음을 의미합니다." },
                 "stroke-dasharray": { "title": "점선 패턴", "description": "외곽선 또는 선을 점선으로 표시할지 제어합니다.", "effectHint": "예: 4 2는 선분 뒤에 공백을 둡니다." },
                 "stroke-linecap": { "title": "선 끝 모양", "description": "선 끝을 평평하게, 둥글게, 또는 사각형으로 표시할지 제어합니다.", "effectHint": "노선도에는 round가 보통 더 잘 어울립니다." },
-                "stroke-linejoin": { "title": "모서리 연결", "description": "선이 꺾이는 부분의 연결 모양을 제어합니다.", "effectHint": "round는 모서리를 더 부드럽게 만듭니다." },
+                "stroke-linejoin": { "title": "선 연결 모양", "description": "선이 꺾이는 부분의 연결 모양을 제어합니다.", "effectHint": "round는 모서리를 더 부드럽게 만듭니다." },
                 "_rmp_children_text": { "title": "텍스트 내용", "description": "이 텍스트 요소에 표시되는 내용을 제어합니다." },
                 "font-size": { "title": "글자 크기", "description": "텍스트 크기를 제어합니다.", "effectHint": "숫자가 클수록 글자가 커집니다." },
                 "font-family": { "title": "글꼴", "description": "텍스트에 사용하는 글꼴 모음을 제어합니다.", "effectHint": "직접 글꼴 이름을 쓰기보다 텍스트 스타일 class를 사용하는 것이 좋습니다." },
-                "font-weight": { "title": "글자 두께", "description": "텍스트의 두께를 제어합니다." },
+                "font-weight": { "title": "글자 굵기", "description": "텍스트의 두께를 제어합니다." },
                 "letter-spacing": { "title": "자간", "description": "글자 사이의 간격을 제어합니다.", "effectHint": "음수는 더 촘촘하게, 양수는 더 넓게 만듭니다." },
                 "text-anchor": { "title": "가로 정렬", "description": "X 위치를 기준으로 텍스트의 좌우 정렬을 제어합니다.", "effectHint": "middle은 텍스트를 X 위치 중심에 맞춥니다." },
                 "dominant-baseline": { "title": "세로 정렬", "description": "Y 위치를 기준으로 텍스트의 위아래 정렬을 제어합니다.", "effectHint": "middle/central은 텍스트를 도형 가운데에 둘 때 자주 사용합니다." },
-                "className": { "title": "텍스트 스타일", "description": "RMP 내장 텍스트 스타일을 선택합니다.", "effectHint": "도시나 언어별 글꼴 스타일을 맞출 때 사용합니다." },
+                "className": { "title": "텍스트 스타일", "description": "철도 노선도 그리기 내장 텍스트 스타일을 선택합니다.", "effectHint": "도시나 언어별 글꼴 스타일을 맞출 때 사용합니다." },
                 "transform": { "title": "이동 / 회전 / 크기 조정", "description": "도형 전체에 변형을 적용합니다.", "effectHint": "예: translate(10, 0)은 도형 전체를 오른쪽으로 이동합니다." },
                 "viewBox": { "title": "보기 영역", "description": "SVG 내부 좌표계의 보이는 범위를 제어합니다.", "effectHint": "보통 전체 SVG 컨테이너에 사용하며 임의로 바꾸지 않는 것이 좋습니다." },
-                "opacity": { "title": "투명도", "description": "도형 전체가 얼마나 투명한지 제어합니다.", "effectHint": "0은 완전 투명, 1은 완전 불투명입니다." },
+                "opacity": { "title": "불투명도", "description": "도형 전체가 얼마나 투명한지 제어합니다.", "effectHint": "0은 완전 투명, 1은 완전 불투명입니다." },
                 "clip-path": { "title": "클립 영역", "description": "다른 모양을 사용해 현재 도형의 일부를 잘라냅니다.", "effectHint": "보통 가져온 SVG에서 온 값이므로 그대로 두어도 됩니다." },
                 "mask": { "title": "마스크", "description": "마스크를 사용해 도형의 보이는 부분을 제어합니다.", "effectHint": "보통 가져온 SVG에서 온 값이므로 그대로 두어도 됩니다." },
-                "filter": { "title": "필터", "description": "그림자나 흐림 같은 SVG 효과를 추가합니다.", "effectHint": "RMP 호환성은 구체적인 필터 내용에 따라 달라집니다." },
+                "filter": { "title": "필터", "description": "그림자나 흐림 같은 SVG 효과를 추가합니다.", "effectHint": "철도 노선도 그리기 호환성은 구체적인 필터 내용에 따라 달라집니다." },
                 "style": { "title": "스타일시트", "description": "가져온 SVG의 인라인 스타일을 유지합니다.", "effectHint": "보통 업로드한 SVG에서 온 값이며 세부 조정이 필요할 때만 편집합니다." }
             },
             "tipsA1": "오른쪽 상단을 클릭하세요",
@@ -176,7 +176,7 @@
             "tipsB2": "그런 다음 캔버스를 클릭하여 SVG 구성 요소를 추가하세요",
             "smoothPath": {
                 "title": "매끄러운 경로",
-                "smoothing": "평활화",
+                "smoothing": "평활도",
                 "startCap": "시작점 모양",
                 "endCap": "끝점 모양",
                 "arrowLength": "화살표 길이",
@@ -194,7 +194,7 @@
         "components": {
             "title": "변수",
             "name": "이름",
-            "defaultValue": "기본 값",
+            "defaultValue": "기본값",
             "defaultColor": "기본 색상",
             "options": "옵션",
             "optionsHelper": "한 줄에 옵션 하나씩 입력하세요.",
@@ -202,7 +202,7 @@
             "maximum": "최대",
             "step": "단계",
             "types": {
-                "text": "텍스트",
+                "text": "한 줄 텍스트",
                 "textarea": "여러 줄 텍스트",
                 "number": "숫자",
                 "switch": "스위치",
@@ -214,7 +214,7 @@
         },
         "common": {
             "type": "유형",
-            "label": "라벨"
+            "label": "레이블"
         }
     },
     "ticket": {
@@ -226,7 +226,7 @@
         "change": "디자이너에서 작품 변경",
         "replace": "기존 작품 교체",
         "new": "새로운 작품으로",
-        "back": "뒤로",
+        "back": "돌아가기",
         "submit": "제출",
         "submitTemplate": "작품 제출",
         "failed": "실패: {{status}} {{statusText}} {{message}}",
@@ -235,8 +235,8 @@
     "multiLangEntry": {
         "lang": "언어",
         "name": "이름",
-        "add": "다른 언어로 이름 추가",
-        "remove": "이 이름 제거"
+        "add": "다른 언어의 이름 추가",
+        "remove": "이 이름 삭제"
     },
     "Help": "도움말",
     "Undo": "실행 취소",
@@ -248,7 +248,7 @@
     "Error Message": "오류 메시지",
     "SVG format not available": "지원하지 않는 SVG 형식입니다",
     "Invalid param": "잘못된 설정입니다",
-    "Done!": "완료되었습니다.",
+    "Done!": "완료",
     "validation": {
         "unknownVariable": "알 수 없는 변수: {{name}}",
         "invalidColor": "잘못된 색상 변수: {{name}}",
