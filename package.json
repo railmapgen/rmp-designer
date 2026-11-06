@@ -15,7 +15,7 @@
         "@railmapgen/rmg-components": "^10.1.0",
         "@railmapgen/rmg-palette-resources": "^3.0.0",
         "@railmapgen/rmg-runtime": "^10.2.0",
-        "@railmapgen/rmg-translate": "^3.2.1",
+        "@railmapgen/rmg-translate": "^3.5.4",
         "@reduxjs/toolkit": "^2.1.0",
         "@types/jsdom": "^21.1.7",
         "common": "^0.2.5",

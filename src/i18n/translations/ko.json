@@ -258,10 +258,5 @@
         "legacy": "잘못된 이전 형식의 표현식",
         "binding": "잘못된 속성 바인딩",
         "style": "\"style\"은 객체여야 합니다."
-    },
-    "Back": "돌아가기",
-    "Language": "언어",
-    "Name": "이름",
-    "Remove": "제거",
-    "Settings": "설정"
+    }
 }
